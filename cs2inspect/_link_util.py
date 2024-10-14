@@ -9,23 +9,14 @@ import urllib.parse
 from typing import Optional
 
 
-def link_type(inspect: str) -> Optional[str]:
-    """Get the type of inspect link (masked or unmasked)"""
-
-    link_valid, link_type_str = is_link_valid(inspect)
-    if link_valid:
-        return link_type_str
-
-    return None
-
-
-def is_link_valid(inspect: str) -> tuple[bool, Optional[str]]:
-    """Validate a given inspect link"""
+def _link_valid_and_type(inspect: str) -> tuple[bool, Optional[str]]:
+    """Check a given inspect link and return validity and if valid the type of the inspect link"""
 
     if not is_link_quoted(inspect):
         inspect = quote_link(inspect)
 
-    unmasked = re.compile(r"^steam://rungame/730/\d+/[+ ]csgo_econ_action_preview(?: ?|%20)([SM])(\d+)A(\d+)D(\d+)$")
+    unmasked = re.compile(
+        r"^steam://rungame/730/\d+/[+ ]csgo_econ_action_preview(?: ?|%20)([SM])(\d+)A(\d+)D(\d+)$")
     masked = re.compile(r"^steam://rungame/730/\d+/[+ ]csgo_econ_action_preview(?: ?|%20)[0-9A-F]+$")
     patterns = {
         'unmasked': unmasked,
@@ -37,6 +28,24 @@ def is_link_valid(inspect: str) -> tuple[bool, Optional[str]]:
             return True, link_type_str
 
     return False, None
+
+
+def link_type(inspect: str) -> Optional[str]:
+    """Get the type of inspect link (masked or unmasked)"""
+
+    is_valid, link_type_str = _link_valid_and_type(inspect)
+    if is_valid:
+        return link_type_str
+
+    return None
+
+
+def is_link_valid(inspect: str) -> bool:
+    """Validate a given inspect link"""
+
+    is_valid, _ = _link_valid_and_type(inspect)
+
+    return is_valid
 
 
 def is_link_quoted(inspect: str) -> bool:
