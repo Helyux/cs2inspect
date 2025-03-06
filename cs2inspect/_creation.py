@@ -84,7 +84,7 @@ def link_masked(data_block: CEconItemPreviewDataBlock) -> Optional[str]:
     """Generate a masked inspect link from the given data block"""
     hex_string = to_hex(data_block)
     inspect_link = f"{INSPECT_BASE}{hex_string}"
-    return inspect_link if is_link_valid(inspect_link)[0] else None
+    return inspect_link if is_link_valid(inspect_link) else None
 
 
 def link_unmasked(asset_id: str, class_id: str,
@@ -92,7 +92,7 @@ def link_unmasked(asset_id: str, class_id: str,
     """Generate an unmasked inspect link from the given asset and class id and either the owner or the market id"""
     location = f"M{market_id}" if market_id else f"S{owner_id}"
     inspect_link = f"{INSPECT_BASE}{location}A{asset_id}D{class_id}"
-    return inspect_link if is_link_valid(inspect_link)[0] else None
+    return inspect_link if is_link_valid(inspect_link) else None
 
 
 if __name__ == '__main__':

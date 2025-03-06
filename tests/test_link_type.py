@@ -4,9 +4,10 @@ __date__ = "11.08.2024"
 __email__ = "m@hler.eu"
 __status__ = "Development"
 
+
+import cs2inspect
 import unittest
 
-from cs2inspect import link_type
 
 inspect_links = [
     ["masked", "%2000188004202628063003388783EBE60340AC0369DA0A5E"],
@@ -48,7 +49,7 @@ class TestLinkType(unittest.TestCase):
         for expected_result, test_case in inspect_links:
             with self.subTest(test_case=test_case):
                 inspect_link = prefix + test_case
-                self.assertEqual(link_type(inspect_link), expected_result, f"Failed for link: {inspect_link}")
+                self.assertEqual(cs2inspect.link_type(inspect_link), expected_result, f"Failed for link: {inspect_link}")
 
 
 if __name__ == '__main__':

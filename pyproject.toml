@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cs2inspect"
-version = "0.2.3"
+version = "0.2.4"
 description = "CS2 inspect link utility"
 authors = ["Lukas Mahler <m@hler.eu>"]
 readme = "README.md"
