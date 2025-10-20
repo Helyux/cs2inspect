@@ -13,7 +13,7 @@
 
 ## Overview
 
-`cs2inspect` is a python package used for creating and working with CS2 inspect links and gen codes.
+`cs2inspect` is a python package used for creating and working with counter-strike inspect links and gen codes.
 
 ## Features
 
