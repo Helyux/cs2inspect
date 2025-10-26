@@ -14,7 +14,7 @@ classifiers=[
 
 [tool.poetry.dependencies]
 python = "^3.9"
-protobuf = "^5.27.3"
+protobuf = "6.33.0"
 
 [tool.poetry.group.dev.dependencies]
 vermin = "^1.6.0"
