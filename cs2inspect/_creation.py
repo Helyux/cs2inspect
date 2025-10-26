@@ -1,50 +1,18 @@
 __author__ = "Lukas Mahler"
 __version__ = "0.0.0"
-__date__ = "11.08.2024"
+__date__ = "26.10.2025"
 __email__ = "m@hler.eu"
 __status__ = "Development"
 
 
 from typing import Any, Optional, Union
 
-from cs2inspect._hex import bytes_to_float, to_hex
+from cs2inspect._gen_util import build_gen_from_datablock, build_gen_from_dict
+from cs2inspect._hex import to_hex
 from cs2inspect._link_util import is_link_valid
 from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
 
 INSPECT_BASE = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20"
-
-
-def _gen_from_dict(data: dict[str, Any]) -> Optional[str]:
-    """Generate the item data string from a dictionary"""
-    required_keys = {"defindex", "paintindex", "paintseed", "paintwear"}
-    if not required_keys.issubset(data.keys()):
-        return None
-    stickers = data.get('stickers', [])
-    return _build_gen_string(data, stickers)
-
-
-def _gen_from_datablock(data: CEconItemPreviewDataBlock) -> Optional[str]:
-    """Generate the item data string from a CEconItemPreviewDataBlock"""
-    data_dict = {
-        'defindex': data.defindex,
-        'paintindex': data.paintindex,
-        'paintseed': data.paintseed,
-        'paintwear': bytes_to_float(data.paintwear),
-        'stickers': [{'slot': s.slot, 'sticker_id': s.sticker_id, 'wear': s.wear} for s in data.stickers]
-    }
-    return _build_gen_string(data_dict, data_dict['stickers'])
-
-
-def _build_gen_string(data: dict[str, Any], stickers: list[dict[str, Any]]) -> str:
-    """Build the item data string from the given data and stickers"""
-    str_gen = f"{data['defindex']} {data['paintindex']} {data['paintseed']} {data['paintwear']}"
-
-    sorted_stickers = sorted(stickers, key=lambda s: s['slot'])
-    if stickers:
-        for sticker in sorted_stickers:
-            str_gen += f" {sticker['sticker_id']} {float(sticker['wear']) if 'wear' in sticker else 0.0}"
-
-    return str_gen
 
 
 def _link_from_dict(data: dict[str, Any]) -> Optional[str]:
@@ -74,10 +42,24 @@ def link(data: Union[dict[str, Any], CEconItemPreviewDataBlock]) -> Optional[str
 def gen(data: Union[dict[str, Any], CEconItemPreviewDataBlock], prefix: str = "!gen") -> Optional[str]:
     """Generate a gen command string for the given item"""
     if isinstance(data, dict):
-        return f"{prefix} {_gen_from_dict(data)}"
+        gen_payload = build_gen_from_dict(data)
+        if gen_payload is None:
+            return None
+        return f"{prefix} {gen_payload}"
     elif isinstance(data, CEconItemPreviewDataBlock):
-        return f"{prefix} {_gen_from_datablock(data)}"
+        return f"{prefix} {build_gen_from_datablock(data)}"
     return None
+
+
+def link_console(data: Union[str, dict[str, Any], CEconItemPreviewDataBlock]) -> Optional[str]:
+    """Generate a console-pastable command string for the given item"""
+    if isinstance(data, (dict, CEconItemPreviewDataBlock)):
+        inspect_link = link(data).split("/+")[1].replace("%20", " ")
+        return inspect_link
+    elif isinstance(data, str):
+        return data.split("/+")[1].replace("%20", " ")
+    else:
+        return None
 
 
 def link_masked(data_block: CEconItemPreviewDataBlock) -> Optional[str]:

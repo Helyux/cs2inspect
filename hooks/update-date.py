@@ -1,6 +1,6 @@
 __author__ = "Lukas Mahler"
 __version__ = "0.0.0"
-__date__ = "12.07.2024"
+__date__ = "26.10.2025"
 __email__ = "m@hler.eu"
 __status__ = "Development"
 
@@ -9,6 +9,8 @@ import datetime
 import os
 import sys
 from typing import Literal
+
+IGNORED_FILES = {"econ_pb2.py"}
 
 
 def check_date_match(file_path: str) -> bool:
@@ -66,7 +68,13 @@ def check_hook(files: list[str]) -> Literal[0, 1]:
     """
 
     # Get list of modified .py files
-    py_files = [file_path for file_path in files if file_path.endswith('.py') and os.path.isfile(file_path)]
+    py_files = [
+        file_path
+        for file_path in files
+        if file_path.endswith('.py')
+        and os.path.isfile(file_path)
+        and os.path.basename(file_path) not in IGNORED_FILES
+    ]
     for file_path in py_files:
         if not check_date_match(file_path):
             return 1

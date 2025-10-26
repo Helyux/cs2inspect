@@ -5,8 +5,8 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![Xing][xing-shield]][xing-url]
+[![Downloads][downloads-shield]][downloads-url]
+[![GPLv3 License][license-shield]][license-url]
 </div>
 
 # cs2inspect
@@ -20,6 +20,7 @@
 - Creating 'unmasked' inspect links (containing the owners steam id)
 - Creating 'masked' inspect links (not containing the owners steam id)
 - Creating gen codes
+- Creating console pasteable inspect links
 - Checking inspect link validity (using regex)
 
 - Structured protobuf creation
@@ -56,6 +57,8 @@ proto_base = cs2inspect.Builder(
 
 # You can also change and add attributes of the proto_base after creation
 proto_base.stickers.append({'slot': 2, 'sticker_id': 7203, 'wear': 0})
+proto_base.keychains.append({'slot': 0,'sticker_id': 36,
+                             'offset_x': 4.515311241149902,'offset_y': 0.5914779901504517,'offset_z': 8.906611442565918})
 
 try:
     # Build the protobuf
@@ -65,11 +68,15 @@ except Exception as e:
     exit(1)
 
 link_str = cs2inspect.link(protobuf)
-print(link_str)  # = steam://rungame/730/76561202255233023/+csgo_econ_action_preview%2000180720AD0728053897A19BF3034002620A080210A3381D000000006B570344
+print(link_str)  # = steam://rungame/730/76561202255233023/+csgo_econ_action_preview%2000180720AD0728053897A19BF3034002620A080210A3381D00000000A20118080010241D000000003D6E7D9040451A6B173F4D7B810E4191B1FE6E
+
+# Get a console command you can paste directly in-game
+console_str = cs2inspect.link_console(protobuf)
+print(console_str)  # = csgo_econ_action_preview 00180720AD0728053897A19BF3034002620A080210A3381D00000000A20118080010241D000000003D6E7D9040451A6B173F4D7B810E4191B1FE6E
 
 # You can also create gen codes from the protobuf
 gen_str = cs2inspect.gen(protobuf, prefix="!g")  # You can omit prefix to get '!gen'
-print(gen_str)   # = !g 7 941 2 0.22540508210659027 7203 0.0
+print(gen_str)   # = !g 7 941 2 0.22540508 0 0 0 0 7203 0 0 0 0 0 36 0
 
 ```
 
@@ -89,7 +96,7 @@ GPLv3 License. See the LICENSE file for details.
 [stars-url]: https://github.com/Helyux/cs2inspect/stargazers
 [issues-shield]: https://img.shields.io/github/issues/Helyux/cs2inspect.svg?style=for-the-badge
 [issues-url]: https://github.com/Helyux/cs2inspect/issues
-[license-shield]: https://img.shields.io/github/license/Helyux/cs2inspect.svg?style=for-the-badge
+[downloads-shield]: https://img.shields.io/pepy/dt/cs2inspect?style=for-the-badge
+[downloads-url]: https://pepy.tech/project/cs2inspect
+[license-shield]: https://img.shields.io/badge/License-GPLv3-red.svg?style=for-the-badge
 [license-url]: https://github.com/Helyux/cs2inspect/blob/master/LICENSE
-[xing-shield]: https://img.shields.io/static/v1?style=for-the-badge&message=Xing&color=006567&logo=Xing&logoColor=FFFFFF&label
-[xing-url]: https://www.xing.com/profile/Lukas_Mahler10
