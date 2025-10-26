@@ -1,6 +1,6 @@
 __author__ = "Lukas Mahler"
 __version__ = "0.0.0"
-__date__ = "11.08.2024"
+__date__ = "26.10.2025"
 __email__ = "m@hler.eu"
 __status__ = "Development"
 
@@ -78,6 +78,17 @@ def gen(data: Union[dict[str, Any], CEconItemPreviewDataBlock], prefix: str = "!
     elif isinstance(data, CEconItemPreviewDataBlock):
         return f"{prefix} {_gen_from_datablock(data)}"
     return None
+
+
+def link_console(data: Union[str, dict[str, Any], CEconItemPreviewDataBlock]) -> Optional[str]:
+    """Generate a console-pastable command string for the given item"""
+    if isinstance(data, (dict, CEconItemPreviewDataBlock)):
+        inspect_link = link(data).split("/+")[1].replace("%20", " ")
+        return inspect_link
+    elif isinstance(data, str):
+        return data.split("/+")[1].replace("%20", " ")
+    else:
+        return None
 
 
 def link_masked(data_block: CEconItemPreviewDataBlock) -> Optional[str]:

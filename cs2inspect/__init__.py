@@ -5,7 +5,7 @@ __email__ = "m@hler.eu"
 __status__ = "Development"
 
 
-from cs2inspect._creation import gen, link, link_masked, link_unmasked
+from cs2inspect._creation import gen, link, link_console, link_masked, link_unmasked
 from cs2inspect._hex import from_hex, to_hex
 from cs2inspect._link_util import is_link_quoted, is_link_valid, link_type, quote_link, unquote_link
 from cs2inspect._proto import Builder
@@ -15,6 +15,7 @@ __all__ = [
 
     'gen',
     'link',
+    'link_console',
     'link_masked',
     'link_unmasked',
 
