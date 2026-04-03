@@ -18,11 +18,12 @@
 ## Features
 
 - Creating 'unmasked' inspect links (containing the owners steam id)
-- Creating 'masked' inspect links (not containing the owners steam id)
+- Creating 'masked' (XOR-capable) inspect links
+- Decoding/Unparsing inspect links back into data or protobuf objects
+- **Smart Enrichment**: Resolve numeric IDs to human-readable names (Weapon, Skin, Rarity, etc.)
 - Creating gen codes
 - Creating console pasteable inspect links
-- Checking inspect link validity (using regex)
-- Decoding/Unparsing inspect links back into data or protobuf objects
+- Checking inspect link validity (robust regex supporting modern CS2 formats)
 
 ## Installation
 
@@ -92,15 +93,37 @@ import cs2inspect
 # Works with both the new masked CS2 links and the old traditional unmasked inspect links
 masked_link = "steam://run/730//+csgo_econ_action_preview%206A7AC7C6BEDED06B72704ACE6F426F5A635296868780692AAC6C226A3A6A02E9EAEAEA661A625E7EE646"
 
-# Get a normalized dictionary (best for human reading or passing back to Builder)
+# 1. Get a normalized dictionary (best for human reading or passing back to Builder)
 data_dict = cs2inspect.parse_link(masked_link)
 print(data_dict['defindex'])  # 26
-print(data_dict['paintwear']) # 0.05357979238033295
-print(data_dict['paintseed']) # 838
+print(data_dict['paintwear']) # 0.053579...
 
-# Get the raw protobuf data block (Inverse of cs2inspect.link())
+# 2. Get the raw protobuf data block (Inverse of cs2inspect.link())
 proto = cs2inspect.unlink(masked_link)
 print(proto.itemid) # 50039428653
+```
+
+### Smart Enrichment
+
+Resolve numeric IDs to real names (Weapon, Skin, Rarity, Wear, etc.) using an optional schema.
+
+```python
+import cs2inspect
+
+# One-time setup: download the latest item/skin names (using ByMykel/CSGO-API)
+# This is saved locally and remembered across restarts
+cs2inspect.download_schema()
+
+# Parse with enrichment enabled
+link = "steam://run/730//+csgo_econ_action_preview%206A7AC7C..."
+info = cs2inspect.parse_link(link, enrich=True)
+
+print(info['full_item_name']) # "PP-Bizon | High Roller (Factory New)"
+print(info['weapon_type'])    # "PP-Bizon"
+print(info['item_name'])      # "High Roller"
+print(info['rarity_name'])    # "Classified"
+print(info['wear_name'])      # "Factory New"
+print(info['imageurl'])       # "https://..."
 ```
 
 ## Contributing
