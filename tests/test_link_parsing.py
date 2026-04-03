@@ -1,0 +1,43 @@
+__author__ = "Lukas Mahler"
+__version__ = "0.0.0"
+__date__ = "03.04.2026"
+__email__ = "m@hler.eu"
+__status__ = "Development"
+
+
+import unittest
+
+import cs2inspect
+
+
+class TestLinkParsing(unittest.TestCase):
+
+    def test_unlink_masked_link(self):
+        # Test unlinking a masked link (should return a CEconItemPreviewDataBlock)
+        masked_link = "steam://run/730//+csgo_econ_action_preview%206A7AC7C6BEDED06B72704ACE6F426F5A635296868780692AAC6C226A3A6A02E9EAEAEA661A625E7EE646"
+        data = cs2inspect.unlink(masked_link)
+
+        self.assertTrue(isinstance(data, cs2inspect.econ_pb2.CEconItemPreviewDataBlock), "Unlink of masked link did not return a protobuf data block")
+        self.assertEqual(data.defindex, 26)
+        self.assertEqual(data.paintindex, 676)
+
+    def test_unlink_unmasked_link(self):
+        # Test unlinking an unmasked link (should return a dictionary)
+        unmasked_link = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S76561198066322090A38350177019D9385506221951591925"
+        data = cs2inspect.unlink(unmasked_link)
+
+        self.assertTrue(isinstance(data, dict), "Unlink of unmasked link did not return a dictionary")
+        self.assertEqual(data['owner_id'], '76561198066322090')
+        self.assertEqual(data['asset_id'], '38350177019')
+
+    def test_parse_link_masked_roundtrip(self):
+        # Test parse_link (friendly dictionary output) for a masked link
+        masked_link = "steam://run/730//+csgo_econ_action_preview%206A7AC7C6BEDED06B72704ACE6F426F5A635296868780692AAC6C226A3A6A02E9EAEAEA661A625E7EE646"
+        data = cs2inspect.parse_link(masked_link)
+
+        self.assertTrue(isinstance(data, dict), "parse_link did not return a dictionary")
+        self.assertEqual(data['defindex'], 26)
+        self.assertAlmostEqual(data['paintwear'], 0.053579792, places=8)
+
+if __name__ == '__main__':
+    unittest.main()
