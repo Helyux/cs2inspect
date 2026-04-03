@@ -10,6 +10,7 @@ from cs2inspect._hex import from_hex, to_hex
 from cs2inspect._link_util import is_link_quoted, is_link_valid, link_type, quote_link, unquote_link
 from cs2inspect._parse import parse_link, unlink
 from cs2inspect._proto import Builder
+from cs2inspect._schema import ItemSchema, download_schema, load_schema, load_schema_path
 
 __all__ = [
     'Builder',

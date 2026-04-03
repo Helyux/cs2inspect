@@ -5,10 +5,12 @@ __email__ = "m@hler.eu"
 __status__ = "Development"
 
 import re
-from typing import Any, Dict, Union
+from typing import Any, Dict, Optional, Union
 
 from cs2inspect._hex import bytes_to_float, from_hex
 from cs2inspect._link_util import _link_valid_and_type, unquote_link
+from cs2inspect._metadata import Origin, Quality, Rarity, get_wear_name
+from cs2inspect._schema import ItemSchema, load_schema
 from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
 
 
@@ -65,7 +67,11 @@ def _proto_to_dict(proto: CEconItemPreviewDataBlock) -> Dict[str, Any]:
     return result
 
 
-def parse_link(inspect_link: str) -> Dict[str, Any]:
+def parse_link(
+    inspect_link: str,
+    enrich: bool = False,
+    schema: Optional[Union[ItemSchema, str]] = None
+) -> Dict[str, Any]:
     """Parse a valid inspect link and extract its properties as a dictionary."""
     is_valid, type_str = _link_valid_and_type(inspect_link)
 
@@ -73,13 +79,14 @@ def parse_link(inspect_link: str) -> Dict[str, Any]:
         raise ValueError("Invalid inspect link format")
 
     inspect_link = unquote_link(inspect_link)
+    result = {}
 
     if type_str == 'masked':
         # extract the hex payload - find the hex after "preview" possibly with space/%20 in between
         match = re.search(r'csgo_econ_action_preview(?:\s+|%20|)([0-9A-F]+)$', inspect_link, re.IGNORECASE)
         if match:
             proto = from_hex(match.group(1))
-            return _proto_to_dict(proto)
+            result = _proto_to_dict(proto)
     elif type_str == 'unmasked':
         # extract S/M and ID, A ID, D ID
         match = re.search(r'csgo_econ_action_preview(?:\s+|%20|)([SM])(\d+)A(\d+)D(\d+)$', inspect_link, re.IGNORECASE)
@@ -88,14 +95,79 @@ def parse_link(inspect_link: str) -> Dict[str, Any]:
             location_id = match.group(2)
             asset_id = match.group(3)
             class_id = match.group(4)
-            data = {'asset_id': asset_id, 'class_id': class_id}
+            result = {'asset_id': asset_id, 'class_id': class_id}
             if location_type == 'M':
-                data['market_id'] = location_id
+                result['market_id'] = location_id
             else:
-                data['owner_id'] = location_id
-            return data
+                result['owner_id'] = location_id
+    else:
+        raise ValueError("Could not parse link")
 
-    raise ValueError("Could not parse link")
+    if enrich and result:
+        # Load schema if path provided
+        if isinstance(schema, str):
+            schema = load_schema(schema)
+        elif schema is None:
+            schema = load_schema()  # Try to load from config
+
+        # 1. Map basic enums
+        if "paintwear" in result:
+            result["wear_name"] = get_wear_name(result["paintwear"])
+        if "rarity" in result:
+            result["rarity_name"] = Rarity.get_name(result["rarity"])
+        if "origin" in result:
+            result["origin_name"] = Origin.get_name(result["origin"])
+        if "quality" in result:
+            result["quality_name"] = Quality.get_name(result["quality"])
+
+        # 2. Schema-based names
+        if schema and "defindex" in result:
+            defindex = result["defindex"]
+            paintindex = result.get("paintindex", 0)
+
+            result["weapon_type"] = schema.get_weapon_name(defindex)
+
+            skin_info = schema.get_skin_info(defindex, paintindex)
+            if skin_info:
+                result["item_name"] = skin_info.get("name", "Unknown")
+                result["imageurl"] = schema.get_image_url(skin_info.get("image", ""))
+                result["min"] = skin_info.get("min_float")
+                result["max"] = skin_info.get("max_float")
+
+                # Full name construction
+                quality_val = result.get("quality", 0)
+                prefix = ""
+                if quality_val == Quality.STRANGE:
+                    prefix = "StatTrak™ "
+                elif quality_val == Quality.TOURNAMENT:
+                    prefix = "Souvenir "
+                elif quality_val == Quality.UNUSUAL:
+                    prefix = "★ "
+                elif quality_val == Quality.GENUINE:
+                    prefix = "Genuine "
+
+                weapon = result["weapon_type"]
+                skin = result["item_name"]
+                wear = f" ({result['wear_name']})" if "wear_name" in result else ""
+
+                if skin and skin != "Unknown":
+                    result["full_item_name"] = f"{prefix}{weapon} | {skin}{wear}"
+                else:
+                    result["full_item_name"] = f"{prefix}{weapon}{wear}"
+
+        # 3. Compatibility fields (matching user's request)
+        if "account_id" in result:
+            result["accountid"] = result["account_id"]
+        if "item_id" in result:
+            result["itemid"] = str(result["item_id"])
+        if "paintwear" in result:
+            result["floatvalue"] = result["paintwear"]
+
+        # Ensure stickers is always a list
+        if "stickers" not in result:
+            result["stickers"] = []
+
+    return result
 
 def unlink(inspect_link: str) -> Union[Dict[str, Any], CEconItemPreviewDataBlock]:
     """
