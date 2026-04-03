@@ -1,15 +1,6 @@
 __author__ = "Lukas Mahler"
 __version__ = "0.0.0"
-__date__ = "03.04.2026"
-__email__ = "m@hler.eu"
-__status__ = "Development"
-
-
-from typing import Any, Optional, Union
-
-__author__ = "Lukas Mahler"
-__version__ = "0.0.0"
-__date__ = "26.10.2025"
+__date__ = "04.04.2026"
 __email__ = "m@hler.eu"
 __status__ = "Development"
 

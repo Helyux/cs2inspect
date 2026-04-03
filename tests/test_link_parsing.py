@@ -1,6 +1,6 @@
 __author__ = "Lukas Mahler"
 __version__ = "0.0.0"
-__date__ = "03.04.2026"
+__date__ = "04.04.2026"
 __email__ = "m@hler.eu"
 __status__ = "Development"
 
@@ -38,6 +38,22 @@ class TestLinkParsing(unittest.TestCase):
         self.assertTrue(isinstance(data, dict), "parse_link did not return a dictionary")
         self.assertEqual(data['defindex'], 26)
         self.assertAlmostEqual(data['paintwear'], 0.053579792, places=8)
+
+    def test_unlink_agent(self):
+        link = "steam://run/730//+csgo_econ_action_preview%20ACBC2675184201ADB430868CAC84AA9CA8CEA6A4ADBC408F899E512593C486DCBB45C46EBD"
+        data = cs2inspect.unlink(link)
+        self.assertEqual(data.defindex, 5404)
+
+    def test_unlink_sticker(self):
+        link = "steam://run/730//+csgo_econ_action_preview%20889888903181A888A08CB88CEA8D8088984193E088F880F5194CD2"
+        data = cs2inspect.unlink(link)
+        self.assertEqual(data.defindex, 1209)
+
+    def test_unlink_charm_on_gun(self):
+        link = "steam://run/730//+csgo_econ_action_preview%2080902F68726C3C8198BCA03D83A885B084B8014B626683C05B87E8DEF084228196888090A5BDDAF600BFC5BD6E44BECD0AF47BC0E000A20C63A9EA"
+        data = cs2inspect.unlink(link)
+        self.assertEqual(data.defindex, 60)
+        self.assertTrue(len(data.keychains) > 0)
 
 if __name__ == '__main__':
     unittest.main()

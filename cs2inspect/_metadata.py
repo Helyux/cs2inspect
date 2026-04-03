@@ -1,8 +1,9 @@
 __author__ = "Lukas Mahler"
 __version__ = "0.0.0"
-__date__ = "03.04.2026"
+__date__ = "04.04.2026"
 __email__ = "m@hler.eu"
 __status__ = "Development"
+
 
 import json
 from enum import IntEnum
@@ -34,6 +35,26 @@ class Rarity(IntEnum):
         }
         return names.get(value, "Unknown")
 
+    @classmethod
+    def parse(cls, value: str | int) -> int:
+        """Parse rarity from string name or integer ID."""
+        if isinstance(value, int):
+            return value
+        if isinstance(value, str):
+            clean_name = value.upper().replace(" ", "_").replace("-", "_")
+            try:
+                return cls[clean_name].value
+            except KeyError:
+                # Handle aliases
+                aliases = {
+                    "EXTRAORDINARY": cls.GOLD.value,
+                    "UNUSUAL": cls.GOLD.value # Gloves/Knives use Gold rarity 99
+                }
+                if clean_name in aliases:
+                    return aliases[clean_name]
+                raise ValueError(f"Unknown rarity name: {value}")
+        raise TypeError(f"Rarity must be str or int, got {type(value)}")
+
 
 class Quality(IntEnum):
     NORMAL = 0
@@ -45,9 +66,8 @@ class Quality(IntEnum):
     DEVELOPER = 6
     SELF_MADE = 7
     VALVE = 8
-    PLAIN = 9
+    STATTRAK = 9
     RECYCLED = 10
-    STRANGE = 11
     TOURNAMENT = 12
     HAUNTED = 13
     COLLECTORS = 14
@@ -65,7 +85,7 @@ class Quality(IntEnum):
             cls.DEVELOPER: "Developer",
             cls.SELF_MADE: "Self-Made",
             cls.VALVE: "Valve",
-            cls.STRANGE: "StatTrak™",
+            cls.STATTRAK: "StatTrak™",
             cls.TOURNAMENT: "Souvenir",
             cls.COLLECTORS: "Collector's",
         }
@@ -99,6 +119,7 @@ class Origin(IntEnum):
         return names.get(value, "Unknown")
 
 
+
 def get_wear_name(wear: float) -> str:
     if wear < 0.07:
         return "Factory New"
@@ -109,3 +130,15 @@ def get_wear_name(wear: float) -> str:
     if wear < 0.45:
         return "Well-Worn"
     return "Battle-Scarred"
+
+
+CATEGORY_IDS = {
+    1209: "Sticker",
+    1349: "Graffiti",
+    4609: "Patch",
+    62: "Charm"
+}
+
+
+if __name__ == '__main__':
+    exit(1)

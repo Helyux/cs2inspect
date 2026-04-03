@@ -1,4 +1,10 @@
-__date__ = "03.04.2026"
+__author__ = "Lukas Mahler"
+__version__ = "0.0.0"
+__date__ = "04.04.2026"
+__email__ = "m@hler.eu"
+__status__ = "Development"
+
+
 import json
 import os
 import urllib.request
@@ -9,66 +15,104 @@ from typing import Any, Optional
 class ItemSchema:
     def __init__(self, data: dict[str, Any]):
         self._data = data
-        self._weapons = {}  # {defindex: name}
-        self._skins = {}  # {(defindex, paintindex): {data}}
+        self._weapons = {}
+        self._skins = {}
+        self._agents = {}
+        self._stickers = {}
+        self._charms = {}
+        self._sticker_slabs = {}
         self._initialize()
 
     def _initialize(self):
-        # ByMykel CSGO-API /all.json structure
         for key, item in self._data.items():
-            # 1. Try to get defindex
-            # Assets like weapons have it in weapon.weapon_id
-            # Assets like stickers have it in def_index
             weapon_def = item.get("weapon", {})
-            defindex = weapon_def.get("weapon_id")
-            if defindex is None:
-                defindex = item.get("def_index")
+            weapon_id = weapon_def.get("weapon_id")
+            def_index = item.get("def_index")
 
-            if defindex is not None:
-                defindex = int(defindex)
+            if key.startswith("agent-") and def_index is not None:
+                self._agents[int(def_index)] = item.get("name")
 
-                # Store weapon name
-                weapon_name = weapon_def.get("name")
-                if weapon_name:
-                    self._weapons[defindex] = weapon_name
+            elif (key.startswith("sticker_slab-") or key.startswith("patch-")) and def_index is not None:
+                original = item.get("original", {})
+                self._sticker_slabs[int(def_index)] = {
+                    "name": item.get("name", "Unknown"),
+                    "codename": original.get("name", "Unknown"),
+                    "material": original.get("image_inventory", "Unknown"),
+                    "image": item.get("image", "")
+                }
 
-                # 2. Try to get paintindex (for skins)
-                paintindex = item.get("paint_index")
-                if paintindex is not None:
-                    paintindex = int(paintindex)
-                    # We store skin info. We use the pattern name for the "item_name"
+            elif key.startswith("sticker-") and def_index is not None:
+                original = item.get("original", {})
+                self._stickers[int(def_index)] = {
+                    "name": item.get("name", "Unknown"),
+                    "codename": original.get("name", "Unknown"),
+                    "material": original.get("image_inventory", "Unknown"),
+                    "image": item.get("image", "")
+                }
+
+            elif (key.startswith("charm-") or key.startswith("keychain-")) and def_index is not None:
+                original = item.get("original", {})
+                self._charms[int(def_index)] = {
+                    "name": item.get("name", "Unknown"),
+                    "codename": original.get("name", "Unknown"),
+                    "material": original.get("image_inventory", "Unknown"),
+                    "image": item.get("image", "")
+                }
+
+            if weapon_id is not None:
+                w_id = int(weapon_id)
+                w_name = weapon_def.get("name")
+                if w_name:
+                    self._weapons[w_id] = w_name
+
+                paint_index = item.get("paint_index")
+                if paint_index is not None:
+                    p_id = int(paint_index)
                     pattern_def = item.get("pattern", {})
-                    # If it's a skin, we want the pattern name (e.g. "Seasons")
-                    # but the item name in the API might be "XM1014 | Seasons (Factory New)"
-                    skin_name = pattern_def.get("name")
-                    if not skin_name:
-                        skin_name = item.get("name")
+                    skin_name = pattern_def.get("name") or item.get("name")
 
                     if skin_name:
-                        self._skins[(defindex, paintindex)] = {
+                        self._skins[(w_id, p_id)] = {
                             "name": skin_name,
                             "image": item.get("image", ""),
                             "min_float": item.get("min_float"),
                             "max_float": item.get("max_float")
                         }
 
-    def get_weapon_name(self, defindex: int) -> str:
-        return self._weapons.get(defindex, "Unknown")
+    def get_weapon_name(self, weapon_id: int) -> str:
+        return self._weapons.get(weapon_id, "Unknown")
 
-    def get_skin_info(self, defindex: int, paintindex: int) -> Optional[dict[str, Any]]:
-        return self._skins.get((defindex, paintindex))
+    def get_agent_name(self, defindex: int) -> str:
+        return self._agents.get(defindex, "Unknown")
+
+    def get_skin_info(self, weapon_id: int, paint_index: int) -> Optional[dict[str, Any]]:
+        return self._skins.get((weapon_id, paint_index))
+
+    def get_sticker_info(self, sticker_id: int) -> Optional[dict[str, Any]]:
+        return self._stickers.get(sticker_id)
+
+    def get_sticker_slab_info(self, defindex: int) -> Optional[dict[str, Any]]:
+        return self._sticker_slabs.get(defindex)
+
+    def get_charm_info(self, charm_id: int) -> Optional[dict[str, Any]]:
+        return self._charms.get(charm_id)
 
     @staticmethod
     def get_image_url(icon_url: str) -> str:
-        if not icon_url:
-            return ""
-        # The API already provides the full URL or a relative one
-        return icon_url
+        return icon_url if icon_url else ""
 
 
 def get_config_path() -> Path:
-    # Near the library: in the package's parent directory or inside the package
-    return Path(__file__).parent / ".cs2inspect_config.json"
+    new_path = Path(__file__).parent / ".cs2inspect.json"
+    old_path = Path(__file__).parent / ".cs2inspect_config.json"
+
+    if not new_path.exists() and old_path.exists():
+        try:
+            old_path.rename(new_path)
+        except Exception:
+            return old_path
+
+    return new_path
 
 
 def save_schema_path(path: str):
@@ -87,16 +131,27 @@ def load_schema_path() -> Optional[str]:
         try:
             with open(config_path, "r", encoding="utf-8") as f:
                 config = json.load(f)
-                return config.get("schema_path")
+                path = config.get("schema_path")
+                if path and Path(path).exists():
+                    return path
         except Exception:
-            return None
+            pass
+
+    fallbacks = [
+        Path.cwd() / "cs2_schema.json",
+        Path(__file__).parent.parent / "cs2_schema.json",
+        Path(__file__).parent / "cs2_schema.json"
+    ]
+
+    for f in fallbacks:
+        if f.exists():
+            return str(f.absolute())
+
     return None
 
 
 def download_schema(destination: str = "cs2_schema.json", language: str = "en") -> str:
     url = f"https://raw.githubusercontent.com/ByMykel/CSGO-API/main/public/api/{language}/all.json"
-
-    print(f"Downloading CS2 schema from {url}...")
     headers = {'User-Agent': 'Mozilla/5.0'}
     req = urllib.request.Request(url, headers=headers)
 
@@ -108,7 +163,6 @@ def download_schema(destination: str = "cs2_schema.json", language: str = "en") 
         json.dump(data, f, indent=4)
 
     save_schema_path(abs_path)
-    print(f"Schema saved to {abs_path}")
     return abs_path
 
 
@@ -125,3 +179,7 @@ def load_schema(path: Optional[str] = None) -> Optional[ItemSchema]:
             return ItemSchema(data)
     except Exception:
         return None
+
+
+if __name__ == '__main__':
+    exit(1)

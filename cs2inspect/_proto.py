@@ -1,6 +1,6 @@
 __author__ = "Lukas Mahler"
 __version__ = "0.0.0"
-__date__ = "03.04.2026"
+__date__ = "04.04.2026"
 __email__ = "m@hler.eu"
 __status__ = "Development"
 
@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from cs2inspect._hex import float_to_bytes
-from cs2inspect._rarity import parse_rarity
+from cs2inspect._metadata import Rarity
 from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
 
 _COSMETIC_FIELDS = (
@@ -60,7 +60,7 @@ class Builder:
             "paintindex": self.paintindex,
             "paintseed": self.paintseed,
             "paintwear": float_to_bytes(self.paintwear),
-            "rarity": parse_rarity(self.rarity),
+            "rarity": Rarity.parse(self.rarity),
         }
 
         optional_fields = {

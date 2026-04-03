@@ -1,6 +1,6 @@
 __author__ = "Lukas Mahler"
 __version__ = "0.0.0"
-__date__ = "26.10.2025"
+__date__ = "04.04.2026"
 __email__ = "m@hler.eu"
 __status__ = "Development"
 
@@ -79,3 +79,7 @@ def build_gen_from_datablock(data: CEconItemPreviewDataBlock) -> str:
         ],
     }
     return _build_gen_string(data_dict, data_dict['stickers'], data_dict['keychains'])
+
+
+if __name__ == '__main__':
+    exit(1)

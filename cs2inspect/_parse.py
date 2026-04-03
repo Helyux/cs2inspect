@@ -1,15 +1,16 @@
 __author__ = "Lukas Mahler"
 __version__ = "0.0.0"
-__date__ = "03.04.2026"
+__date__ = "04.04.2026"
 __email__ = "m@hler.eu"
 __status__ = "Development"
+
 
 import re
 from typing import Any, Dict, Optional, Union
 
 from cs2inspect._hex import bytes_to_float, from_hex
 from cs2inspect._link_util import _link_valid_and_type, unquote_link
-from cs2inspect._metadata import Origin, Quality, Rarity, get_wear_name
+from cs2inspect._metadata import CATEGORY_IDS, Origin, Quality, Rarity, get_wear_name
 from cs2inspect._schema import ItemSchema, load_schema
 from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
 
@@ -103,12 +104,12 @@ def parse_link(
     else:
         raise ValueError("Could not parse link")
 
-    if enrich and result:
-        # Load schema if path provided
+    if (enrich or schema) and result:
+        # Load schema if path provided or if enrich requested
         if isinstance(schema, str):
             schema = load_schema(schema)
         elif schema is None:
-            schema = load_schema()  # Try to load from config
+            schema = load_schema()  # Try to load from default config
 
         # 1. Map basic enums
         if "paintwear" in result:
@@ -125,7 +126,79 @@ def parse_link(
             defindex = result["defindex"]
             paintindex = result.get("paintindex", 0)
 
-            result["weapon_type"] = schema.get_weapon_name(defindex)
+            # Prioritized Resolution
+            w_name = schema.get_weapon_name(defindex)
+            a_name = schema.get_agent_name(defindex)
+            is_standalone = defindex in CATEGORY_IDS
+
+            # Selection Logic:
+            # a. If it's a skin (paintindex > 0), it's definitely a weapon
+            if paintindex > 0:
+                result["weapon_type"] = w_name
+            # b. If it matches an Agent, prefer that (Agents never have paintindex)
+            elif a_name != "Unknown":
+                result["weapon_type"] = a_name
+            # c. Handle Category IDs (Sticker, Patch, etc.)
+            elif is_standalone:
+                result["weapon_type"] = CATEGORY_IDS[defindex]
+            else:
+                result["weapon_type"] = w_name
+
+        if schema:
+            if "stickers" in result:
+                enriched_stickers = []
+                for s in result["stickers"]:
+                    s_id = s.get("sticker_id")
+                    if s_id is not None:
+                        # Patches and sticker slabs (e.g. on Charms) use sticker_slab maps
+                        s_info = schema.get_sticker_info(s_id) or schema.get_sticker_slab_info(s_id)
+                        if s_info:
+                            sticker_obj = {
+                                "slot": s.get("slot"),
+                                "stickerId": s_id,
+                                "codename": s_info.get("codename"),
+                                "material": s_info.get("material"),
+                                "name": s_info.get("name"),
+                                "image": s_info.get("image"),
+                                "wear": s.get("wear", 0.0)
+                            }
+                            enriched_stickers.append(sticker_obj)
+                        else:
+                            s["stickerId"] = s_id
+                            enriched_stickers.append(s)
+                result["stickers"] = enriched_stickers
+
+            if "keychains" in result:
+                enriched_keychains = []
+                for k in result["keychains"]:
+                    k_id = k.get("sticker_id")
+                    w_id = k.get("wrapped_sticker")
+                    look_id = w_id if w_id is not None else k_id
+
+                    if look_id is not None:
+                        k_info = schema.get_charm_info(look_id) or schema.get_sticker_slab_info(look_id) or schema.get_sticker_info(look_id)
+                        if k_info:
+                            keychain_obj = {
+                                "slot": k.get("slot"),
+                                "stickerId": look_id,
+                                "codename": k_info.get("codename"),
+                                "material": k_info.get("material"),
+                                "name": k_info.get("name"),
+                                "image": k_info.get("image"),
+                                "wear": k.get("wear", 0.0)
+                            }
+                            if w_id is not None:
+                                keychain_obj["wrapped_sticker"] = w_id
+                            enriched_keychains.append(keychain_obj)
+                        else:
+                            k["stickerId"] = k_id
+                            enriched_keychains.append(k)
+                result["keychains"] = enriched_keychains
+
+        # 3. Name Construction
+        if schema and "defindex" in result:
+            defindex = result["defindex"]
+            paintindex = result.get("paintindex", 0)
 
             skin_info = schema.get_skin_info(defindex, paintindex)
             if skin_info:
@@ -134,28 +207,49 @@ def parse_link(
                 result["min"] = skin_info.get("min_float")
                 result["max"] = skin_info.get("max_float")
 
-                # Full name construction
-                quality_val = result.get("quality", 0)
-                prefix = ""
-                if quality_val == Quality.STRANGE:
-                    prefix = "StatTrak™ "
-                elif quality_val == Quality.TOURNAMENT:
-                    prefix = "Souvenir "
-                elif quality_val == Quality.UNUSUAL:
-                    prefix = "★ "
-                elif quality_val == Quality.GENUINE:
-                    prefix = "Genuine "
+            w_name = schema.get_weapon_name(defindex)
+            a_name = schema.get_agent_name(defindex)
+            is_standalone = defindex in CATEGORY_IDS
 
-                weapon = result["weapon_type"]
-                skin = result["item_name"]
-                wear = f" ({result['wear_name']})" if "wear_name" in result else ""
+            quality_val = result.get("quality", 0)
+            prefix = ""
+            if quality_val == Quality.UNUSUAL:
+                prefix += "★ "
+            if "killeaterscoretype" in result:
+                prefix += "StatTrak™ "
+            if quality_val == Quality.TOURNAMENT:
+                prefix += "Souvenir "
+            if quality_val == Quality.GENUINE:
+                prefix += "Genuine "
 
-                if skin and skin != "Unknown":
-                    result["full_item_name"] = f"{prefix}{weapon} | {skin}{wear}"
+            weapon = result.get("weapon_type", "Unknown")
+            skin = result.get("item_name")
+            wear = f" ({result['wear_name']})" if "wear_name" in result else ""
+
+            if a_name != "Unknown" and weapon == a_name:
+                result["full_item_name"] = weapon
+            elif is_standalone:
+                if weapon == "Sticker" and result.get("stickers"):
+                    sticker = result["stickers"][0]
+                    result["full_item_name"] = sticker.get("name", weapon)
+                    result["item_name"] = sticker.get("name")
+                    result["imageurl"] = schema.get_image_url(sticker.get("image"))
+                    result["stickers"] = []
+                elif weapon == "Charm" and result.get("keychains"):
+                    charm = result["keychains"][0]
+                    result["full_item_name"] = charm.get("name", weapon)
+                    result["item_name"] = charm.get("name")
+                    result["imageurl"] = schema.get_image_url(charm.get("image"))
+                    result["keychains"] = []
                 else:
-                    result["full_item_name"] = f"{prefix}{weapon}{wear}"
+                    result["full_item_name"] = weapon
+            elif skin and skin != "Unknown":
+                result["full_item_name"] = f"{prefix}{weapon} | {skin}{wear}"
+            else:
+                result["full_item_name"] = f"{prefix}{weapon}{wear}"
 
-        # 3. Compatibility fields (matching user's request)
+
+        # Compatibility and field normalization
         if "account_id" in result:
             result["accountid"] = result["account_id"]
         if "item_id" in result:
