@@ -1,6 +1,6 @@
 __author__ = "Lukas Mahler"
 __version__ = "0.0.0"
-__date__ = "20.07.2024"
+__date__ = "03.04.2026"
 __email__ = "m@hler.eu"
 __status__ = "Development"
 
@@ -44,12 +44,23 @@ def from_hex(hex_str: str) -> CEconItemPreviewDataBlock:
     # Convert hex string to bytes
     data_bytes = hex_to_bytes(hex_str)
 
+    if not data_bytes:
+        raise ValueError("Empty hex string")
+
+    # If first byte is not 0, it's an XOR masked link
+    if data_bytes[0] != 0:
+        mask = data_bytes[0]
+        data_bytes = bytes(b ^ mask for b in data_bytes)
+
+        if data_bytes[0] != 0:
+            raise ValueError("Invalid masked inspect hex payload")
+
     # Remove the first null byte
-    if data_bytes[0] == 0:
-        data_bytes = data_bytes[1:]
+    data_bytes = data_bytes[1:]
 
     # Remove the last 4 bytes (CRC checksum)
-    data_bytes = data_bytes[:-4]
+    if len(data_bytes) >= 4:
+        data_bytes = data_bytes[:-4]
 
     # Deserialize the protobuf message
     data_block = CEconItemPreviewDataBlock()

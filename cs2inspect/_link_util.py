@@ -1,6 +1,6 @@
 __author__ = "Lukas Mahler"
 __version__ = "0.0.0"
-__date__ = "11.08.2024"
+__date__ = "03.04.2026"
 __email__ = "m@hler.eu"
 __status__ = "Development"
 
@@ -15,9 +15,11 @@ def _link_valid_and_type(inspect: str) -> tuple[bool, Optional[str]]:
     if not is_link_quoted(inspect):
         inspect = quote_link(inspect)
 
+    # Improved regex: allows optional steam prefix, handles both /run/ and /rungame/, optional account id, optional slashes
     unmasked = re.compile(
-        r"^steam://rungame/730/\d+/[+ ]csgo_econ_action_preview(?: ?|%20)([SM])(\d+)A(\d+)D(\d+)$")
-    masked = re.compile(r"^steam://rungame/730/\d+/[+ ]csgo_econ_action_preview(?: ?|%20)[0-9A-F]+$")
+        r"^(?:steam://(?:run|rungame)/730/(?:\d*/)*)?(?:\+?\s*)?csgo_econ_action_preview(?: ?|%20)([SM])(\d+)A(\d+)D(\d+)$")
+    masked = re.compile(
+        r"^(?:steam://(?:run|rungame)/730/(?:\d*/)*)?(?:\+?\s*)?csgo_econ_action_preview(?: ?|%20)([0-9A-F]+)$")
     patterns = {
         'unmasked': unmasked,
         'masked': masked

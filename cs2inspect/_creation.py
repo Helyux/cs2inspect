@@ -1,5 +1,14 @@
 __author__ = "Lukas Mahler"
 __version__ = "0.0.0"
+__date__ = "03.04.2026"
+__email__ = "m@hler.eu"
+__status__ = "Development"
+
+
+from typing import Any, Optional, Union
+
+__author__ = "Lukas Mahler"
+__version__ = "0.0.0"
 __date__ = "26.10.2025"
 __email__ = "m@hler.eu"
 __status__ = "Development"
@@ -12,7 +21,9 @@ from cs2inspect._hex import to_hex
 from cs2inspect._link_util import is_link_valid
 from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
 
-INSPECT_BASE = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20"
+INSPECT_BASE_DEFAULT = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20"
+INSPECT_BASE_NEW = "steam://run/730//+csgo_econ_action_preview%20"
+INSPECT_BASE = INSPECT_BASE_DEFAULT
 
 
 def _link_from_dict(data: dict[str, Any]) -> Optional[str]:
@@ -26,16 +37,17 @@ def _link_from_dict(data: dict[str, Any]) -> Optional[str]:
         asset_id=data['asset_id'],
         class_id=data['class_id'],
         market_id=data.get('market_id'),
-        owner_id=data.get('owner_id')
+        owner_id=data.get('owner_id'),
+        base=data.get('base', INSPECT_BASE)
     )
 
 
-def link(data: Union[dict[str, Any], CEconItemPreviewDataBlock]) -> Optional[str]:
+def link(data: Union[dict[str, Any], CEconItemPreviewDataBlock], base: str = INSPECT_BASE) -> Optional[str]:
     """Generate an inspect link from the provided data"""
     if isinstance(data, dict):
         return _link_from_dict(data)
     elif isinstance(data, CEconItemPreviewDataBlock):
-        return link_masked(data)
+        return link_masked(data, base=base)
     return None
 
 
@@ -62,18 +74,19 @@ def link_console(data: Union[str, dict[str, Any], CEconItemPreviewDataBlock]) ->
         return None
 
 
-def link_masked(data_block: CEconItemPreviewDataBlock) -> Optional[str]:
+def link_masked(data_block: CEconItemPreviewDataBlock, base: str = INSPECT_BASE) -> Optional[str]:
     """Generate a masked inspect link from the given data block"""
     hex_string = to_hex(data_block)
-    inspect_link = f"{INSPECT_BASE}{hex_string}"
+    inspect_link = f"{base}{hex_string}"
     return inspect_link if is_link_valid(inspect_link) else None
 
 
 def link_unmasked(asset_id: str, class_id: str,
-                  market_id: Optional[str] = None, owner_id: Optional[str] = None) -> Optional[str]:
+                  market_id: Optional[str] = None, owner_id: Optional[str] = None,
+                  base: str = INSPECT_BASE) -> Optional[str]:
     """Generate an unmasked inspect link from the given asset and class id and either the owner or the market id"""
     location = f"M{market_id}" if market_id else f"S{owner_id}"
-    inspect_link = f"{INSPECT_BASE}{location}A{asset_id}D{class_id}"
+    inspect_link = f"{base}{location}A{asset_id}D{class_id}"
     return inspect_link if is_link_valid(inspect_link) else None
 
 

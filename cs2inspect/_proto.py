@@ -1,6 +1,6 @@
 __author__ = "Lukas Mahler"
 __version__ = "0.0.0"
-__date__ = "26.10.2025"
+__date__ = "03.04.2026"
 __email__ = "m@hler.eu"
 __status__ = "Development"
 
@@ -24,6 +24,7 @@ _COSMETIC_FIELDS = (
     "offset_z",
     "pattern",
     "highlight_reel",
+    "wrapped_sticker",
 )
 
 
@@ -60,9 +61,6 @@ class Builder:
             "paintseed": self.paintseed,
             "paintwear": float_to_bytes(self.paintwear),
             "rarity": parse_rarity(self.rarity),
-            "stickers": self._build_preview_collection(self.stickers),
-            "keychains": self._build_preview_collection(self.keychains),
-            "variations": self._build_preview_collection(self.variations),
         }
 
         optional_fields = {
@@ -86,6 +84,14 @@ class Builder:
         for field_name, value in optional_fields.items():
             if value is not None:
                 data[field_name] = value
+
+        # Process repeated collections
+        if self.stickers:
+            data["stickers"] = self._build_preview_collection(self.stickers)
+        if self.keychains:
+            data["keychains"] = self._build_preview_collection(self.keychains)
+        if self.variations:
+            data["variations"] = self._build_preview_collection(self.variations)
 
         return CEconItemPreviewDataBlock(**data)
 
