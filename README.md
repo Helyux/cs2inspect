@@ -22,9 +22,7 @@
 - Creating gen codes
 - Creating console pasteable inspect links
 - Checking inspect link validity (using regex)
-
-- Structured protobuf creation
-- Hex data handling (for 'masked' inspect links)
+- Decoding/Unparsing inspect links back into data or protobuf objects
 
 ## Installation
 
@@ -32,7 +30,12 @@
 pip install cs2inspect
 ```
 
-## Example usage
+> [!IMPORTANT]
+> Since version 7.x of Protobuf, this package now requires **Python 3.10+**.
+
+## Example Usage
+
+### Creating Links
 
 ```python
 import cs2inspect
@@ -79,7 +82,25 @@ print(console_str)  # = csgo_econ_action_preview 00180720AD0728053897A19BF303400
 # You can also create gen codes from the protobuf
 gen_str = cs2inspect.gen(protobuf, prefix="!g")  # You can omit the prefix to get '!gen'
 print(gen_str)   # = !g 7 941 2 0.22540508 0 0 0 0 7203 0 0 0 0 0 36 0
+```
 
+### Parsing Links
+
+```python
+import cs2inspect
+
+# Works with both the new masked CS2 links and the old traditional unmasked inspect links
+masked_link = "steam://run/730//+csgo_econ_action_preview%206A7AC7C6BEDED06B72704ACE6F426F5A635296868780692AAC6C226A3A6A02E9EAEAEA661A625E7EE646"
+
+# Get a normalized dictionary (best for human reading or passing back to Builder)
+data_dict = cs2inspect.parse_link(masked_link)
+print(data_dict['defindex'])  # 26
+print(data_dict['paintwear']) # 0.05357979238033295
+print(data_dict['paintseed']) # 838
+
+# Get the raw protobuf data block (Inverse of cs2inspect.link())
+proto = cs2inspect.unlink(masked_link)
+print(proto.itemid) # 50039428653
 ```
 
 ## Contributing
