@@ -122,6 +122,7 @@ info = cs2inspect.parse(link, enrich=True)
 
 print(json.dumps(info, indent=4))
 
+```
 <details>
 <summary>Click to view full JSON output</summary>
 
