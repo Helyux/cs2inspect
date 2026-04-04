@@ -7,7 +7,7 @@ __status__ = "Development"
 
 from typing import Any
 
-from cs2inspect._hex import bytes_to_float
+from cs2inspect._util_hex import bytes_to_float
 from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
 
 

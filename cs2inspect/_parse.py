@@ -8,10 +8,10 @@ __status__ = "Development"
 import re
 from typing import Any, Dict, Optional, Union
 
-from cs2inspect._hex import bytes_to_float, from_hex
-from cs2inspect._link_util import _link_valid_and_type, unquote_link
 from cs2inspect._metadata import CATEGORY_IDS, Origin, Quality, Rarity, get_wear_name
 from cs2inspect._schema import ItemSchema, load_schema
+from cs2inspect._util_hex import bytes_to_float, from_hex
+from cs2inspect._util_link import _link_valid_and_type, unquote_link
 from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
 
 
@@ -68,7 +68,7 @@ def _proto_to_dict(proto: CEconItemPreviewDataBlock) -> Dict[str, Any]:
     return result
 
 
-def parse_link(
+def parse(
     inspect_link: str,
     enrich: bool = False,
     schema: Optional[Union[ItemSchema, str]] = None

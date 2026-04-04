@@ -8,8 +8,8 @@ __status__ = "Development"
 from dataclasses import dataclass, field
 from typing import Any
 
-from cs2inspect._hex import float_to_bytes
 from cs2inspect._metadata import Rarity
+from cs2inspect._util_hex import float_to_bytes
 from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
 
 _COSMETIC_FIELDS = (

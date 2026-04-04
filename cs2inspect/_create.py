@@ -7,9 +7,9 @@ __status__ = "Development"
 
 from typing import Any, Optional, Union
 
-from cs2inspect._gen_util import build_gen_from_datablock, build_gen_from_dict
-from cs2inspect._hex import to_hex
-from cs2inspect._link_util import is_link_valid
+from cs2inspect._util_gen import build_gen_from_datablock, build_gen_from_dict
+from cs2inspect._util_hex import to_hex
+from cs2inspect._util_link import is_link_valid
 from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
 
 INSPECT_BASE_DEFAULT = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20"

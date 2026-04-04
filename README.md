@@ -95,7 +95,7 @@ import json
 masked_link = "steam://run/730//+csgo_econ_action_preview%206A7AC7C6BEDED06B72704ACE6F426F5A635296868780692AAC6C226A3A6A02E9EAEAEA661A625E7EE646"
 
 # 1. Get a normalized dictionary of raw field data
-data_dict = cs2inspect.parse_link(masked_link)
+data_dict = cs2inspect.parse(masked_link)
 print(data_dict['defindex'])  # 26
 print(data_dict['paintwear']) # 0.05357979238033295
 
@@ -118,7 +118,7 @@ cs2inspect.download_schema()
 
 # Parse with enrichment enabled for a complex weapon (StatTrak™ AK-47 | Slate / with Stickers and a Charm)
 link = "steam://run/730//+csgo_econ_action_preview%200D1DC5E9CAE5BB0C150A2D860525093D043599ADABE20E4DBB0E450D5DD0076F19050C1DD43510C0C1013230710D96B0488D33ABB66F19050D1DD0351030071A3230BD25CAB0480D99D8376F19050E1DE03510C0C1013230D0F0A73348ED1813316F19050E1DE4351088E61C3230FBB9443348F58BAA306F19050F1D9C341088E61C3230014B1A33484DE99EB6650C7D05AF0C1A050D1D2230EC64104C4828251932404AB2884D5D8E880CEBE9FCE9"
-info = cs2inspect.parse_link(link, enrich=True)
+info = cs2inspect.parse(link, enrich=True)
 
 print(json.dumps(info, indent=4))
 
@@ -126,89 +126,88 @@ print(json.dumps(info, indent=4))
 <summary>Click to view full JSON output</summary>
 
 ```json
-# {
-#     "item_id": 49074532936,
-#     "defindex": 7,
-#     "paintindex": 1035,
-#     "rarity": 4,
-#     "quality": 9,
-#     "paintseed": 438,
-#     "paintwear": 0.11404433846473694,
-#     "killeaterscoretype": 0,
-#     "killeatervalue": 1373,
-#     "inventory": 1,
-#     "origin": 8,
-#     "stickers": [
-#         {
-#             "slot": 1,
-#             "stickerId": 7257,
-#             "codename": "cph2024_team_navi_gold",
-#             "material": "econ/stickers/cph2024/navi_gold",
-#             "name": "Sticker | Natus Vincere (Gold) | Copenhagen 2024",
-#             "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI6-obi42bgThH10JWwqHQDu6f4PPU8IfLFDWLAlOtysuQwSiyywB8hsT6BzYz9c3LDOwY-Sswn4fCOG2o",
-#             "wear": 0.550000011920929
-#         },
-#         {
-#             "slot": 0,
-#             "stickerId": 7261,
-#             "codename": "cph2024_team_vp_gold",
-#             "material": "econ/stickers/cph2024/vp_gold",
-#             "name": "Sticker | Virtus.pro (Gold) | Copenhagen 2024",
-#             "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI64pfL7VbrRVPwyJflqnNfv6StOf05cKmXV2SWxLdytrM7GnHqkU8l52nUmImqd3mWcEZ-XUXT9D_W",
-#             "wear": 0.5899999737739563
-#         },
-#         {
-#             "slot": 3,
-#             "stickerId": 7277,
-#             "codename": "cph2024_team_vita_gold",
-#             "material": "econ/stickers/cph2024/vita_gold",
-#             "name": "Sticker | Vitality (Gold) | Copenhagen 2024",
-#             "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI64o7g62bgThH10M7ipHZdvKT9MPQ6JvWQDz-Sl-pytLQ6GC_gzEtw62zVyY39eH2WbwA-SswneFne1lk",
-#             "wear": 0.550000011920929
-#         },
-#         {
-#             "slot": 3,
-#             "stickerId": 7273,
-#             "codename": "cph2024_team_spir_gold",
-#             "material": "econ/stickers/cph2024/spir_gold",
-#             "name": "Sticker | Team Spirit (Gold) | Copenhagen 2024",
-#             "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI655f9-GbgThH10MGw-HIKv6T6baFucfPFC2KUkO905uRvGnrllkp-5TjQzo6qJH6XPFM-SswnKK8h7Zw",
-#             "wear": 0.5699999928474426
-#         },
-#         {
-#             "slot": 2,
-#             "stickerId": 7313,
-#             "codename": "cph2024_team_gl_gold",
-#             "material": "econ/stickers/cph2024/gl_gold",
-#             "name": "Sticker | GamerLegion (Gold) | Copenhagen 2024",
-#             "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI684vL7VbrRVP1x5K1rHoOu6P-PPY6JfHKXTLEmOovs-M4S3HjkElz5DuBydmsJXuVcEZ-XYJJFe58",
-#             "wear": 0.5699999928474426
-#         }
-#     ],
-#     "keychains": [
-#         {
-#             "slot": 0,
-#             "stickerId": 47,
-#             "codename": "std_magmatude",
-#             "material": "econ/charms/magmatude",
-#             "name": "Charm | Magmatude",
-#             "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGI6zwki4Uf_a0IWsPGiE7Fhy-I764WbkThD8i5jp6Ttkv6PhY6dSLfmAHW6exuJ_vupWQyC_nRIzuziEnsGgJymSZwd0CZpyQu5buxO9wNbmPrzm5wCLg95Fmyz_3y1Nuydq4OZXT-N7raqdv_up",
-#             "wear": 0.0
-#         }
-#     ],
-#     "wear_name": "Minimal Wear",
-#     "rarity_name": "Restricted",
-#     "origin_name": "External",
-#     "quality_name": "StatTrak™",
-#     "weapon_type": "AK-47",
-#     "item_name": "Slate",
-#     "wear_name": "Minimal Wear",
-#     "min": 0,
-#     "max": 1,
-#     "full_item_name": "StatTrak™ AK-47 | Slate (Minimal Wear)",
-#     "itemid": "49074532936",
-#     "floatvalue": 0.11404433846473694
-# }
+{
+    "item_id": 49074532936,
+    "defindex": 7,
+    "paintindex": 1035,
+    "rarity": 4,
+    "quality": 9,
+    "paintseed": 438,
+    "paintwear": 0.11404433846473694,
+    "killeaterscoretype": 0,
+    "killeatervalue": 1373,
+    "inventory": 1,
+    "origin": 8,
+    "stickers": [
+        {
+            "slot": 1,
+            "stickerId": 7257,
+            "codename": "cph2024_team_navi_gold",
+            "material": "econ/stickers/cph2024/navi_gold",
+            "name": "Sticker | Natus Vincere (Gold) | Copenhagen 2024",
+            "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI6-obi42bgThH10JWwqHQDu6f4PPU8IfLFDWLAlOtysuQwSiyywB8hsT6BzYz9c3LDOwY-Sswn4fCOG2o",
+            "wear": 0.550000011920929
+        },
+        {
+            "slot": 0,
+            "stickerId": 7261,
+            "codename": "cph2024_team_vp_gold",
+            "material": "econ/stickers/cph2024/vp_gold",
+            "name": "Sticker | Virtus.pro (Gold) | Copenhagen 2024",
+            "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI64pfL7VbrRVPwyJflqnNfv6StOf05cKmXV2SWxLdytrM7GnHqkU8l52nUmImqd3mWcEZ-XUXT9D_W",
+            "wear": 0.5899999737739563
+        },
+        {
+            "slot": 3,
+            "stickerId": 7277,
+            "codename": "cph2024_team_vita_gold",
+            "material": "econ/stickers/cph2024/vita_gold",
+            "name": "Sticker | Vitality (Gold) | Copenhagen 2024",
+            "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI64o7g62bgThH10M7ipHZdvKT9MPQ6JvWQDz-Sl-pytLQ6GC_gzEtw62zVyY39eH2WbwA-SswneFne1lk",
+            "wear": 0.550000011920929
+        },
+        {
+            "slot": 3,
+            "stickerId": 7273,
+            "codename": "cph2024_team_spir_gold",
+            "material": "econ/stickers/cph2024/spir_gold",
+            "name": "Sticker | Team Spirit (Gold) | Copenhagen 2024",
+            "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI655f9-GbgThH10MGw-HIKv6T6baFucfPFC2KUkO905uRvGnrllkp-5TjQzo6qJH6XPFM-SswnKK8h7Zw",
+            "wear": 0.5699999928474426
+        },
+        {
+            "slot": 2,
+            "stickerId": 7313,
+            "codename": "cph2024_team_gl_gold",
+            "material": "econ/stickers/cph2024/gl_gold",
+            "name": "Sticker | GamerLegion (Gold) | Copenhagen 2024",
+            "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI684vL7VbrRVP1x5K1rHoOu6P-PPY6JfHKXTLEmOovs-M4S3HjkElz5DuBydmsJXuVcEZ-XYJJFe58",
+            "wear": 0.5699999928474426
+        }
+    ],
+    "keychains": [
+        {
+            "slot": 0,
+            "stickerId": 47,
+            "codename": "std_magmatude",
+            "material": "econ/charms/magmatude",
+            "name": "Charm | Magmatude",
+            "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGI6zwki4Uf_a0IWsPGiE7Fhy-I764WbkThD8i5jp6Ttkv6PhY6dSLfmAHW6exuJ_vupWQyC_nRIzuziEnsGgJymSZwd0CZpyQu5buxO9wNbmPrzm5wCLg95Fmyz_3y1Nuydq4OZXT-N7raqdv_up",
+            "wear": 0.0
+        }
+    ],
+    "wear_name": "Minimal Wear",
+    "rarity_name": "Restricted",
+    "origin_name": "External",
+    "quality_name": "StatTrak™",
+    "weapon_type": "AK-47",
+    "item_name": "Slate",
+    "min": 0,
+    "max": 1,
+    "full_item_name": "StatTrak™ AK-47 | Slate (Minimal Wear)",
+    "itemid": "49074532936",
+    "floatvalue": 0.11404433846473694
+}
 ```
 </details>
 

@@ -30,12 +30,12 @@ class TestLinkParsing(unittest.TestCase):
         self.assertEqual(data['owner_id'], '76561198066322090')
         self.assertEqual(data['asset_id'], '38350177019')
 
-    def test_parse_link_masked_roundtrip(self):
-        # Test parse_link (friendly dictionary output) for a masked link
+    def test_parse_masked_roundtrip(self):
+        # Test parse (friendly dictionary output) for a masked link
         masked_link = "steam://run/730//+csgo_econ_action_preview%206A7AC7C6BEDED06B72704ACE6F426F5A635296868780692AAC6C226A3A6A02E9EAEAEA661A625E7EE646"
-        data = cs2inspect.parse_link(masked_link)
+        data = cs2inspect.parse(masked_link)
 
-        self.assertTrue(isinstance(data, dict), "parse_link did not return a dictionary")
+        self.assertTrue(isinstance(data, dict), "parse did not return a dictionary")
         self.assertEqual(data['defindex'], 26)
         self.assertAlmostEqual(data['paintwear'], 0.053579792, places=8)
 

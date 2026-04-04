@@ -5,12 +5,12 @@ __email__ = "m@hler.eu"
 __status__ = "Development"
 
 
-from cs2inspect._creation import gen, link, link_console, link_masked, link_unmasked
-from cs2inspect._hex import from_hex, to_hex
-from cs2inspect._link_util import is_link_quoted, is_link_valid, link_type, quote_link, unquote_link
-from cs2inspect._parse import parse_link, unlink
+from cs2inspect._create import gen, link, link_console, link_masked, link_unmasked
+from cs2inspect._parse import parse, unlink
 from cs2inspect._proto import Builder
 from cs2inspect._schema import ItemSchema, download_schema, load_schema, load_schema_path
+from cs2inspect._util_hex import from_hex, to_hex
+from cs2inspect._util_link import is_link_quoted, is_link_valid, link_type, quote_link, unquote_link
 
 __all__ = [
     'Builder',
@@ -30,7 +30,7 @@ __all__ = [
     'to_hex',
     'from_hex',
 
-    'parse_link',
+    'parse',
     'unlink',
 ]
 
