@@ -1,6 +1,6 @@
 __author__ = "Lukas Mahler"
 __version__ = "0.0.0"
-__date__ = "04.04.2026"
+__date__ = "08.04.2026"
 __email__ = "m@hler.eu"
 __status__ = "Development"
 
@@ -18,10 +18,10 @@ from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
 def _proto_to_dict(proto: CEconItemPreviewDataBlock) -> Dict[str, Any]:
     """Convert a CEconItemPreviewDataBlock protobuf to a dictionary compatible with Builder."""
 
-    # Map proto field names to Builder parameter names
+    # Map proto field names to result dictionary keys
     mapping = {
-        "accountid": "account_id",
-        "itemid": "item_id",
+        "accountid": "accountid",
+        "itemid": "itemid",
         "defindex": "defindex",
         "paintindex": "paintindex",
         "rarity": "rarity",
@@ -45,12 +45,10 @@ def _proto_to_dict(proto: CEconItemPreviewDataBlock) -> Dict[str, Any]:
     result = {}
 
     # Process scalar fields
-    for proto_name, builder_name in mapping.items():
+    for proto_name, result_key in mapping.items():
         if proto.HasField(proto_name):
             val = getattr(proto, proto_name)
-            if proto_name == "paintwear":
-                val = bytes_to_float(val)
-            result[builder_name] = val
+            result[result_key] = val
 
     # Process repeated fields (stickers, keychains, variations)
     for collection_name in ["stickers", "keychains", "variations"]:
@@ -104,6 +102,9 @@ def parse(
     else:
         raise ValueError("Could not parse link")
 
+    if "paintwear" in result:
+        result["floatvalue"] = bytes_to_float(result["paintwear"])
+
     if (enrich or schema) and result:
         # Load schema if path provided or if enrich requested
         if isinstance(schema, str):
@@ -112,32 +113,44 @@ def parse(
             schema = load_schema()  # Try to load from default config
 
         # 1. Map basic enums
-        if "paintwear" in result:
-            result["wear_name"] = get_wear_name(result["paintwear"])
-        if "rarity" in result:
-            result["rarity_name"] = Rarity.get_name(result["rarity"])
-        if "origin" in result:
-            result["origin_name"] = Origin.get_name(result["origin"])
-        if "quality" in result:
-            result["quality_name"] = Quality.get_name(result["quality"])
+        if "floatvalue" in result:
+            result["wear_name"] = get_wear_name(result["floatvalue"])
+        elif "paintwear" in result:
+            # Fallback if somehow only paintwear is there
+            result["wear_name"] = get_wear_name(bytes_to_float(result["paintwear"]))
 
         # 2. Schema-based names
+        context = "weapon"
         if schema and "defindex" in result:
             defindex = result["defindex"]
             paintindex = result.get("paintindex", 0)
 
             # Prioritized Resolution
             w_name = schema.get_weapon_name(defindex)
-            a_name = schema.get_agent_name(defindex)
+            a_info = schema.get_agent_info(defindex)
             is_standalone = defindex in CATEGORY_IDS
 
-            # Selection Logic:
+            if a_info:
+                context = "character"
+            elif is_standalone:
+                context = "other"
+
+        if "rarity" in result:
+            result["rarity_name"] = Rarity.get_name(result["rarity"], context)
+        if "origin" in result:
+            result["origin_name"] = Origin.get_name(result["origin"])
+        if "quality" in result:
+            result["quality_name"] = Quality.get_name(result["quality"])
+
+        # 3. Final Selection Logic:
             # a. If it's a skin (paintindex > 0), it's definitely a weapon
             if paintindex > 0:
                 result["weapon_type"] = w_name
             # b. If it matches an Agent, prefer that (Agents never have paintindex)
-            elif a_name != "Unknown":
-                result["weapon_type"] = a_name
+            elif a_info:
+                result["weapon_type"] = a_info.get("name")
+                result["collection_name"] = a_info.get("collection")
+                result["imageurl"] = schema.get_image_url(a_info.get("image", ""))
             # c. Handle Category IDs (Sticker, Patch, etc.)
             elif is_standalone:
                 result["weapon_type"] = CATEGORY_IDS[defindex]
@@ -159,7 +172,8 @@ def parse(
                                 "codename": s_info.get("codename"),
                                 "material": s_info.get("material"),
                                 "name": s_info.get("name"),
-                                "image": s_info.get("image"),
+                                "imageurl": s_info.get("image"),
+                                "collection_name": s_info.get("collection"),
                                 "wear": s.get("wear", 0.0)
                             }
                             enriched_stickers.append(sticker_obj)
@@ -184,7 +198,8 @@ def parse(
                                 "codename": k_info.get("codename"),
                                 "material": k_info.get("material"),
                                 "name": k_info.get("name"),
-                                "image": k_info.get("image"),
+                                "imageurl": k_info.get("image"),
+                                "collection_name": k_info.get("collection"),
                                 "wear": k.get("wear", 0.0)
                             }
                             if w_id is not None:
@@ -200,12 +215,14 @@ def parse(
             defindex = result["defindex"]
             paintindex = result.get("paintindex", 0)
 
-            skin_info = schema.get_skin_info(defindex, paintindex)
+            skin_info = schema.get_skin_info(defindex, paintindex, result.get("floatvalue"))
             if skin_info:
                 result["item_name"] = skin_info.get("name", "Unknown")
                 result["imageurl"] = schema.get_image_url(skin_info.get("image", ""))
                 result["min"] = skin_info.get("min_float")
                 result["max"] = skin_info.get("max_float")
+                if skin_info.get("collection"):
+                    result["collection_name"] = skin_info.get("collection")
 
             w_name = schema.get_weapon_name(defindex)
             a_name = schema.get_agent_name(defindex)
@@ -215,7 +232,7 @@ def parse(
             prefix = ""
             if quality_val == Quality.UNUSUAL:
                 prefix += "★ "
-            if "killeaterscoretype" in result:
+            if "killeaterscoretype" in result or quality_val == Quality.STRANGE:
                 prefix += "StatTrak™ "
             if quality_val == Quality.TOURNAMENT:
                 prefix += "Souvenir "
@@ -233,13 +250,15 @@ def parse(
                     sticker = result["stickers"][0]
                     result["full_item_name"] = sticker.get("name", weapon)
                     result["item_name"] = sticker.get("name")
-                    result["imageurl"] = schema.get_image_url(sticker.get("image"))
+                    result["collection_name"] = sticker.get("collection_name")
+                    result["imageurl"] = schema.get_image_url(sticker.get("imageurl"))
                     result["stickers"] = []
                 elif weapon == "Charm" and result.get("keychains"):
                     charm = result["keychains"][0]
                     result["full_item_name"] = charm.get("name", weapon)
                     result["item_name"] = charm.get("name")
-                    result["imageurl"] = schema.get_image_url(charm.get("image"))
+                    result["collection_name"] = charm.get("collection_name")
+                    result["imageurl"] = schema.get_image_url(charm.get("imageurl"))
                     result["keychains"] = []
                 else:
                     result["full_item_name"] = weapon
@@ -249,17 +268,9 @@ def parse(
                 result["full_item_name"] = f"{prefix}{weapon}{wear}"
 
 
-        # Compatibility and field normalization
-        if "account_id" in result:
-            result["accountid"] = result["account_id"]
-        if "item_id" in result:
-            result["itemid"] = str(result["item_id"])
-        if "paintwear" in result:
-            result["floatvalue"] = result["paintwear"]
-
-        # Ensure stickers is always a list
-        if "stickers" not in result:
-            result["stickers"] = []
+    # Final check for stickers
+    if "stickers" not in result:
+        result["stickers"] = []
 
     return result
 
