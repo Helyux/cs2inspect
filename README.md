@@ -96,12 +96,13 @@ masked_link = "steam://run/730//+csgo_econ_action_preview%206A7AC7C6BEDED06B7270
 
 # 1. Get a normalized dictionary of raw field data
 data_dict = cs2inspect.parse(masked_link)
-print(data_dict['defindex'])  # 26
-print(data_dict['paintwear']) # 0.05357979238033295
+print(data_dict['defindex'])    # 26
+print(data_dict['floatvalue'])  # 0.05357979238033295
 
 # 2. Get the raw protobuf data block (Inverse of cs2inspect.link())
 proto = cs2inspect.unlink(masked_link)
 print(proto.itemid) # 50039428653
+print(proto.accountid) # 165644180
 ```
 
 ### Smart Enrichment
@@ -120,7 +121,7 @@ cs2inspect.download_schema()
 link = "steam://run/730//+csgo_econ_action_preview%200D1DC5E9CAE5BB0C150A2D860525093D043599ADABE20E4DBB0E450D5DD0076F19050C1DD43510C0C1013230710D96B0488D33ABB66F19050D1DD0351030071A3230BD25CAB0480D99D8376F19050E1DE03510C0C1013230D0F0A73348ED1813316F19050E1DE4351088E61C3230FBB9443348F58BAA306F19050F1D9C341088E61C3230014B1A33484DE99EB6650C7D05AF0C1A050D1D2230EC64104C4828251932404AB2884D5D8E880CEBE9FCE9"
 info = cs2inspect.parse(link, enrich=True)
 
-print(json.dumps(info, indent=4))
+print(json.dumps(info, indent=4, ensure_ascii=False))
 
 ```
 <details>
@@ -128,13 +129,13 @@ print(json.dumps(info, indent=4))
 
 ```json
 {
-    "item_id": 49074532936,
+    "itemid": 49074532936,
     "defindex": 7,
     "paintindex": 1035,
     "rarity": 4,
     "quality": 9,
+    "paintwear": 1038716948,
     "paintseed": 438,
-    "paintwear": 0.11404433846473694,
     "killeaterscoretype": 0,
     "killeatervalue": 1373,
     "inventory": 1,
@@ -146,7 +147,8 @@ print(json.dumps(info, indent=4))
             "codename": "cph2024_team_navi_gold",
             "material": "econ/stickers/cph2024/navi_gold",
             "name": "Sticker | Natus Vincere (Gold) | Copenhagen 2024",
-            "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI6-obi42bgThH10JWwqHQDu6f4PPU8IfLFDWLAlOtysuQwSiyywB8hsT6BzYz9c3LDOwY-Sswn4fCOG2o",
+            "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI6-obi42bgThH10JWwqHQDu6f4PPU8IfLFDWLAlOtysuQwSiyywB8hsT6BzYz9c3LDOwY-Sswn4fCOG2o",
+            "collection_name": "Copenhagen 2024 Legends Sticker Capsule",
             "wear": 0.550000011920929
         },
         {
@@ -155,7 +157,8 @@ print(json.dumps(info, indent=4))
             "codename": "cph2024_team_vp_gold",
             "material": "econ/stickers/cph2024/vp_gold",
             "name": "Sticker | Virtus.pro (Gold) | Copenhagen 2024",
-            "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI64pfL7VbrRVPwyJflqnNfv6StOf05cKmXV2SWxLdytrM7GnHqkU8l52nUmImqd3mWcEZ-XUXT9D_W",
+            "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI64pfL7VbrRVPwyJflqnNfv6StOf05cKmXV2SWxLdytrM7GnHqkU8l52nUmImqd3mWcEZ-XUXT9D_W",
+            "collection_name": "Copenhagen 2024 Legends Sticker Capsule",
             "wear": 0.5899999737739563
         },
         {
@@ -164,7 +167,8 @@ print(json.dumps(info, indent=4))
             "codename": "cph2024_team_vita_gold",
             "material": "econ/stickers/cph2024/vita_gold",
             "name": "Sticker | Vitality (Gold) | Copenhagen 2024",
-            "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI64o7g62bgThH10M7ipHZdvKT9MPQ6JvWQDz-Sl-pytLQ6GC_gzEtw62zVyY39eH2WbwA-SswneFne1lk",
+            "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI64o7g62bgThH10M7ipHZdvKT9MPQ6JvWQDz-Sl-pytLQ6GC_gzEtw62zVyY39eH2WbwA-SswneFne1lk",
+            "collection_name": "Copenhagen 2024 Legends Sticker Capsule",
             "wear": 0.550000011920929
         },
         {
@@ -173,7 +177,8 @@ print(json.dumps(info, indent=4))
             "codename": "cph2024_team_spir_gold",
             "material": "econ/stickers/cph2024/spir_gold",
             "name": "Sticker | Team Spirit (Gold) | Copenhagen 2024",
-            "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI655f9-GbgThH10MGw-HIKv6T6baFucfPFC2KUkO905uRvGnrllkp-5TjQzo6qJH6XPFM-SswnKK8h7Zw",
+            "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI655f9-GbgThH10MGw-HIKv6T6baFucfPFC2KUkO905uRvGnrllkp-5TjQzo6qJH6XPFM-SswnKK8h7Zw",
+            "collection_name": "Copenhagen 2024 Legends Sticker Capsule",
             "wear": 0.5699999928474426
         },
         {
@@ -182,7 +187,8 @@ print(json.dumps(info, indent=4))
             "codename": "cph2024_team_gl_gold",
             "material": "econ/stickers/cph2024/gl_gold",
             "name": "Sticker | GamerLegion (Gold) | Copenhagen 2024",
-            "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI684vL7VbrRVP1x5K1rHoOu6P-PPY6JfHKXTLEmOovs-M4S3HjkElz5DuBydmsJXuVcEZ-XYJJFe58",
+            "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI684vL7VbrRVP1x5K1rHoOu6P-PPY6JfHKXTLEmOovs-M4S3HjkElz5DuBydmsJXuVcEZ-XYJJFe58",
+            "collection_name": "Copenhagen 2024 Challengers Sticker Capsule",
             "wear": 0.5699999928474426
         }
     ],
@@ -190,27 +196,42 @@ print(json.dumps(info, indent=4))
         {
             "slot": 0,
             "stickerId": 47,
-            "codename": "std_magmatude",
-            "material": "econ/charms/magmatude",
+            "codename": "kc_missinglink_lilhothead",
+            "material": "econ/keychains/missinglink_community_01/kc_missinglink_lilhothead",
             "name": "Charm | Magmatude",
-            "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGI6zwki4Uf_a0IWsPGiE7Fhy-I764WbkThD8i5jp6Ttkv6PhY6dSLfmAHW6exuJ_vupWQyC_nRIzuziEnsGgJymSZwd0CZpyQu5buxO9wNbmPrzm5wCLg95Fmyz_3y1Nuydq4OZXT-N7raqdv_up",
+            "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGI6zwki4Uf_a0IWsPGiE7Fhy-I764WbkThD8i5jp6Ttkv6PhY6dSLfmAHW6exuJ_vupWQyC_nRIzuziEnsGgJymSZwd0CZpyQu5buxO9wNbmPrzm5wCLg95Fmyz_3y1Nuydq4OZXT-N7raqdv_up",
+            "collection_name": "Missing Link Community Charm Collection",
             "wear": 0.0
         }
     ],
+    "floatvalue": 0.11404433846473694,
     "wear_name": "Minimal Wear",
     "rarity_name": "Restricted",
-    "origin_name": "External",
+    "origin_name": "Found in Crate",
     "quality_name": "StatTrak™",
     "weapon_type": "AK-47",
     "item_name": "Slate",
+    "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyLwlcK3wiVI0POlPPNSMOKcCGKD0ud5vuBlcCW6khUz_W3Sytb4cCqTOFUpWJtzTOUD5hPsw9a0Yrnrs1SK3ooXzy6shilM5311o7FVYrIufmI",
     "min": 0,
     "max": 1,
-    "full_item_name": "StatTrak™ AK-47 | Slate (Minimal Wear)",
-    "itemid": "49074532936",
-    "floatvalue": 0.11404433846473694
+    "collection_name": "The Snakebite Collection",
+    "full_item_name": "StatTrak™ AK-47 | Slate (Minimal Wear)"
 }
 ```
 </details>
+
+## Technical Limitations
+
+### Masked vs. Unmasked Links
+`cs2inspect` is a **local, offline decoder**. This leads to a fundamental difference in how it handles the two primary inspect link formats:
+
+*   **Masked / Modern Links** (e.g., `%200018...` or `%206A7A...`):
+    *   **Fully Supported**: These links contain a packed binary payload of the item's properties.
+    *   **Offline Enrichment**: Stickers, floats, charms, and detailed weapon data are extracted directly from the link without any network calls.
+
+*   **Unmasked / Legacy Links** (e.g., `%20S76...A49...D75...`):
+    *   **Partial Support (IDs only)**: These links only provide pointers (`owner_id`, `asset_id`, `class_id`) to a Steam inventory item.
+    *   **No Property Data**: The link itself contains **no information** about stickers, floats, or weapon skins. To resolve these, a call to the **Steam Web API** is required, which is outside the scope of this library's offline parsing logic.
 
 ## Contributing
 Contributions are welcome! Open an issue or submit a pull request.
