@@ -329,15 +329,15 @@ def load_schema_path() -> Optional[str]:
     return None
 
 
-def download_schema(destination: str = "cs2_schema.json", language: str = "en") -> str:
-    url = f"https://raw.githubusercontent.com/ByMykel/CSGO-API/main/public/api/{language}/all.json"
+def download_schema(path: str = "cs2_schema.json") -> str:
+    url = "https://raw.githubusercontent.com/ByMykel/CSGO-API/main/public/api/en/all.json"
     headers = {'User-Agent': 'Mozilla/5.0'}
     req = urllib.request.Request(url, headers=headers)
 
     with urllib.request.urlopen(req) as response:
         data = json.loads(response.read().decode())
 
-    abs_path = str(Path(destination).absolute())
+    abs_path = str(Path(path).absolute())
     with open(abs_path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
 

@@ -101,8 +101,8 @@ print(data_dict['floatvalue'])  # 0.05357979238033295
 
 # 2. Get the raw protobuf data block (Inverse of cs2inspect.link())
 proto = cs2inspect.unlink(masked_link)
-print(proto.itemid) # 50039428653
-print(proto.accountid) # 165644180
+print(proto.itemid)     # 50039428653
+print(proto.accountid)  # 165644180
 ```
 
 ### Smart Enrichment
@@ -115,7 +115,7 @@ import json
 
 # One-time setup: download the latest item/skin names (using ByMykel/CSGO-API)
 # This is saved locally and remembered across restarts
-cs2inspect.download_schema()
+cs2inspect.download_schema(path="cs2_schema.json")
 
 # Parse with enrichment enabled for a complex weapon (StatTrak™ AK-47 | Slate / with Stickers and a Charm)
 link = "steam://run/730//+csgo_econ_action_preview%200D1DC5E9CAE5BB0C150A2D860525093D043599ADABE20E4DBB0E450D5DD0076F19050C1DD43510C0C1013230710D96B0488D33ABB66F19050D1DD0351030071A3230BD25CAB0480D99D8376F19050E1DE03510C0C1013230D0F0A73348ED1813316F19050E1DE4351088E61C3230FBB9443348F58BAA306F19050F1D9C341088E61C3230014B1A33484DE99EB6650C7D05AF0C1A050D1D2230EC64104C4828251932404AB2884D5D8E880CEBE9FCE9"
@@ -220,29 +220,21 @@ print(json.dumps(info, indent=4, ensure_ascii=False))
 ```
 </details>
 
-## Technical Limitations
-
-### Masked vs. Unmasked Links
-`cs2inspect` is a **local, offline decoder**. This leads to a fundamental difference in how it handles the two primary inspect link formats:
-
-*   **Masked / Modern Links** (e.g., `%200018...` or `%206A7A...`):
-    *   **Fully Supported**: These links contain a packed binary payload of the item's properties.
-    *   **Offline Enrichment**: Stickers, floats, charms, and detailed weapon data are extracted directly from the link without any network calls.
-
-*   **Unmasked / Legacy Links** (e.g., `%20S76...A49...D75...`):
-    *   **Partial Support (IDs only)**: These links only provide pointers (`owner_id`, `asset_id`, `class_id`) to a Steam inventory item.
-    *   **No Property Data**: The link itself contains **no information** about stickers, floats, or weapon skins. To resolve these, a call to the **Steam Web API** is required, which is outside the scope of this library's offline parsing logic.
+## Technical Limitations (Parsing)
+`cs2inspect` is a local, offline decoder. **Masked/Modern links** (binary Protobuf payload) are fully supported with offline enrichment of stickers, floats, and charms. **Unmasked/Legacy links** (S/M A D pointers) have partial support as they contain no binary property data; resolving their stickers or skins requires a call to the **GameCoordinator (GC)**, which is outside the scope of this offline library.
 
 ## Contributing
 Contributions are welcome! Open an issue or submit a pull request.
 
-## Acknowledgements
-Special thanks to these projects for their foundational work:
-- [csfloat/inspect](https://github.com/csfloat/inspect) - Foundational skin inspect library
-- [ByMykel/CSGO-API](https://github.com/ByMykel/CSGO-API) - Source for the items and skins schema.
-
 ## License
 GPLv3 License. See the LICENSE file for details.
+
+## Acknowledgements
+Special thanks to these projects for their foundational work and metadata tracking:
+- [csfloat/inspect](https://github.com/csfloat/inspect) - Foundational skin inspect library
+- [ByMykel/CSGO-API](https://github.com/ByMykel/CSGO-API) - Primary source for items and skins schema
+- [SteamTracking/GameTracking-CS2](https://github.com/SteamTracking/GameTracking-CS2) - Engine-authoritative tracking (resource/csgo_english.txt)
+- [SteamDatabase/SteamTracking](https://github.com/SteamDatabase/SteamTracking) - Comprehensive item schema tracking
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
