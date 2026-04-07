@@ -1,6 +1,6 @@
 __author__ = "Lukas Mahler"
 __version__ = "0.0.0"
-__date__ = "04.04.2026"
+__date__ = "08.04.2026"
 __email__ = "m@hler.eu"
 __status__ = "Development"
 
@@ -37,7 +37,8 @@ class TestLinkParsing(unittest.TestCase):
 
         self.assertTrue(isinstance(data, dict), "parse did not return a dictionary")
         self.assertEqual(data['defindex'], 26)
-        self.assertAlmostEqual(data['paintwear'], 0.053579792, places=8)
+        self.assertEqual(data['paintwear'], 1029404284)
+        self.assertAlmostEqual(data['floatvalue'], 0.053579792, places=8)
 
     def test_unlink_agent(self):
         link = "steam://run/730//+csgo_econ_action_preview%20ACBC2675184201ADB430868CAC84AA9CA8CEA6A4ADBC408F899E512593C486DCBB45C46EBD"
@@ -54,6 +55,16 @@ class TestLinkParsing(unittest.TestCase):
         data = cs2inspect.unlink(link)
         self.assertEqual(data.defindex, 60)
         self.assertTrue(len(data.keychains) > 0)
+
+    def test_parse_legacy_unmasked_link(self):
+        # Test a standard legacy link with S/A/D components
+        link = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S76561198342167318A49511393803D7532878161036823080"
+        data = cs2inspect.parse(link)
+
+        self.assertEqual(data['owner_id'], '76561198342167318')
+        self.assertEqual(data['asset_id'], '49511393803')
+        self.assertEqual(data['class_id'], '7532878161036823080')
+        self.assertEqual(data['stickers'], []) # Unmasked links don't have sticker data
 
 if __name__ == '__main__':
     unittest.main()
