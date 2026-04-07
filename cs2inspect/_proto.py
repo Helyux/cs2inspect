@@ -1,6 +1,6 @@
 __author__ = "Lukas Mahler"
 __version__ = "0.0.0"
-__date__ = "04.04.2026"
+__date__ = "08.04.2026"
 __email__ = "m@hler.eu"
 __status__ = "Development"
 
@@ -36,8 +36,8 @@ class Builder:
     paintwear: float
     rarity: str | int
     quality: int | None = None
-    account_id: int | None = None
-    item_id: int | None = None
+    accountid: int | None = None
+    itemid: int | None = None
     killeaterscoretype: int | None = None
     killeatervalue: int | None = None
     customname: str | None = None
@@ -65,8 +65,8 @@ class Builder:
 
         optional_fields = {
             "quality": self.quality,
-            "accountid": self.account_id,
-            "itemid": self.item_id,
+            "accountid": self.accountid,
+            "itemid": self.itemid,
             "killeaterscoretype": self.killeaterscoretype,
             "killeatervalue": self.killeatervalue,
             "customname": self.customname,

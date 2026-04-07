@@ -1,6 +1,6 @@
 __author__ = "Lukas Mahler"
 __version__ = "0.0.0"
-__date__ = "04.04.2026"
+__date__ = "08.04.2026"
 __email__ = "m@hler.eu"
 __status__ = "Development"
 
@@ -13,25 +13,34 @@ from cs2inspect._util_hex import from_hex, to_hex
 from cs2inspect._util_link import is_link_quoted, is_link_valid, link_type, quote_link, unquote_link
 
 __all__ = [
-    'Builder',
-
+    # Core API
     'gen',
     'link',
     'link_console',
     'link_masked',
     'link_unmasked',
+    'parse',
+    'unlink',
 
-    'link_type',
-    'is_link_valid',
+    # Protobuf Builder
+    'Builder',
+
+    # Schema Management
+    'ItemSchema',
+    'download_schema',
+    'load_schema',
+    'load_schema_path',
+
+    # Link Utilities
     'is_link_quoted',
+    'is_link_valid',
+    'link_type',
     'quote_link',
     'unquote_link',
 
-    'to_hex',
+    # Hex Utilities
     'from_hex',
-
-    'parse',
-    'unlink',
+    'to_hex',
 ]
 
 
