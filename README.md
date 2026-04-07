@@ -89,7 +89,6 @@ print(gen_str)   # = !g 7 941 2 0.22540508 0 0 0 0 7203 0 0 0 0 0 36 0
 
 ```python
 import cs2inspect
-import json
 
 # Works with both the new masked CS2 links and the old traditional unmasked inspect links
 masked_link = "steam://run/730//+csgo_econ_action_preview%206A7AC7C6BEDED06B72704ACE6F426F5A635296868780692AAC6C226A3A6A02E9EAEAEA661A625E7EE646"
@@ -232,9 +231,9 @@ GPLv3 License. See the LICENSE file for details.
 ## Acknowledgements
 Special thanks to these projects for their foundational work and metadata tracking:
 - [csfloat/inspect](https://github.com/csfloat/inspect) - Foundational skin inspect library
-- [ByMykel/CSGO-API](https://github.com/ByMykel/CSGO-API) - Primary source for items and skins schema
-- [SteamTracking/GameTracking-CS2](https://github.com/SteamTracking/GameTracking-CS2) - Engine-authoritative tracking (resource/csgo_english.txt)
-- [SteamDatabase/SteamTracking](https://github.com/SteamDatabase/SteamTracking) - Comprehensive item schema tracking
+- [ByMykel/CSGO-API](https://github.com/ByMykel/CSGO-API) - Primary source for the items and skins schema
+- [SteamTracking/GameTracking-CS2](https://github.com/SteamTracking/GameTracking-CS2) - Source for `items_game.txt` and `csgo_english.txt`
+- [SteamDatabase/SteamTracking](https://github.com/SteamDatabase/SteamTracking) - Source for `CounterStrikeGlobalOffensive.json`
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
