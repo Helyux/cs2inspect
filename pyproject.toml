@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cs2inspect"
-version = "0.3.1"
+version = "0.4.0"
 description = "CS2 inspect link utility"
 authors = ["Lukas Mahler <m@hler.eu>"]
 readme = "README.md"
@@ -13,12 +13,17 @@ classifiers=[
 ]
 
 [tool.poetry.dependencies]
-python = "^3.9"
-protobuf = "6.33.5"
+python = "^3.10"
+protobuf = "^7.34.1"
+platformdirs = "^4.2.0"
 
 [tool.poetry.group.dev.dependencies]
 vermin = "^1.6.0"
 pre-commit = "^3.7.1"
+pytest = "^8.0.0"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
 
 [build-system]
 requires = ["poetry-core"]

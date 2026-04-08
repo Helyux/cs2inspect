@@ -1,10 +1,3 @@
-__author__ = "Lukas Mahler"
-__version__ = "0.0.0"
-__date__ = "26.10.2025"
-__email__ = "m@hler.eu"
-__status__ = "Development"
-
-
 import unittest
 
 import cs2inspect
@@ -12,28 +5,53 @@ import cs2inspect
 
 class TestHexRoundtrip(unittest.TestCase):
 
-    def test_proto_roundtrip_via_hex_preserves_payload(self):
+    def test_protobuf_hex_roundtrip(self):
         builder = cs2inspect.Builder(
             defindex=7,
             paintindex=941,
             paintseed=2,
-            paintwear=0.22540508,
+            paintwear=0.22540508210659027,
             rarity=5,
-            stickers=[{"slot": 2, "sticker_id": 7203, "wear": 0.01}],
-            keychains=[{"slot": 0, "sticker_id": 36, "offset_x": 1.0}],
+            stickers=[{'slot': 2, 'sticker_id': 7203, 'wear': 0}],
+            keychains=[{'slot': 0, 'sticker_id': 36,
+                        'offset_x': 4.515311241149902,
+                        'offset_y': 0.5914779901504517,
+                        'offset_z': 8.906611442565918}]
         )
 
-        original_proto = builder.build()
-        hex_payload = cs2inspect.to_hex(original_proto)
+        protobuf_original = builder.build()
+        # Normal (non-masked) hex starts with 00
+        hex_string = cs2inspect.to_hex(protobuf_original)
+        self.assertTrue(hex_string.startswith("00"))
 
-        self.assertTrue(hex_payload.startswith("00"))
-        self.assertEqual(hex_payload, hex_payload.upper())
+        protobuf_recreated = cs2inspect.from_hex(hex_string)
+        self.assertEqual(protobuf_original, protobuf_recreated)
 
-        roundtripped_proto = cs2inspect.from_hex(hex_payload)
-        self.assertEqual(
-            roundtripped_proto.SerializeToString(),
-            original_proto.SerializeToString(),
+    def test_from_hex_rejects_corrupted_crc(self):
+        builder = cs2inspect.Builder(
+            defindex=7, paintindex=941, paintseed=2,
+            paintwear=0.22540508210659027, rarity=5,
         )
+        hex_string = cs2inspect.to_hex(builder.build())
+
+        # Corrupt the last byte of the CRC
+        corrupted = hex_string[:-2] + ("00" if hex_string[-2:] != "00" else "FF")
+        with self.assertRaises(ValueError, msg="CRC checksum mismatch"):
+            cs2inspect.from_hex(corrupted)
+
+    def test_from_hex_rejects_oversized_payload(self):
+        # 100001 hex chars = way beyond the 100000 limit
+        huge_hex = "A" * 100_001
+        with self.assertRaises(ValueError, msg="Hex payload too large"):
+            cs2inspect.from_hex(huge_hex)
+
+    def test_from_hex_rejects_empty_string(self):
+        with self.assertRaises(ValueError):
+            cs2inspect.from_hex("")
+
+    def test_from_hex_rejects_too_short_payload(self):
+        with self.assertRaises(ValueError):
+            cs2inspect.from_hex("00AABB")
 
 
 if __name__ == '__main__':

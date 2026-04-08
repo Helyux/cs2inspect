@@ -1,6 +1,6 @@
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.2.0
+    rev: v6.0.0
     hooks:
     -   id: trailing-whitespace
         exclude_types:
@@ -10,16 +10,8 @@ repos:
     -   id: check-toml
     -   id: check-added-large-files
 -   repo: https://github.com/pycqa/isort
-    rev: 5.13.2
+    rev: 8.0.1
     hooks:
     -   id: isort
         name: isort (python)
         args: [--line-length=120]
--   repo: local
-    hooks:
-      - id: update-date
-        name: Check __date__ variable in .py files
-        entry: python ./hooks/update-date.py
-        language: python
-        pass_filenames: true
-        types: [python]

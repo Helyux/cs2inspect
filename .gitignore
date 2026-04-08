@@ -10,3 +10,5 @@ dist/
 .vscode
 .python-version
 .idea/
+cs2_schema.json
+inspect_test.py

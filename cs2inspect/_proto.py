@@ -1,15 +1,8 @@
-__author__ = "Lukas Mahler"
-__version__ = "0.0.0"
-__date__ = "26.10.2025"
-__email__ = "m@hler.eu"
-__status__ = "Development"
-
-
 from dataclasses import dataclass, field
 from typing import Any
 
-from cs2inspect._hex import float_to_bytes
-from cs2inspect._rarity import parse_rarity
+from cs2inspect._metadata import Rarity
+from cs2inspect._util_hex import float_to_bytes
 from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
 
 _COSMETIC_FIELDS = (
@@ -24,6 +17,7 @@ _COSMETIC_FIELDS = (
     "offset_z",
     "pattern",
     "highlight_reel",
+    "wrapped_sticker",
 )
 
 
@@ -35,8 +29,8 @@ class Builder:
     paintwear: float
     rarity: str | int
     quality: int | None = None
-    account_id: int | None = None
-    item_id: int | None = None
+    accountid: int | None = None
+    itemid: int | None = None
     killeaterscoretype: int | None = None
     killeatervalue: int | None = None
     customname: str | None = None
@@ -59,16 +53,13 @@ class Builder:
             "paintindex": self.paintindex,
             "paintseed": self.paintseed,
             "paintwear": float_to_bytes(self.paintwear),
-            "rarity": parse_rarity(self.rarity),
-            "stickers": self._build_preview_collection(self.stickers),
-            "keychains": self._build_preview_collection(self.keychains),
-            "variations": self._build_preview_collection(self.variations),
+            "rarity": Rarity.parse(self.rarity),
         }
 
         optional_fields = {
             "quality": self.quality,
-            "accountid": self.account_id,
-            "itemid": self.item_id,
+            "accountid": self.accountid,
+            "itemid": self.itemid,
             "killeaterscoretype": self.killeaterscoretype,
             "killeatervalue": self.killeatervalue,
             "customname": self.customname,
@@ -86,6 +77,14 @@ class Builder:
         for field_name, value in optional_fields.items():
             if value is not None:
                 data[field_name] = value
+
+        # Process repeated collections
+        if self.stickers:
+            data["stickers"] = self._build_preview_collection(self.stickers)
+        if self.keychains:
+            data["keychains"] = self._build_preview_collection(self.keychains)
+        if self.variations:
+            data["variations"] = self._build_preview_collection(self.variations)
 
         return CEconItemPreviewDataBlock(**data)
 

@@ -1,12 +1,6 @@
-__author__ = "Lukas Mahler"
-__version__ = "0.0.0"
-__date__ = "06.03.2026"
-__email__ = "m@hler.eu"
-__status__ = "Development"
-
+import unittest
 
 import cs2inspect
-import unittest
 
 
 class TestCS2InspectLinkCreation(unittest.TestCase):

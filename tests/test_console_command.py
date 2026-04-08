@@ -1,10 +1,3 @@
-__author__ = "Lukas Mahler"
-__version__ = "0.0.0"
-__date__ = "26.10.2025"
-__email__ = "m@hler.eu"
-__status__ = "Development"
-
-
 import unittest
 
 import cs2inspect

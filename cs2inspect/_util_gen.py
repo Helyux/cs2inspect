@@ -1,13 +1,6 @@
-__author__ = "Lukas Mahler"
-__version__ = "0.0.0"
-__date__ = "26.10.2025"
-__email__ = "m@hler.eu"
-__status__ = "Development"
-
-
 from typing import Any
 
-from cs2inspect._hex import bytes_to_float
+from cs2inspect._util_hex import bytes_to_float
 from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
 
 
@@ -38,7 +31,19 @@ def _serialize_item_pairs(items: list[dict[str, Any]], pad_to: int | None = None
 
 
 def _build_gen_string(data: dict[str, Any], stickers: list[dict[str, Any]], keychains: list[dict[str, Any]]) -> str:
-    """Build the item data string from the given data and attachments."""
+    """
+    Build the item data string from the given data and attachments.
+
+    :param data: The parsed data dictionary containing the defindex, paintindex, paintseed, and paintwear.
+    :type data: dict[str, Any]
+    :param stickers: List of stickers appended to the weapon.
+    :type stickers: list[dict[str, Any]]
+    :param keychains: List of keychains appended to the weapon.
+    :type keychains: list[dict[str, Any]]
+
+    :return: The formatted gen command string.
+    :rtype: str
+    """
     paintwear = _format_float(float(data['paintwear']))
     parts: list[str] = [
         str(data['defindex']),
@@ -54,6 +59,15 @@ def _build_gen_string(data: dict[str, Any], stickers: list[dict[str, Any]], keyc
 
 
 def build_gen_from_dict(data: dict[str, Any]) -> str | None:
+    """
+    Extract properties and format them automatically into a gen command parsing properties dynamically.
+
+    :param data: The inspect data dictionary.
+    :type data: dict[str, Any]
+
+    :return: The generated gen string, or None if essential properties are missing.
+    :rtype: str | None
+    """
     required_keys = {"defindex", "paintindex", "paintseed", "paintwear"}
     if not required_keys.issubset(data.keys()):
         return None
@@ -64,6 +78,15 @@ def build_gen_from_dict(data: dict[str, Any]) -> str | None:
 
 
 def build_gen_from_datablock(data: CEconItemPreviewDataBlock) -> str:
+    """
+    Produce the equivalent schema-less generating standard sequence string from raw protobuf payload blocks directly.
+
+    :param data: The datablock instance populated with internal data.
+    :type data: CEconItemPreviewDataBlock
+
+    :return: The generated gen string.
+    :rtype: str
+    """
     data_dict = {
         'defindex': data.defindex,
         'paintindex': data.paintindex,
@@ -79,3 +102,7 @@ def build_gen_from_datablock(data: CEconItemPreviewDataBlock) -> str:
         ],
     }
     return _build_gen_string(data_dict, data_dict['stickers'], data_dict['keychains'])
+
+
+if __name__ == '__main__':
+    exit(1)
