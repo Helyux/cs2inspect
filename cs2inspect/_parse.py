@@ -48,10 +48,6 @@ def parse(
             enrich_attachments(result, schema)
             build_full_name(result, schema)
 
-    # Final check for stickers
-    if "stickers" not in result:
-        result["stickers"] = []
-
     return result
 
 

@@ -57,7 +57,6 @@ class TestLinkParsing(unittest.TestCase):
         self.assertEqual(data['owner_id'], '76561198342167318')
         self.assertEqual(data['asset_id'], '49511393803')
         self.assertEqual(data['class_id'], '7532878161036823080')
-        self.assertEqual(data['stickers'], []) # Unmasked links don't have sticker data
 
 if __name__ == '__main__':
     unittest.main()
