@@ -87,10 +87,12 @@ print(gen_str)   # = !g 7 941 2 0.22540508 0 0 0 0 7203 0 0 0 0 0 36 0
 
 ### Parsing Links
 
+Supports both legacy unmasked links (limited data; see [Limitations](#technical-limitations-parsing)) and modern masked links.
+
 ```python
 import cs2inspect
 
-# 1. Parse a traditional unmasked link (contains only IDs; see [Limitations](#technical-limitations-parsing))
+# 1. Parse a traditional unmasked link
 unmasked_link = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S76561198066322090A38350177019D9385506221951591925"
 ids = cs2inspect.parse(unmasked_link)
 print(ids['owner_id'])    # 76561198066322090
