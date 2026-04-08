@@ -90,15 +90,20 @@ print(gen_str)   # = !g 7 941 2 0.22540508 0 0 0 0 7203 0 0 0 0 0 36 0
 ```python
 import cs2inspect
 
-# Works with both the new masked CS2 links and the old traditional unmasked inspect links
+# 1. Parse a traditional unmasked link (contains only IDs; see [Limitations](#technical-limitations-parsing))
+unmasked_link = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S76561198066322090A38350177019D9385506221951591925"
+ids = cs2inspect.parse(unmasked_link)
+print(ids['owner_id'])    # 76561198066322090
+print(ids['asset_id'])    # 38350177019
+print(ids['class_id'])    # 9385506221951591925
+
+# 2. Parse a new masked CS2 link (contains full item properties)
 masked_link = "steam://run/730//+csgo_econ_action_preview%206A7AC7C6BEDED06B72704ACE6F426F5A635296868780692AAC6C226A3A6A02E9EAEAEA661A625E7EE646"
+data = cs2inspect.parse(masked_link)
+print(data['defindex'])    # 26 (M4A4)
+print(data['floatvalue'])  # 0.05357979...
 
-# 1. Get a normalized dictionary of raw field data
-data_dict = cs2inspect.parse(masked_link)
-print(data_dict['defindex'])    # 26
-print(data_dict['floatvalue'])  # 0.05357979238033295
-
-# 2. Get the raw protobuf data block (Inverse of cs2inspect.link())
+# 3. Get the raw protobuf data block from a masked link (Inverse of cs2inspect.link())
 proto = cs2inspect.unlink(masked_link)
 print(proto.itemid)     # 50039428653
 print(proto.accountid)  # 165644180
