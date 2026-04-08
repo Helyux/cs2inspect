@@ -1,24 +1,30 @@
 __author__ = "Lukas Mahler"
-__version__ = "0.0.0"
-__date__ = "04.04.2026"
+__version__ = "0.3.1"
+__date__ = "08.04.2026"
 __email__ = "m@hler.eu"
 __status__ = "Development"
 
 
-from typing import Any, Optional, Union
+from typing import Any
 
+from cs2inspect._util_base import INSPECT_BASE
 from cs2inspect._util_gen import build_gen_from_datablock, build_gen_from_dict
 from cs2inspect._util_hex import to_hex
 from cs2inspect._util_link import is_link_valid
 from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
 
-INSPECT_BASE_DEFAULT = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20"
-INSPECT_BASE_NEW = "steam://run/730//+csgo_econ_action_preview%20"
-INSPECT_BASE = INSPECT_BASE_DEFAULT
 
+def _link_from_dict(data: dict[str, Any]) -> str | None:
+    """
+    Generate an inspect link from a data dictionary.
 
-def _link_from_dict(data: dict[str, Any]) -> Optional[str]:
-    """Generate an inspect link from a dictionary"""
+    :param data: The dictionary containing item data.
+    :type data: dict[str, Any]
+
+    :return: The generated inspect link or None.
+    :rtype: str | None
+    """
+
     required_keys = {"asset_id", "class_id"}
     if not required_keys.issubset(data.keys()):
         return None
@@ -33,8 +39,19 @@ def _link_from_dict(data: dict[str, Any]) -> Optional[str]:
     )
 
 
-def link(data: Union[dict[str, Any], CEconItemPreviewDataBlock], base: str = INSPECT_BASE) -> Optional[str]:
-    """Generate an inspect link from the provided data"""
+def link(data: dict[str, Any] | CEconItemPreviewDataBlock, base: str = INSPECT_BASE) -> str | None:
+    """
+    Generate an inspect link from a provided datablock or data dictionary.
+
+    :param data: The input datablock or data dictionary.
+    :type data: dict[str, Any] | CEconItemPreviewDataBlock
+    :param base: The base URL for the inspect link.
+    :type base: str
+
+    :return: The generated inspect link, or None if invalid.
+    :rtype: str | None
+    """
+
     if isinstance(data, dict):
         return _link_from_dict(data)
     elif isinstance(data, CEconItemPreviewDataBlock):
@@ -42,8 +59,19 @@ def link(data: Union[dict[str, Any], CEconItemPreviewDataBlock], base: str = INS
     return None
 
 
-def gen(data: Union[dict[str, Any], CEconItemPreviewDataBlock], prefix: str = "!gen") -> Optional[str]:
-    """Generate a gen command string for the given item"""
+def gen(data: dict[str, Any] | CEconItemPreviewDataBlock, prefix: str = "!gen") -> str | None:
+    """
+    Generate a (!gen) or equivalent gen command string for the given item.
+
+    :param data: The parsed data dictionary or protobuf block to generate from.
+    :type data: dict[str, Any] | CEconItemPreviewDataBlock
+    :param prefix: The prefix command string (default: "!gen").
+    :type prefix: str
+
+    :return: The gen command string, or None if the payload could not be built.
+    :rtype: str | None
+    """
+
     if isinstance(data, dict):
         gen_payload = build_gen_from_dict(data)
         if gen_payload is None:
@@ -54,8 +82,17 @@ def gen(data: Union[dict[str, Any], CEconItemPreviewDataBlock], prefix: str = "!
     return None
 
 
-def link_console(data: Union[str, dict[str, Any], CEconItemPreviewDataBlock]) -> Optional[str]:
-    """Generate a console-pastable command string for the given item"""
+def link_console(data: str | dict[str, Any] | CEconItemPreviewDataBlock) -> str | None:
+    """
+    Generate a console-pastable inspect link for the given item (e.g., 'csgo_econ_action_preview ...').
+
+    :param data: An existing inspect link, an unmasked properties dict, or a CEconItemPreviewDataBlock.
+    :type data: str | dict[str, Any] | CEconItemPreviewDataBlock
+
+    :return: The console-pastable inspect link, or None if it cannot be generated.
+    :rtype: str | None
+    """
+
     if isinstance(data, (dict, CEconItemPreviewDataBlock)):
         inspect_link = link(data).split("/+")[1].replace("%20", " ")
         return inspect_link
@@ -65,17 +102,45 @@ def link_console(data: Union[str, dict[str, Any], CEconItemPreviewDataBlock]) ->
         return None
 
 
-def link_masked(data_block: CEconItemPreviewDataBlock, base: str = INSPECT_BASE) -> Optional[str]:
-    """Generate a masked inspect link from the given data block"""
+def link_masked(data_block: CEconItemPreviewDataBlock, base: str = INSPECT_BASE) -> str | None:
+    """
+    Generate a masked inspect link (hex string payload) from the given data block.
+
+    :param data_block: The CEconItemPreviewDataBlock protobuf object.
+    :type data_block: CEconItemPreviewDataBlock
+    :param base: The base URL for the inspect link.
+    :type base: str
+
+    :return: The generated inspect link, or None if invalid.
+    :rtype: str | None
+    """
+
     hex_string = to_hex(data_block)
     inspect_link = f"{base}{hex_string}"
     return inspect_link if is_link_valid(inspect_link) else None
 
 
 def link_unmasked(asset_id: str, class_id: str,
-                  market_id: Optional[str] = None, owner_id: Optional[str] = None,
-                  base: str = INSPECT_BASE) -> Optional[str]:
-    """Generate an unmasked inspect link from the given asset and class id and either the owner or the market id"""
+                  market_id: str | None = None, owner_id: str | None = None,
+                  base: str = INSPECT_BASE) -> str | None:
+    """
+    Generate an unmasked inspect link (D/A/S/M format) from the given IDs.
+
+    :param asset_id: The asset ID ('A' block).
+    :type asset_id: str
+    :param class_id: The class ID ('D' block).
+    :type class_id: str
+    :param market_id: Optional market ID ('M' block).
+    :type market_id: str | None
+    :param owner_id: Optional owner ID ('S' block).
+    :type owner_id: str | None
+    :param base: The base inspect link URL.
+    :type base: str
+
+    :return: The generated inspect link, or None if invalid.
+    :rtype: str | None
+    """
+
     location = f"M{market_id}" if market_id else f"S{owner_id}"
     inspect_link = f"{base}{location}A{asset_id}D{class_id}"
     return inspect_link if is_link_valid(inspect_link) else None

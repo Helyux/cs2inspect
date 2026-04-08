@@ -1,5 +1,5 @@
 __author__ = "Lukas Mahler"
-__version__ = "0.0.0"
+__version__ = "0.3.1"
 __date__ = "08.04.2026"
 __email__ = "m@hler.eu"
 __status__ = "Development"
@@ -72,7 +72,15 @@ class Rarity(IntEnum):
 
     @classmethod
     def parse(cls, value: str | int) -> int:
-        """Parse rarity from string name or integer ID supporting all tracks."""
+        """
+        Parse rarity from string name or integer ID.
+
+        :param value: The rarity name or ID.
+        :type value: str | int
+
+        :return: The resolved rarity integer ID.
+        :rtype: int
+        """
         if isinstance(value, int):
             return value
         if isinstance(value, str):
