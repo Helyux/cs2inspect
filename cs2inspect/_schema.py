@@ -1,5 +1,5 @@
 __author__ = "Lukas Mahler"
-__version__ = "0.0.0"
+__version__ = "0.3.1"
 __date__ = "08.04.2026"
 __email__ = "m@hler.eu"
 __status__ = "Development"
@@ -8,11 +8,21 @@ __status__ = "Development"
 import json
 import urllib.request
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
+
+import platformdirs
+
+from cs2inspect._util_base import SCHEMA_URL
 
 
 class ItemSchema:
     def __init__(self, data: dict[str, Any]):
+        """
+        Initialize the schema and parse the raw JSON metadata natively.
+
+        :param data: The raw schema dictionary mapping identifiers.
+        :type data: dict[str, Any]
+        """
         self._data = data
         self._weapons = {}
         self._skins = {}
@@ -23,8 +33,10 @@ class ItemSchema:
         self._initialize()
 
     def _initialize(self):
-        # Build crate-to-collection mapping
         crate_to_col = {}
+        nested_parents = []
+
+        # Pass 1: Build crate mapping and collect items with nested children
         for key, item in self._data.items():
             if key.startswith("collection-") and "crates" in item and isinstance(item["crates"], list):
                 col_name = item.get("name")
@@ -34,11 +46,7 @@ class ItemSchema:
                         if crate_id:
                             crate_to_col[crate_id] = col_name
 
-        # Second pass: Associate all nested items with their parent collection or container name.
-        nested_to_col = {}
-        for key, item in self._data.items():
-            # Possible child lists in the schema: contains, contains_rare, loot_list
-            children_keys = ["contains", "contains_rare", "loot_list"]
+            children_keys = ("contains", "contains_rare", "loot_list")
             all_children = []
             for ck in children_keys:
                  c_list = item.get(ck)
@@ -46,18 +54,22 @@ class ItemSchema:
                       all_children.extend(c_list)
 
             if all_children:
-                # Priority: Collection Name (inherited) > Own Name
-                col_name = item.get("name")
-                if key.startswith("crate-") and key in crate_to_col:
-                     col_name = crate_to_col[key]
+                nested_parents.append((key, item, all_children))
 
-                if col_name:
-                    for child in all_children:
-                        child_id = child.get("id")
-                        if child_id:
-                             # Don't overwrite if a primary collection- level mapping was already found
-                             if not (child_id in nested_to_col and key.startswith("crate-")):
-                                  nested_to_col[child_id] = col_name
+        # Pass 2: Resolve nested items
+        nested_to_col = {}
+        for key, item, all_children in nested_parents:
+            col_name = item.get("name")
+            if key.startswith("crate-") and key in crate_to_col:
+                 col_name = crate_to_col[key]
+
+            if col_name:
+                for child in all_children:
+                    child_id = child.get("id")
+                    if child_id:
+                         # Don't overwrite if a primary collection- level mapping was already found
+                         if not (child_id in nested_to_col and key.startswith("crate-")):
+                              nested_to_col[child_id] = col_name
 
         self._nested_to_col = nested_to_col
 
@@ -65,7 +77,7 @@ class ItemSchema:
         for key, item in self._data.items():
             self._process_item(key, item)
 
-    def _process_item(self, key: str, item: dict[str, Any], parent_collection: Optional[str] = None):
+    def _process_item(self, key: str, item: dict[str, Any], parent_collection: str | None = None):
         weapon_def = item.get("weapon", {})
         weapon_id = weapon_def.get("weapon_id")
         def_index = item.get("def_index")
@@ -219,26 +231,79 @@ class ItemSchema:
                             self._process_item(child_id, child, parent_collection=col_name)
 
     def get_weapon_name(self, weapon_id: int) -> str:
+        """
+        Get the localized name of a weapon by its ID.
+
+        :param weapon_id: The definition index of the weapon.
+        :type weapon_id: int
+
+        :return: The localized name or 'Unknown'.
+        :rtype: str
+        """
+
         return self._weapons.get(weapon_id, "Unknown")
 
     def get_agent_name(self, defindex: int) -> str:
+        """
+        Get the localized name of an agent character.
+
+        :param defindex: The definition index of the agent.
+        :type defindex: int
+
+        :return: The resolved agent name or 'Unknown'.
+        :rtype: str
+        """
+
         info = self._agents.get(defindex)
         if isinstance(info, dict):
             return info.get("name", "Unknown")
         return "Unknown"
 
-    def get_agent_info(self, defindex: int) -> Optional[dict[str, Any]]:
+    def get_agent_info(self, defindex: int) -> dict[str, Any] | None:
+        """
+        Fetch complete agent metadata including collections and image urls.
+
+        :param defindex: The definition index of the agent.
+        :type defindex: int
+
+        :return: The agent dictionary or None if undiscovered.
+        :rtype: dict[str, Any] | None
+        """
+
         return self._agents.get(defindex)
 
     def get_wear_tier(self, float_val: float) -> int:
-        """Map a float value (0.0 - 1.0) to a wear tier (0-4)."""
+        """
+        Map a float value (0.0 - 1.0) to a specific continuous cosmetic wear tier (0-4).
+
+        :param float_val: The exact float precision string/number measuring item wear.
+        :type float_val: float
+
+        :return: Discrete wear tier ranging from 0 (FN) to 4 (BS).
+        :rtype: int
+        """
+
         if float_val < 0.07: return 0 # Factory New
         if float_val < 0.15: return 1 # Minimal Wear
         if float_val < 0.38: return 2 # Field-Tested
         if float_val < 0.45: return 3 # Well-Worn
         return 4 # Battle-Scarred
 
-    def get_skin_info(self, weapon_id: int, paint_index: int, float_val: Optional[float] = None) -> Optional[dict[str, Any]]:
+    def get_skin_info(self, weapon_id: int, paint_index: int, float_val: float | None = None) -> dict[str, Any] | None:
+        """
+        Fetch generalized skin metadata corresponding strictly to the paintwear and specific paint_index.
+
+        :param weapon_id: The definition index denoting the physical weapon model.
+        :type weapon_id: int
+        :param paint_index: The specific skin variation mapped physically.
+        :type paint_index: int
+        :param float_val: Visual float altering the visual image optionally, Defaults to None.
+        :type float_val: float | None
+
+        :return: An extracted structured object returning skin stats or None if unavailable.
+        :rtype: dict[str, Any] | None
+        """
+
         skin = self._skins.get((weapon_id, paint_index))
         if not skin:
             return None
@@ -267,44 +332,117 @@ class ItemSchema:
 
         return res
 
-    def get_sticker_info(self, sticker_id: int) -> Optional[dict[str, Any]]:
+    def get_sticker_info(self, sticker_id: int) -> dict[str, Any] | None:
+        """
+        Fetch specific sticker metadata explicitly by variant ID.
+
+        :param sticker_id: ID referencing the sticker model explicitly mapped.
+        :type sticker_id: int
+
+        :return: Found collection dict string values or None.
+        :rtype: dict[str, Any] | None
+        """
+
         return self._stickers.get(sticker_id)
 
-    def get_sticker_slab_info(self, defindex: int) -> Optional[dict[str, Any]]:
+    def get_sticker_slab_info(self, defindex: int) -> dict[str, Any] | None:
+        """
+        Fetch internal slab structure mappings for legacy modifiers.
+
+        :param defindex: Explicit modifier target index.
+        :type defindex: int
+
+        :return: Slabs object structured natively or None.
+        :rtype: dict[str, Any] | None
+        """
+
         return self._sticker_slabs.get(defindex)
 
-    def get_charm_info(self, charm_id: int) -> Optional[dict[str, Any]]:
+    def get_charm_info(self, charm_id: int) -> dict[str, Any] | None:
+        """
+        Fetch physical attachment keychains and mapped ID strings natively.
+
+        :param charm_id: Explicit keychain definition index.
+        :type charm_id: int
+
+        :return: The associated dynamic JSON dict block.
+        :rtype: dict[str, Any] | None
+        """
+
         return self._charms.get(charm_id)
 
     @staticmethod
     def get_image_url(icon_url: str) -> str:
+        """
+        Validate and format standard web paths gracefully returning localized icons mappings.
+
+        :param icon_url: Expected standard path location mapped loosely from Steam networks.
+        :type icon_url: str
+
+        :return: Correct fully resolved URL or an empty string securely.
+        :rtype: str
+        """
+
         return icon_url if icon_url else ""
 
 
 def get_config_path() -> Path:
-    new_path = Path(__file__).parent / ".cs2inspect.json"
-    old_path = Path(__file__).parent / ".cs2inspect_config.json"
+    """
+    Resolve and return the preferred OS-specific configuration path globally while migrating stale defaults.
 
-    if not new_path.exists() and old_path.exists():
-        try:
-            old_path.rename(new_path)
-        except Exception:
-            return old_path
+    :return: The generated Path instance natively pointing securely to local user config files natively.
+    :rtype: Path
+    """
+    config_dir = Path(platformdirs.user_config_dir("cs2inspect"))
+    config_dir.mkdir(parents=True, exist_ok=True)
+    new_path = config_dir / "config.json"
+    old_path = Path(__file__).parent / ".cs2inspect.json"
+    very_old_path = Path(__file__).parent / ".cs2inspect_config.json"
+
+    # Migrate from old locations to new platformdirs location
+    if not new_path.exists():
+        if old_path.exists():
+            try:
+                old_path.rename(new_path)
+                return new_path
+            except OSError:
+                return old_path
+        elif very_old_path.exists():
+             try:
+                 very_old_path.rename(new_path)
+                 return new_path
+             except OSError:
+                 return very_old_path
 
     return new_path
 
 
 def save_schema_path(path: str):
+    """
+    Serialize the absolute path location of the targeted schema locally for future caching loads securely.
+
+    :param path: The string pointing strictly toward the validated schema json explicitly downloaded.
+    :type path: str
+
+    :return: None locally resolving paths implicitly.
+    :rtype: None
+    """
     config_path = get_config_path()
     try:
         config = {"schema_path": str(Path(path).absolute())}
         with open(config_path, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4)
-    except Exception:
+    except (OSError, TypeError):
         pass
 
 
-def load_schema_path() -> Optional[str]:
+def load_schema_path() -> str | None:
+    """
+    Load the saved schema path from the configuration file or checked fallbacks.
+
+    :return: The path to the schema file if found, or None.
+    :rtype: str | None
+    """
     config_path = get_config_path()
     if config_path.exists():
         try:
@@ -313,7 +451,7 @@ def load_schema_path() -> Optional[str]:
                 path = config.get("schema_path")
                 if path and Path(path).exists():
                     return path
-        except Exception:
+        except (json.JSONDecodeError, OSError, KeyError):
             pass
 
     fallbacks = [
@@ -329,34 +467,62 @@ def load_schema_path() -> Optional[str]:
     return None
 
 
-def download_schema(path: str = "cs2_schema.json") -> str:
-    url = "https://raw.githubusercontent.com/ByMykel/CSGO-API/main/public/api/en/all.json"
-    headers = {'User-Agent': 'Mozilla/5.0'}
-    req = urllib.request.Request(url, headers=headers)
+def download_schema(path: str = "cs2_schema.json", timeout: float = 30.0) -> str:
+    """
+    Download the latest CS2 schema JSON from the remote repository.
 
-    with urllib.request.urlopen(req) as response:
+    :param path: The target file path to save the schema to.
+    :type path: str
+    :param timeout: Network timeout in seconds for the download request.
+    :type timeout: float
+
+    :return: The absolute path to the downloaded schema file.
+    :rtype: str
+    """
+
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    req = urllib.request.Request(SCHEMA_URL, headers=headers)
+
+    with urllib.request.urlopen(req, timeout=timeout) as response:
         data = json.loads(response.read().decode())
 
     abs_path = str(Path(path).absolute())
     with open(abs_path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4)
+        json.dump(data, f, separators=(',', ':'))
 
     save_schema_path(abs_path)
     return abs_path
 
 
-def load_schema(path: Optional[str] = None) -> Optional[ItemSchema]:
+_SCHEMA_CACHE: dict[str, ItemSchema] = {}
+
+def load_schema(path: str | None = None) -> ItemSchema | None:
+    """
+    Load the ItemSchema instance from a local JSON file path.
+
+    :param path: The file path to the schema JSON. If None, the configured path is used taking priority.
+    :type path: str | None
+
+    :return: The loaded ItemSchema instance, or None if the file cannot be found or read.
+    :rtype: ItemSchema | None
+    """
     if path is None:
         path = load_schema_path()
 
     if not path or not Path(path).exists():
         return None
 
+    path_str = str(Path(path).absolute())
+    if path_str in _SCHEMA_CACHE:
+        return _SCHEMA_CACHE[path_str]
+
     try:
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path_str, "r", encoding="utf-8") as f:
             data = json.load(f)
-            return ItemSchema(data)
-    except Exception:
+            schema = ItemSchema(data)
+            _SCHEMA_CACHE[path_str] = schema
+            return schema
+    except (json.JSONDecodeError, OSError):
         return None
 
 
