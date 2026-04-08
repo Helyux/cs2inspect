@@ -1,6 +1,6 @@
 __author__ = "Lukas Mahler"
-__version__ = "0.0.0"
-__date__ = "26.10.2025"
+__version__ = "0.3.1"
+__date__ = "08.04.2026"
 __email__ = "m@hler.eu"
 __status__ = "Development"
 
@@ -11,7 +11,6 @@ import sys
 from typing import Literal
 
 IGNORED_FILES = {"econ_pb2.py"}
-
 
 def check_date_match(file_path: str) -> bool:
     """
