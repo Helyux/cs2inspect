@@ -239,8 +239,8 @@ GPLv3 License. See the LICENSE file for details.
 Special thanks to these projects for their foundational work and metadata tracking:
 - [csfloat/inspect](https://github.com/csfloat/inspect) - Foundational skin inspect library
 - [ByMykel/CSGO-API](https://github.com/ByMykel/CSGO-API) - Primary source for the items and skins schema
-- [SteamTracking/GameTracking-CS2](https://github.com/SteamTracking/GameTracking-CS2) - Source for `items_game.txt` and `csgo_english.txt`
-- [SteamDatabase/SteamTracking](https://github.com/SteamDatabase/SteamTracking) - Source for `CounterStrikeGlobalOffensive.json`
+- [SteamTracking/GameTracking-CS2](https://github.com/SteamTracking/GameTracking-CS2) - Source for `items_game.txt` and `csgo_english.txt` (used for Enums)
+- [SteamDatabase/SteamTracking](https://github.com/SteamDatabase/SteamTracking) - Source for `CounterStrikeGlobalOffensive.json` (used for Enums)
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
