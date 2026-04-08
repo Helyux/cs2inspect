@@ -58,5 +58,15 @@ class TestLinkParsing(unittest.TestCase):
         self.assertEqual(data['asset_id'], '49511393803')
         self.assertEqual(data['class_id'], '7532878161036823080')
 
+    def test_parse_zero_seed(self):
+        # Test a link that explicitly omits the paintseed field (should default to 0)
+        link = "steam://run/730//+csgo_econ_action_preview%2081915B282B79C699A9A17C80A982B185B9467A585F82E9020101018DF185AEA6C671"
+        data = cs2inspect.parse(link)
+
+        self.assertIn('paintseed', data)
+        self.assertEqual(data['paintseed'], 0)
+        self.assertEqual(data['defindex'], 40)
+        self.assertEqual(data['paintindex'], 253)
+
 if __name__ == '__main__':
     unittest.main()

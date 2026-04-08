@@ -38,15 +38,19 @@ def parse(
     if (enrich or schema) and result:
         # Load schema if path provided or if enrich requested
         if isinstance(schema, str):
-            schema = load_schema(schema)
+            schema = load_schema(schema, raise_on_error=True)
         elif schema is None:
             schema = load_schema()
 
-        enrich_enums(result, schema)
-
+        # If we have a schema (either provided or loaded from default location),
+        # we perform full enrichment.
         if schema:
+            enrich_enums(result, schema)
             enrich_attachments(result, schema)
             build_full_name(result, schema)
+        else:
+            # Fallback for when no schema is available: basic metadata enums only
+            enrich_enums(result, None)
 
     return result
 

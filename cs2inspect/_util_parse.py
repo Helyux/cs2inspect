@@ -50,6 +50,11 @@ def _proto_to_dict(proto: CEconItemPreviewDataBlock) -> dict[str, Any]:
             val = getattr(proto, proto_name)
             result[result_key] = val
 
+    # Ensure cosmetic 'Big Three' default to 0 for consistency if missing
+    for key in ["paintindex", "paintseed", "paintwear"]:
+        if key not in result:
+            result[key] = 0
+
     # Process repeated fields (stickers, keychains, variations)
     for collection_name in ["stickers", "keychains", "variations"]:
         items = getattr(proto, collection_name)

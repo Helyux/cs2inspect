@@ -489,12 +489,14 @@ def download_schema(path: str = "cs2_schema.json", timeout: float = 30.0) -> str
 
 _SCHEMA_CACHE: dict[str, ItemSchema] = {}
 
-def load_schema(path: str | None = None) -> ItemSchema | None:
+def load_schema(path: str | None = None, raise_on_error: bool = False) -> ItemSchema | None:
     """
     Load the ItemSchema instance from a local JSON file path.
 
     :param path: The file path to the schema JSON. If None, the configured path is used taking priority.
     :type path: str | None
+    :param raise_on_error: Whether to raise an error if the path is explicitly provided but invalid.
+    :type raise_on_error: bool
 
     :return: The loaded ItemSchema instance, or None if the file cannot be found or read.
     :rtype: ItemSchema | None
@@ -503,6 +505,8 @@ def load_schema(path: str | None = None) -> ItemSchema | None:
         path = load_schema_path()
 
     if not path or not Path(path).exists():
+        if raise_on_error and path:
+            raise FileNotFoundError(f"Schema file not found at: {path}")
         return None
 
     path_str = str(Path(path).absolute())
