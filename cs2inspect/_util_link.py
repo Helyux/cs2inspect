@@ -1,10 +1,3 @@
-__author__ = "Lukas Mahler"
-__version__ = "0.3.1"
-__date__ = "08.04.2026"
-__email__ = "m@hler.eu"
-__status__ = "Development"
-
-
 import urllib.parse
 
 from cs2inspect._util_base import RE_MASKED_LINK, RE_UNMASKED_LINK

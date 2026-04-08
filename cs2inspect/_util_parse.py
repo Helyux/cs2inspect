@@ -1,17 +1,10 @@
-__author__ = "Lukas Mahler"
-__version__ = "0.3.1"
-__date__ = "08.04.2026"
-__email__ = "m@hler.eu"
-__status__ = "Development"
-
-
 from typing import Any
 
 from cs2inspect._metadata import CATEGORY_IDS, Origin, Quality, Rarity, get_wear_name
 from cs2inspect._schema import ItemSchema
+from cs2inspect._util_base import RE_MASKED_PAYLOAD, RE_UNMASKED_PAYLOAD
 from cs2inspect._util_hex import bytes_to_float, from_hex
 from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
-from cs2inspect._util_base import RE_MASKED_PAYLOAD, RE_UNMASKED_PAYLOAD
 
 
 def _proto_to_dict(proto: CEconItemPreviewDataBlock) -> dict[str, Any]:

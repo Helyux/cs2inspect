@@ -1,12 +1,4 @@
-__author__ = "Lukas Mahler"
-__version__ = "0.3.1"
-__date__ = "08.04.2026"
-__email__ = "m@hler.eu"
-__status__ = "Development"
-
-
 import re
-
 
 # Base prefixes for matching links and their inner payload segment
 _LINK_PREFIX = r"^(?:steam://(?:run|rungame)/730/(?:\d*/)*)?(?:\+?\s*)?"
