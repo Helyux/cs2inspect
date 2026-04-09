@@ -127,7 +127,6 @@ class Rarity(IntEnum):
 
 # Sources:
 # https://raw.githubusercontent.com/SteamTracking/GameTracking-CS2/refs/heads/master/game/csgo/pak01_dir/scripts/items/items_game.txt
-# https://raw.githubusercontent.com/SteamDatabase/SteamTracking/b5cba7a22ab899d6d423380cff21cec707b7c947/ItemSchema/CounterStrikeGlobalOffensive.json
 # https://raw.githubusercontent.com/SteamTracking/GameTracking-CS2/refs/heads/master/game/csgo/pak01_dir/resource/csgo_english.txt
 class Quality(IntEnum):
     NORMAL = 0

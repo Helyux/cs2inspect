@@ -19,8 +19,8 @@
 
 - Creating 'unmasked' inspect links (containing the owners steam id)
 - Creating 'masked' (XOR-capable) inspect links
-- Decoding/Unparsing inspect links back into data or protobuf objects
-- **Smart Enrichment**: Resolve numeric IDs to human-readable names (Weapon, Skin, Rarity, etc.)
+- Decoding/Parsing inspect links back into data or protobuf objects
+- Parsing Enrichment: Resolve numeric IDs to human-readable names (Weapon, Skin, Rarity, Origin, Quality, etc.)
 - Creating gen codes
 - Creating console pasteable inspect links
 - Checking inspect link validity (robust regex supporting modern CS2 formats)
@@ -92,7 +92,7 @@ Supports both legacy unmasked links (limited data; see [Limitations](#technical-
 ```python
 import cs2inspect
 
-# 1. Parse a traditional unmasked link
+# 1. Parse a traditional unmasked link (S A D format)
 unmasked_link = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S76561198066322090A38350177019D9385506221951591925"
 ids = cs2inspect.parse(unmasked_link)
 print(ids['owner_id'])    # 76561198066322090
@@ -102,18 +102,20 @@ print(ids['class_id'])    # 9385506221951591925
 # 2. Parse a new masked CS2 link (contains full item properties)
 masked_link = "steam://run/730//+csgo_econ_action_preview%206A7AC7C6BEDED06B72704ACE6F426F5A635296868780692AAC6C226A3A6A02E9EAEAEA661A625E7EE646"
 data = cs2inspect.parse(masked_link)
-print(data['defindex'])    # 26 (M4A4)
-print(data['floatvalue'])  # 0.05357979...
+print(data['defindex'])    # 26 (PP-Bizon)
+print(data['floatvalue'])  # 0.05357979238033295
 
 # 3. Get the raw protobuf data block from a masked link (Inverse of cs2inspect.link())
 proto = cs2inspect.unlink(masked_link)
 print(proto.itemid)     # 50039428653
-print(proto.accountid)  # 165644180
+print(proto.defindex)   # 26
+print(proto.paintwear)  # 1029404284 (the proto doesnt contain the calculated float value)
+print(proto.paintseed)  # 838
 ```
 
 ### Smart Enrichment
 
-Resolve numeric IDs to real names (Weapon, Skin, Rarity, Wear, etc.) using an optional schema.
+Resolve numeric IDs to real names (Weapon, Skin, Rarity, Wear, etc.) using an optional schema file.
 
 ```python
 import cs2inspect
@@ -155,7 +157,9 @@ print(json.dumps(info, indent=4, ensure_ascii=False))
             "name": "Sticker | Natus Vincere (Gold) | Copenhagen 2024",
             "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI6-obi42bgThH10JWwqHQDu6f4PPU8IfLFDWLAlOtysuQwSiyywB8hsT6BzYz9c3LDOwY-Sswn4fCOG2o",
             "collection_name": "Copenhagen 2024 Legends Sticker Capsule",
-            "wear": 0.550000011920929
+            "wear": 0.550000011920929,
+            "offset_x": -0.07568451762199402,
+            "offset_y": -0.005073368549346924
         },
         {
             "slot": 0,
@@ -165,7 +169,9 @@ print(json.dumps(info, indent=4, ensure_ascii=False))
             "name": "Sticker | Virtus.pro (Gold) | Copenhagen 2024",
             "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI64pfL7VbrRVPwyJflqnNfv6StOf05cKmXV2SWxLdytrM7GnHqkU8l52nUmImqd3mWcEZ-XUXT9D_W",
             "collection_name": "Copenhagen 2024 Legends Sticker Capsule",
-            "wear": 0.5899999737739563
+            "wear": 0.5899999737739563,
+            "offset_x": -0.09724557399749756,
+            "offset_y": 0.001629471778869629
         },
         {
             "slot": 3,
@@ -175,7 +181,9 @@ print(json.dumps(info, indent=4, ensure_ascii=False))
             "name": "Sticker | Vitality (Gold) | Copenhagen 2024",
             "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI64o7g62bgThH10M7ipHZdvKT9MPQ6JvWQDz-Sl-pytLQ6GC_gzEtw62zVyY39eH2WbwA-SswneFne1lk",
             "collection_name": "Copenhagen 2024 Legends Sticker Capsule",
-            "wear": 0.550000011920929
+            "wear": 0.550000011920929,
+            "offset_x": 0.33396807312965393,
+            "offset_y": 0.009648770093917847
         },
         {
             "slot": 3,
@@ -185,7 +193,9 @@ print(json.dumps(info, indent=4, ensure_ascii=False))
             "name": "Sticker | Team Spirit (Gold) | Copenhagen 2024",
             "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI655f9-GbgThH10MGw-HIKv6T6baFucfPFC2KUkO905uRvGnrllkp-5TjQzo6qJH6XPFM-SswnKK8h7Zw",
             "collection_name": "Copenhagen 2024 Legends Sticker Capsule",
-            "wear": 0.5699999928474426
+            "wear": 0.5699999928474426,
+            "offset_x": 0.1969793736934662,
+            "offset_y": 0.08180040121078491
         },
         {
             "slot": 2,
@@ -195,7 +205,9 @@ print(json.dumps(info, indent=4, ensure_ascii=False))
             "name": "Sticker | GamerLegion (Gold) | Copenhagen 2024",
             "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI684vL7VbrRVP1x5K1rHoOu6P-PPY6JfHKXTLEmOovs-M4S3HjkElz5DuBydmsJXuVcEZ-XYJJFe58",
             "collection_name": "Copenhagen 2024 Challengers Sticker Capsule",
-            "wear": 0.5699999928474426
+            "wear": 0.5699999928474426,
+            "offset_x": 0.14772814512252808,
+            "offset_y": -0.004513293504714966
         }
     ],
     "keychains": [
@@ -207,7 +219,11 @@ print(json.dumps(info, indent=4, ensure_ascii=False))
             "name": "Charm | Magmatude",
             "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGI6zwki4Uf_a0IWsPGiE7Fhy-I764WbkThD8i5jp6Ttkv6PhY6dSLfmAHW6exuJ_vupWQyC_nRIzuziEnsGgJymSZwd0CZpyQu5buxO9wNbmPrzm5wCLg95Fmyz_3y1Nuydq4OZXT-N7raqdv_up",
             "collection_name": "Missing Link Community Charm Collection",
-            "wear": 0.0
+            "wear": 0.0,
+            "offset_x": 9.838349342346191,
+            "offset_y": 0.5787375569343567,
+            "offset_z": 4.179599285125732,
+            "pattern": 17027
         }
     ],
     "floatvalue": 0.11404433846473694,
@@ -238,9 +254,9 @@ GPLv3 License. See the LICENSE file for details.
 ## Acknowledgements
 Special thanks to these projects for their foundational work and metadata tracking:
 - [csfloat/inspect](https://github.com/csfloat/inspect) - Foundational skin inspect library
-- [ByMykel/CSGO-API](https://github.com/ByMykel/CSGO-API) - Primary source for the items and skins schema
-- [SteamTracking/GameTracking-CS2](https://github.com/SteamTracking/GameTracking-CS2) - Source for `items_game.txt` and `csgo_english.txt` (used for Enums)
-- [SteamDatabase/SteamTracking](https://github.com/SteamDatabase/SteamTracking) - Source for `CounterStrikeGlobalOffensive.json` (used for Enums)
+- [ByMykel/CSGO-API](https://github.com/ByMykel/CSGO-API) - Primary source for the schema files
+- [SteamTracking/GameTracking-CS2](https://github.com/SteamTracking/GameTracking-CS2) - Source for `Rarity` and `Quality` enums
+- [SteamDatabase/SteamTracking](https://github.com/SteamDatabase/SteamTracking) - Source for `Origin` enum
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
