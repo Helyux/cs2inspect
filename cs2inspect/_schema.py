@@ -1,11 +1,15 @@
 import json
-import urllib.request
+import os
+import time
 from pathlib import Path
 from typing import Any
 
 import platformdirs
 
-from cs2inspect._util_base import SCHEMA_URL
+from ._util_schema import fetch_and_update_schema
+
+# Cache to store loaded ItemSchema instances to avoid redundant filesystem reads.
+_SCHEMA_CACHE: dict[str, 'ItemSchema'] = {}
 
 
 class ItemSchema:
@@ -16,7 +20,15 @@ class ItemSchema:
         :param data: The raw schema dictionary mapping identifiers.
         :type data: dict[str, Any]
         """
-        self._data = data
+
+        self._data = data.get("items", {}) if "items" in data else data
+        self._highlights = {}
+        if "highlights" in data:
+            for h in data["highlights"]:
+                d_idx = h.get("def_index")
+                if d_idx:
+                    self._highlights[int(d_idx)] = h
+
         self._weapons = {}
         self._skins = {}
         self._agents = {}
@@ -71,6 +83,17 @@ class ItemSchema:
             self._process_item(key, item)
 
     def _process_item(self, key: str, item: dict[str, Any], parent_collection: str | None = None):
+        """
+        Categorize and index a single schema item into the internal specialized maps.
+
+        :param key: The unique identifier for the item (e.g., 'skin-123').
+        :type key: str
+        :param item: The raw metadata dictionary for the item.
+        :type item: dict[str, Any]
+        :param parent_collection: The resolved name of the item's collection, if known.
+        :type parent_collection: str | None
+        """
+
         weapon_def = item.get("weapon", {})
         weapon_id = weapon_def.get("weapon_id")
         def_index = item.get("def_index")
@@ -364,6 +387,19 @@ class ItemSchema:
 
         return self._charms.get(charm_id)
 
+    def get_highlight_info(self, reel_id: int) -> dict[str, Any] | None:
+        """
+        Fetch specific play details for Souvenir Highlight items.
+
+        :param reel_id: The highlight_reel ID from the proto.
+        :type reel_id: int
+
+        :return: The associated highlight metadata or None.
+        :rtype: dict[str, Any] | None
+        """
+
+        return self._highlights.get(reel_id)
+
     @staticmethod
     def get_image_url(icon_url: str) -> str:
         """
@@ -386,6 +422,7 @@ def get_config_path() -> Path:
     :return: The generated Path instance natively pointing securely to local user config files natively.
     :rtype: Path
     """
+
     config_dir = Path(platformdirs.user_config_dir("cs2inspect"))
     config_dir.mkdir(parents=True, exist_ok=True)
     new_path = config_dir / "config.json"
@@ -420,6 +457,7 @@ def save_schema_path(path: str):
     :return: None locally resolving paths implicitly.
     :rtype: None
     """
+
     config_path = get_config_path()
     try:
         config = {"schema_path": str(Path(path).absolute())}
@@ -436,6 +474,7 @@ def load_schema_path() -> str | None:
     :return: The path to the schema file if found, or None.
     :rtype: str | None
     """
+
     config_path = get_config_path()
     if config_path.exists():
         try:
@@ -448,6 +487,9 @@ def load_schema_path() -> str | None:
             pass
 
     fallbacks = [
+        Path.cwd() / "cs2schema.json",
+        Path(__file__).parent.parent / "cs2schema.json",
+        Path(__file__).parent / "cs2schema.json",
         Path.cwd() / "cs2_schema.json",
         Path(__file__).parent.parent / "cs2_schema.json",
         Path(__file__).parent / "cs2_schema.json"
@@ -460,34 +502,27 @@ def load_schema_path() -> str | None:
     return None
 
 
-def download_schema(path: str = "cs2_schema.json", timeout: float = 30.0) -> str:
+def download_schema(path: str = "cs2schema.json", timeout: float = 60.0) -> str:
     """
-    Download the latest CS2 schema JSON from the remote repository.
+    Download, prune, and bundle the latest CS2 schema metadata.
 
-    :param path: The target file path to save the schema to.
+    :param path: The target file path to save the optimized schema to.
     :type path: str
     :param timeout: Network timeout in seconds for the download request.
     :type timeout: float
 
-    :return: The absolute path to the downloaded schema file.
+    :return: The absolute path to the generated schema file.
     :rtype: str
     """
 
-    headers = {'User-Agent': 'Mozilla/5.0'}
-    req = urllib.request.Request(SCHEMA_URL, headers=headers)
-
-    with urllib.request.urlopen(req, timeout=timeout) as response:
-        data = json.loads(response.read().decode())
-
     abs_path = str(Path(path).absolute())
-    with open(abs_path, "w", encoding="utf-8") as f:
-        json.dump(data, f, separators=(',', ':'))
+    success = fetch_and_update_schema(abs_path, timeout=timeout)
 
-    save_schema_path(abs_path)
+    if success:
+        save_schema_path(abs_path)
+
     return abs_path
 
-
-_SCHEMA_CACHE: dict[str, ItemSchema] = {}
 
 def load_schema(path: str | None = None, raise_on_error: bool = False) -> ItemSchema | None:
     """
@@ -501,6 +536,7 @@ def load_schema(path: str | None = None, raise_on_error: bool = False) -> ItemSc
     :return: The loaded ItemSchema instance, or None if the file cannot be found or read.
     :rtype: ItemSchema | None
     """
+
     if path is None:
         path = load_schema_path()
 
@@ -510,6 +546,16 @@ def load_schema(path: str | None = None, raise_on_error: bool = False) -> ItemSc
         return None
 
     path_str = str(Path(path).absolute())
+
+    # Automatically refresh and replace the local schema if it is stale (>30 days).
+    try:
+        mtime = os.path.getmtime(path_str)
+        if (time.time() - mtime) > (30 * 24 * 60 * 60):
+             # Trigger auto-update
+             fetch_and_update_schema(path_str)
+    except (OSError, OverflowError):
+        pass
+
     if path_str in _SCHEMA_CACHE:
         return _SCHEMA_CACHE[path_str]
 
