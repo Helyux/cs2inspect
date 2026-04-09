@@ -10,6 +10,7 @@ permissions:
 jobs:
   release-build:
     runs-on: ubuntu-latest
+    if: github.event.release.prerelease == false
 
     steps:
       # Step 1: Checkout repository
@@ -35,6 +36,7 @@ jobs:
 
   pypi-publish:
     runs-on: ubuntu-latest
+    if: github.event.release.prerelease == false
     needs: release-build
     permissions:
       id-token: write
