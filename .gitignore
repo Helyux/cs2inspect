@@ -11,4 +11,5 @@ dist/
 .python-version
 .idea/
 cs2_schema.json
+cs2schema.json
 inspect_test.py

@@ -121,7 +121,7 @@ import json
 
 # One-time setup: download the latest item/skin names (using ByMykel/CSGO-API)
 # This is saved locally and remembered across restarts
-cs2inspect.download_schema(path="cs2_schema.json")
+cs2inspect.download_schema(path="cs2schema.json")
 
 # Parse with enrichment enabled for a complex weapon (StatTrak™ AK-47 | Slate / with Stickers and a Charm)
 link = "steam://run/730//+csgo_econ_action_preview%200D1DC5E9CAE5BB0C150A2D860525093D043599ADABE20E4DBB0E450D5DD0076F19050C1DD43510C0C1013230710D96B0488D33ABB66F19050D1DD0351030071A3230BD25CAB0480D99D8376F19050E1DE03510C0C1013230D0F0A73348ED1813316F19050E1DE4351088E61C3230FBB9443348F58BAA306F19050F1D9C341088E61C3230014B1A33484DE99EB6650C7D05AF0C1A050D1D2230EC64104C4828251932404AB2884D5D8E880CEBE9FCE9"
