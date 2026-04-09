@@ -21,8 +21,9 @@ INSPECT_BASE_DEFAULT = "steam://rungame/730/76561202255233023/+csgo_econ_action_
 INSPECT_BASE_NEW = "steam://run/730//+csgo_econ_action_preview%20"
 INSPECT_BASE = INSPECT_BASE_DEFAULT
 
-# Remote Schema
+# Remote full and highlights schema (the highlights are missing in the all.json file)
 SCHEMA_URL = "https://raw.githubusercontent.com/ByMykel/CSGO-API/main/public/api/en/all.json"
+HIGHLIGHTS_URL = "https://raw.githubusercontent.com/ByMykel/CSGO-API/main/public/api/en/highlights.json"
 
 # Hex parsing
 MAX_HEX_PAYLOAD_SIZE = 100_000
