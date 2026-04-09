@@ -194,5 +194,25 @@ class TestEnrichedParsing(unittest.TestCase):
         self.assertEqual(charm["collection_name"], "Missing Link Community Charm Collection")
         self.assertEqual(charm["imageurl"], "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGI6zwki4Uf_a0IWsPGiE7Fhy-I764WbkThD8i5jp6Ttkv6PhY6dSLfmAHW6exuJ_vupWQyC_nRIzuziEnsGgJymSZwd0CZpyQu5buxO9wNbmPrzm5wCLg95Fmyz_3y1Nuydq4OZXT-N7raqdv_up")
 
+    def test_custom_placement_stickers_and_charms(self):
+        self.skip_if_no_schema()
+        # Example with custom placements (M4A1-S | Cyrex)
+        link = "steam://run/730//+csgo_econ_action_preview%209D8D390E592F379C85A1BD759FB59BAD94A5215634729EDDCCD59DCD439EFF98959C8D50B9FF98959F8D50B9FF98959E8D50B9FF8995998D41D8B09D9D5D5DA01F3546A3D8811D57A0FF9295998D75D8A0567616A3D89DE9CF27F5F2ED953F9C8B959D8DB9A0834170DDD85EFB4FA3D02D672BDDC56A9F56EC4C0C"
+        res = cs2inspect.parse(link, schema=self.schema)
+
+        # Check Ex3rcice Foil sticker (Austin 2025) for custom placement
+        sticker = next(s for s in res["stickers"] if s["stickerId"] == 8924)
+        self.assertEqual(sticker["slot"], 4)
+        self.assertAlmostEqual(sticker["offset_x"], 0.4290199875831604, places=5)
+        self.assertAlmostEqual(sticker["offset_y"], 0.09887716174125671, places=5)
+        self.assertEqual(sticker["rotation"], -6.0)
+
+        # Check charm for correct "Souvenir Highlight Charm" identification
+        charm = res["keychains"][0]
+        self.assertEqual(charm["stickerId"], 36)
+        self.assertEqual(charm["name"], "Souvenir Highlight Charm")
+        self.assertEqual(charm["highlight_reel"], 375)
+        self.assertAlmostEqual(charm["offset_z"], 5.718101501464844, places=5)
+
 if __name__ == '__main__':
     unittest.main()

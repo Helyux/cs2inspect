@@ -192,8 +192,18 @@ def enrich_attachments(result: dict[str, Any], schema: ItemSchema) -> None:
                         "name": s_info.get("name"),
                         "imageurl": s_info.get("image"),
                         "collection_name": s_info.get("collection"),
-                        "wear": s.get("wear", 0.0)
+                        "wear": s.get("wear", 0.0),
+                        "scale": s.get("scale"),
+                        "rotation": s.get("rotation"),
+                        "tint_id": s.get("tint_id"),
+                        "offset_x": s.get("offset_x"),
+                        "offset_y": s.get("offset_y"),
+                        "offset_z": s.get("offset_z"),
+                        "pattern": s.get("pattern"),
+                        "highlight_reel": s.get("highlight_reel"),
                     }
+                    # Remove None values to keep the output clean
+                    sticker_obj = {k: v for k, v in sticker_obj.items() if v is not None}
                     enriched_stickers.append(sticker_obj)
                 else:
                     s["stickerId"] = s_id
@@ -208,7 +218,24 @@ def enrich_attachments(result: dict[str, Any], schema: ItemSchema) -> None:
             look_id = w_id if w_id is not None else k_id
 
             if look_id is not None:
-                k_info = schema.get_charm_info(look_id) or schema.get_sticker_slab_info(look_id) or schema.get_sticker_info(look_id)
+                # Prioritize charm lookup.
+                k_info = schema.get_charm_info(look_id)
+                highlight_reel = k.get("highlight_reel")
+
+                # If it's a keychain and contains a highlight_reel, it's a Souvenir Highlight.
+                # We should NOT fall back to sticker_slabs/stickers as they often share legacy IDs.
+                if k_info is None and highlight_reel is not None:
+                    k_info = {
+                        "name": "Souvenir Highlight Charm",
+                        "codename": "souvenir_highlight",
+                        "material": "econ/stickers/default", # Placeholder or resolved later
+                        "image": "",
+                        "collection": None
+                    }
+                else:
+                    # Generic fallback for standard charms (e.g. Sticker Slabs)
+                    k_info = k_info or schema.get_sticker_slab_info(look_id) or schema.get_sticker_info(look_id)
+
                 if k_info:
                     keychain_obj = {
                         "slot": k.get("slot"),
@@ -218,8 +245,18 @@ def enrich_attachments(result: dict[str, Any], schema: ItemSchema) -> None:
                         "name": k_info.get("name"),
                         "imageurl": k_info.get("image"),
                         "collection_name": k_info.get("collection"),
-                        "wear": k.get("wear", 0.0)
+                        "wear": k.get("wear", 0.0),
+                        "scale": k.get("scale"),
+                        "rotation": k.get("rotation"),
+                        "tint_id": k.get("tint_id"),
+                        "offset_x": k.get("offset_x"),
+                        "offset_y": k.get("offset_y"),
+                        "offset_z": k.get("offset_z"),
+                        "pattern": k.get("pattern"),
+                        "highlight_reel": k.get("highlight_reel"),
                     }
+                    # Remove None values to keep the output clean
+                    keychain_obj = {k: v for k, v in keychain_obj.items() if v is not None}
                     if w_id is not None:
                         keychain_obj["wrapped_sticker"] = w_id
                     enriched_keychains.append(keychain_obj)
