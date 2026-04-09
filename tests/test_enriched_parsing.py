@@ -8,7 +8,7 @@ class TestEnrichedParsing(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # Load schema for enriched tests - skip if not found
-        schema_path = "cs2_schema.json"
+        schema_path = "cs2schema.json"
         if not Path(schema_path).exists():
             cls.schema = None
         else:
@@ -16,7 +16,7 @@ class TestEnrichedParsing(unittest.TestCase):
 
     def skip_if_no_schema(self):
         if self.schema is None:
-            self.skipTest("cs2_schema.json not found, skipping enriched tests")
+            self.skipTest("cs2schema.json not found, skipping enriched tests")
 
     def test_souvenir_dragon_lore(self):
         self.skip_if_no_schema()
@@ -210,7 +210,7 @@ class TestEnrichedParsing(unittest.TestCase):
         # Check charm for correct "Souvenir Highlight Charm" identification
         charm = res["keychains"][0]
         self.assertEqual(charm["stickerId"], 36)
-        self.assertEqual(charm["name"], "Souvenir Highlight Charm")
+        self.assertEqual(charm["name"], "Souvenir Charm | Austin 2025 Highlight | apEX: Help Is Here")
         self.assertEqual(charm["highlight_reel"], 375)
         self.assertAlmostEqual(charm["offset_z"], 5.718101501464844, places=5)
 

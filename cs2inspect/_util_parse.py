@@ -225,13 +225,23 @@ def enrich_attachments(result: dict[str, Any], schema: ItemSchema) -> None:
                 # If it's a keychain and contains a highlight_reel, it's a Souvenir Highlight.
                 # We should NOT fall back to sticker_slabs/stickers as they often share legacy IDs.
                 if k_info is None and highlight_reel is not None:
-                    k_info = {
-                        "name": "Souvenir Highlight Charm",
-                        "codename": "souvenir_highlight",
-                        "material": "econ/stickers/default", # Placeholder or resolved later
-                        "image": "",
-                        "collection": None
-                    }
+                    h_info = schema.get_highlight_info(highlight_reel)
+                    if h_info:
+                        k_info = {
+                            "name": h_info.get("name", "Souvenir Highlight Charm"),
+                            "codename": "souvenir_highlight",
+                            "material": h_info.get("original", {}).get("image_inventory", "econ/stickers/default"),
+                            "image": h_info.get("image", ""),
+                            "collection": h_info.get("tournament_event")
+                        }
+                    else:
+                        k_info = {
+                            "name": "Souvenir Highlight Charm",
+                            "codename": "souvenir_highlight",
+                            "material": "econ/stickers/default",
+                            "image": "",
+                            "collection": None
+                        }
                 else:
                     # Generic fallback for standard charms (e.g. Sticker Slabs)
                     k_info = k_info or schema.get_sticker_slab_info(look_id) or schema.get_sticker_info(look_id)
