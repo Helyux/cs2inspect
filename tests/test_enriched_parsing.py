@@ -77,55 +77,112 @@ class TestEnrichedParsing(unittest.TestCase):
         link = "steam://run/730//+csgo_econ_action_preview%200D1DC5E9CAE5BB0C150A2D860525093D043599ADABE20E4DBB0E450D5DD0076F19050C1DD43510C0C1013230710D96B0488D33ABB66F19050D1DD0351030071A3230BD25CAB0480D99D8376F19050E1DE03510C0C1013230D0F0A73348ED1813316F19050E1DE4351088E61C3230FBB9443348F58BAA306F19050F1D9C341088E61C3230014B1A33484DE99EB6650C7D05AF0C1A050D1D2230EC64104C4828251932404AB2884D5D8E880CEBE9FCE9"
         res = cs2inspect.parse(link, schema=self.schema)
 
-        # Base IDs
-        self.assertEqual(res["itemid"], 49074532936)
-        self.assertEqual(res["defindex"], 7)
-        self.assertEqual(res["paintindex"], 1035)
-        self.assertEqual(res["rarity"], 4)
-        self.assertEqual(res["quality"], 9)
-        self.assertEqual(res["paintwear"], 1038716948)
-        self.assertEqual(res["paintseed"], 438)
+        expected = {
+            "itemid": 49074532936,
+            "defindex": 7,
+            "paintindex": 1035,
+            "rarity": 4,
+            "quality": 9,
+            "paintwear": 1038716948,
+            "paintseed": 438,
+            "killeaterscoretype": 0,
+            "killeatervalue": 1373,
+            "inventory": 1,
+            "origin": 8,
+            "stickers": [
+                {
+                    "slot": 1,
+                    "stickerId": 7257,
+                    "codename": "cph2024_team_navi_gold",
+                    "material": "econ/stickers/cph2024/navi_gold",
+                    "name": "Sticker | Natus Vincere (Gold) | Copenhagen 2024",
+                    "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI6-obi42bgThH10JWwqHQDu6f4PPU8IfLFDWLAlOtysuQwSiyywB8hsT6BzYz9c3LDOwY-Sswn4fCOG2o",
+                    "collection_name": "Copenhagen 2024 Legends Sticker Capsule",
+                    "wear": 0.550000011920929,
+                    "offset_x": -0.07568451762199402,
+                    "offset_y": -0.005073368549346924
+                },
+                {
+                    "slot": 0,
+                    "stickerId": 7261,
+                    "codename": "cph2024_team_vp_gold",
+                    "material": "econ/stickers/cph2024/vp_gold",
+                    "name": "Sticker | Virtus.pro (Gold) | Copenhagen 2024",
+                    "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI64pfL7VbrRVPwyJflqnNfv6StOf05cKmXV2SWxLdytrM7GnHqkU8l52nUmImqd3mWcEZ-XUXT9D_W",
+                    "collection_name": "Copenhagen 2024 Legends Sticker Capsule",
+                    "wear": 0.5899999737739563,
+                    "offset_x": -0.09724557399749756,
+                    "offset_y": 0.001629471778869629
+                },
+                {
+                    "slot": 3,
+                    "stickerId": 7277,
+                    "codename": "cph2024_team_vita_gold",
+                    "material": "econ/stickers/cph2024/vita_gold",
+                    "name": "Sticker | Vitality (Gold) | Copenhagen 2024",
+                    "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI64o7g62bgThH10M7ipHZdvKT9MPQ6JvWQDz-Sl-pytLQ6GC_gzEtw62zVyY39eH2WbwA-SswneFne1lk",
+                    "collection_name": "Copenhagen 2024 Legends Sticker Capsule",
+                    "wear": 0.550000011920929,
+                    "offset_x": 0.33396807312965393,
+                    "offset_y": 0.009648770093917847
+                },
+                {
+                    "slot": 3,
+                    "stickerId": 7273,
+                    "codename": "cph2024_team_spir_gold",
+                    "material": "econ/stickers/cph2024/spir_gold",
+                    "name": "Sticker | Team Spirit (Gold) | Copenhagen 2024",
+                    "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI655f9-GbgThH10MGw-HIKv6T6baFucfPFC2KUkO905uRvGnrllkp-5TjQzo6qJH6XPFM-SswnKK8h7Zw",
+                    "collection_name": "Copenhagen 2024 Legends Sticker Capsule",
+                    "wear": 0.5699999928474426,
+                    "offset_x": 0.1969793736934662,
+                    "offset_y": 0.08180040121078491
+                },
+                {
+                    "slot": 2,
+                    "stickerId": 7313,
+                    "codename": "cph2024_team_gl_gold",
+                    "material": "econ/stickers/cph2024/gl_gold",
+                    "name": "Sticker | GamerLegion (Gold) | Copenhagen 2024",
+                    "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmxPSnHtwI684vL7VbrRVP1x5K1rHoOu6P-PPY6JfHKXTLEmOovs-M4S3HjkElz5DuBydmsJXuVcEZ-XYJJFe58",
+                    "collection_name": "Copenhagen 2024 Challengers Sticker Capsule",
+                    "wear": 0.5699999928474426,
+                    "offset_x": 0.14772814512252808,
+                    "offset_y": -0.004513293504714966
+                }
+            ],
+            "keychains": [
+                {
+                    "slot": 0,
+                    "stickerId": 47,
+                    "codename": "kc_missinglink_lilhothead",
+                    "material": "econ/keychains/missinglink_community_01/kc_missinglink_lilhothead",
+                    "name": "Charm | Magmatude",
+                    "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGI6zwki4Uf_a0IWsPGiE7Fhy-I764WbkThD8i5jp6Ttkv6PhY6dSLfmAHW6exuJ_vupWQyC_nRIzuziEnsGgJymSZwd0CZpyQu5buxO9wNbmPrzm5wCLg95Fmyz_3y1Nuydq4OZXT-N7raqdv_up",
+                    "collection_name": "Missing Link Community Charm Collection",
+                    "wear": 0.0,
+                    "offset_x": 9.838349342346191,
+                    "offset_y": 0.5787375569343567,
+                    "offset_z": 4.179599285125732,
+                    "pattern": 17027
+                }
+            ],
+            "floatvalue": 0.11404433846473694,
+            "wear_name": "Minimal Wear",
+            "rarity_name": "Restricted",
+            "origin_name": "Found in Crate",
+            "quality_name": "StatTrak™",
+            "weapon_type": "AK-47",
+            "item_name": "Slate",
+            "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyLwlcK3wiVI0POlPPNSMOKcCGKD0ud5vuBlcCW6khUz_W3Sytb4cCqTOFUpWJtzTOUD5hPsw9a0Yrnrs1SK3ooXzy6shilM5311o7FVYrIufmI",
+            "min": 0,
+            "max": 1,
+            "collection_name": "The Snakebite Collection",
+            "full_item_name": "StatTrak™ AK-47 | Slate (Minimal Wear)"
+        }
 
-        # KillEater (StatTrak)
-        self.assertEqual(res["killeaterscoretype"], 0)
-        self.assertEqual(res["killeatervalue"], 1373)
-
-        # Meta
-        self.assertEqual(res["inventory"], 1)
-        self.assertEqual(res["origin"], 8)
-        self.assertEqual(res["floatvalue"], 0.11404433846473694)
-
-        # Enrichment Results
-        self.assertEqual(res["full_item_name"], "StatTrak™ AK-47 | Slate (Minimal Wear)")
-        self.assertEqual(res["collection_name"], "The Snakebite Collection")
-        self.assertEqual(res["weapon_type"], "AK-47")
-        self.assertEqual(res["item_name"], "Slate")
-        self.assertEqual(res["wear_name"], "Minimal Wear")
-        self.assertEqual(res["rarity_name"], "Restricted")
-        self.assertEqual(res["quality_name"], "StatTrak™")
-        self.assertEqual(res["origin_name"], "Found in Crate")
-        self.assertEqual(res["imageurl"], "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyLwlcK3wiVI0POlPPNSMOKcCGKD0ud5vuBlcCW6khUz_W3Sytb4cCqTOFUpWJtzTOUD5hPsw9a0Yrnrs1SK3ooXzy6shilM5311o7FVYrIufmI")
-        self.assertEqual(res["min"], 0)
-        self.assertEqual(res["max"], 1)
-
-        # Counts
-        self.assertEqual(len(res["stickers"]), 5)
-        self.assertEqual(len(res["keychains"]), 1)
-
-        # Sticker Details (First one)
-        sticker = res["stickers"][0]
-        self.assertEqual(sticker["slot"], 1)
-        self.assertEqual(sticker["stickerId"], 7257)
-        self.assertEqual(sticker["name"], "Sticker | Natus Vincere (Gold) | Copenhagen 2024")
-        self.assertEqual(sticker["collection_name"], "Copenhagen 2024 Legends Sticker Capsule")
-
-        # Charm Details
-        charm = res["keychains"][0]
-        self.assertEqual(charm["slot"], 0)
-        self.assertEqual(charm["stickerId"], 47)
-        self.assertEqual(charm["name"], "Charm | Magmatude")
-        self.assertEqual(charm["codename"], "kc_missinglink_lilhothead")
-        self.assertEqual(charm["collection_name"], "Missing Link Community Charm Collection")
+        # Exhaustive 1:1 Parity Check
+        self.assertEqual(res, expected)
 
     def test_modify_m4a4_howl_with_charm(self):
         self.skip_if_no_schema()
@@ -192,6 +249,9 @@ class TestEnrichedParsing(unittest.TestCase):
         self.assertEqual(charm["name"], "Charm | Magmatude")
         self.assertEqual(charm["codename"], "kc_missinglink_lilhothead")
         self.assertEqual(charm["collection_name"], "Missing Link Community Charm Collection")
+        self.assertAlmostEqual(charm["offset_x"], 4.5, places=5)
+        self.assertAlmostEqual(charm["offset_y"], 0.5, places=5)
+        self.assertAlmostEqual(charm["offset_z"], 8.9, places=5)
         self.assertEqual(charm["imageurl"], "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGI6zwki4Uf_a0IWsPGiE7Fhy-I764WbkThD8i5jp6Ttkv6PhY6dSLfmAHW6exuJ_vupWQyC_nRIzuziEnsGgJymSZwd0CZpyQu5buxO9wNbmPrzm5wCLg95Fmyz_3y1Nuydq4OZXT-N7raqdv_up")
 
     def test_custom_placement_stickers_and_charms(self):
@@ -214,5 +274,107 @@ class TestEnrichedParsing(unittest.TestCase):
         self.assertEqual(charm["highlight_reel"], 375)
         self.assertAlmostEqual(charm["offset_z"], 5.718101501464844, places=5)
 
-if __name__ == '__main__':
+    def test_m4a1s_solitude_complex_enrichment(self):
+        self.skip_if_no_schema()
+        # M4A1-S | Solitude with Vitality Holo, 3x FlameZ Gold, and Souvenir Charm
+        link = "steam://run/730//+csgo_econ_action_preview%20B7A756531C120DB6AF8B970DBD9FB287B38F58302D44B4F732B1D5A3BFB3A76984AA13C78A888A6D1F6189F2B7AB298BD5AEBFB3A768FEAA8484C4889AB7B7C7F68A508E6689F2B7CFEF8ED5AEBFB3A768FEAA419FEB889AB7B777F78A60196189F20F6EBD8AD5AEBFB3A768FEAA8ABDE0889AB7B7A7F68A28746489F2D760C18BDF34373737BBC7A015B6A1BFB7A7938A1CBBCE88F21B511E89FA990F5CF7EF74B575FCB257"
+        res = cs2inspect.parse(link, schema=self.schema)
+
+        expected = {
+            "itemid": 50007306849,
+            "defindex": 60,
+            "paintindex": 1338,
+            "rarity": 5,
+            "quality": 4,
+            "paintwear": 1046905839,
+            "paintseed": 773,
+            "inventory": 3221225475,
+            "origin": 23,
+            "stickers": [
+                {
+                    "slot": 4,
+                    "stickerId": 6622,
+                    "codename": "paris2023_team_vita_holo",
+                    "material": "econ/stickers/paris2023/vita_holo",
+                    "name": "Sticker | Vitality (Holo) | Paris 2023",
+                    "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjNqgJ3KEtwYnp8ji403mfhX-kpmuqnUKv_aoMaFocfTGXjeSxOwi6LlsTi2ywR4ksTyHyYyuc3OTZ1cpC4wwG7DqvnpuVg",
+                    "collection_name": "Paris 2023 Legends Sticker Capsule",
+                    "wear": 0.7400000095367432,
+                    "offset_x": 0.4192569851875305,
+                    "offset_y": 0.019300460815429688
+                },
+                {
+                    "slot": 4,
+                    "stickerId": 9439,
+                    "codename": "aus2025_signature_flamez_32",
+                    "material": "econ/stickers/aus2025/sig_flamez_champion",
+                    "name": "Sticker | FlameZ (Champion) | Austin 2025",
+                    "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMu0JinHtwM6547z1V_rQBD0hKnj9SNW__uhZuo_efXHDGGWwO0vs-U6SnuywUoitmzdyNavIy6QblUjCpQhQuIJ5hTujJS5YB_Eu2hd",
+                    "collection_name": "Austin 2025 Champions Autograph Capsule",
+                    "wear": 0.949999988079071,
+                    "rotation": 15.0,
+                    "offset_x": 0.4086448848247528,
+                    "offset_y": 0.00020644068717956543
+                },
+                {
+                    "slot": 4,
+                    "stickerId": 9439,
+                    "codename": "aus2025_signature_flamez_32",
+                    "material": "econ/stickers/aus2025/sig_flamez_champion",
+                    "name": "Sticker | FlameZ (Champion) | Austin 2025",
+                    "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMu0JinHtwM6547z1V_rQBD0hKnj9SNW__uhZuo_efXHDGGWwO0vs-U6SnuywUoitmzdyNavIy6QblUjCpQhQuIJ5hTujJS5YB_Eu2hd",
+                    "collection_name": "Austin 2025 Champions Autograph Capsule",
+                    "wear": 0.8600000143051147,
+                    "rotation": 6.0,
+                    "offset_x": 0.41930267214775085,
+                    "offset_y": 0.03389903903007507
+                },
+                {
+                    "slot": 4,
+                    "stickerId": 9439,
+                    "codename": "aus2025_signature_flamez_32",
+                    "material": "econ/stickers/aus2025/sig_flamez_champion",
+                    "name": "Sticker | FlameZ (Champion) | Austin 2025",
+                    "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMu0JinHtwM6547z1V_rQBD0hKnj9SNW__uhZuo_efXHDGGWwO0vs-U6SnuywUoitmzdyNavIy6QblUjCpQhQuIJ5hTujJS5YB_Eu2hd",
+                    "collection_name": "Austin 2025 Champions Autograph Capsule",
+                    "wear": 0.8399999737739563,
+                    "rotation": 9.0,
+                    "offset_x": 0.4136018455028534,
+                    "offset_y": 0.015065997838973999
+                }
+            ],
+            "keychains": [
+                {
+                    "slot": 0,
+                    "stickerId": 36,
+                    "codename": "souvenir_highlight",
+                    "material": "econ/keychains/aus2025/kc_aus2025",
+                    "name": "Souvenir Charm | Austin 2025 Highlight | flameZ Double Train Kill",
+                    "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGI6zwki4Uf_a0IWgIGjFtQQgu4z31VjyUk-hzMOu-3APtqX8a_U6c6SRW2TGlL4k5uI-TXzhxEUm6mqDzN2pcC6WZwR0A4wwG7BUDwUFHQ",
+                    "collection_name": "Austin 2025",
+                    "wear": 0.0,
+                    "offset_x": 0.9728495478630066,
+                    "offset_y": 0.3318380117416382,
+                    "offset_z": 7.366232872009277,
+                    "highlight_reel": 323
+                }
+            ],
+            "floatvalue": 0.2251126617193222,
+            "wear_name": "Field-Tested",
+            "rarity_name": "Classified",
+            "origin_name": "Quest Reward",
+            "quality_name": "Unique",
+            "weapon_type": "M4A1-S",
+            "item_name": "Solitude",
+            "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyL8ypexwjFS4_ega6F_H-OcDW-vzOFjvvVoRiegqhBzsmyWpYL8JSLSMxgmXJB5Qe8O5hLrkoDlNOix5wTcg4JHzXr5inxJvy5vtr4CV6Ytq63fkUifZonb9V4d",
+            "min": 0,
+            "max": 0.7,
+            "collection_name": "Limited Edition Item",
+            "full_item_name": "M4A1-S | Solitude (Field-Tested)"
+        }
+
+        # Exhaustive 1:1 Parity Check
+        self.assertEqual(res, expected)
+
+if __name__ == "__main__":
     unittest.main()
