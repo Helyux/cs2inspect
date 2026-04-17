@@ -243,7 +243,7 @@ print(json.dumps(info, indent=4, ensure_ascii=False))
 </details>
 
 ## Technical Limitations (Parsing)
-`cs2inspect` is a local, offline decoder. **Masked/Modern links** (binary Protobuf payload) are fully supported with offline enrichment of stickers, floats, and charms. **Unmasked/Legacy links** (S/M A D pointers) have partial support as they contain no binary property data; resolving their stickers or skins requires a call to the **GameCoordinator (GC)**, which is outside the scope of this offline library.
+`cs2inspect` is a local, offline decoder. **Masked/Modern links** (binary Protobuf payload) are fully supported with offline enrichment of stickers, floats, and charms. **Unmasked/Legacy links** (S/M A D pointers) have only minimal support as they contain no binary property data; resolving their attributes requires a call to the **GameCoordinator (GC)**, which is outside the scope of this offline library.
 
 ## Contributing
 Contributions are welcome! Open an issue or submit a pull request.
