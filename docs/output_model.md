@@ -12,30 +12,30 @@ These links contain a binary protobuf payload with full item properties.
 
 | Field | Type | Source | Status | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| `defindex` | `int` | Standard | Mandatory | Weapon or Item definition ID. |
-| `paintindex` | `int` | Standard | Mandatory* | Pattern/Paint ID (Defaulted to 0 if missing). |
-| `paintseed` | `int` | Standard | Mandatory* | Random seed for pattern placement (Defaulted to 0). |
-| `paintwear` | `int` | Standard | Mandatory* | Raw integer representation of item wear (Defaulted to 0). |
-| `floatvalue` | `float` | Standard | Derived | Human-readable wear value (0.0 to 1.0). |
-| `rarity` | `int` | Standard | Mandatory | Internal rarity ID. |
-| `quality` | `int` | Standard | Mandatory | Internal quality ID (e.g., 9 for StatTrak). |
-| `inventory` | `int` | Standard | Mandatory | Internal inventory position/mask. |
-| `origin` | `int` | Standard | Mandatory | How the item was obtained (e.g., 8 for Crate). |
-| `itemid` | `int` | Standard | Mandatory | Unique Item ID. |
-| `accountid` | `int` | Standard | Optional | Account ID of the owner. |
-| `customname` | `str` | Standard | Optional | Custom name tag applied to the item. |
-| `musicindex` | `int` | Standard | Optional | Track ID for Music Kits. |
-| `killeatervalue` | `int` | Standard | Optional | Total kills recorded (for StatTrak items). |
-| `killeaterscoretype` | `int` | Standard | Optional | Type of score tracked (usually 0 for Kills).|
-| `questid` | `int` | Standard | Optional | ID associated with an active quest or operation. |
-| `dropreason` | `int` | Standard | Optional | Internal ID for how the item was obtained. |
-| `entindex` | `int` | Standard | Optional | Entity index (legacy). |
-| `petindex` | `int` | Standard | Optional | Pet index (legacy). |
-| `style` | `int` | Standard | Optional | Selected style index for multi-style items. |
-| `upgrade_level` | `int` | Standard | Optional | Badge or item upgrade level. |
-| `stickers` | `list` | Standard | Optional | A list of [Attachment Objects](#3-attachment-objects). |
-| `keychains` | `list` | Standard | Optional | A list of [Attachment Objects](#3-attachment-objects). |
-| `variations` | `list` | Standard | Optional | A list of item variation dictionaries. |
+| `defindex` | `int` | Standard | Mandatory | Item definition index (from proto). |
+| `paintindex` | `int` | Standard | Mandatory* | Appearance/Paint ID (Defaulted to 0 if missing). |
+| `paintseed` | `int` | Standard | Mandatory* | Random seed for pattern generation (Defaulted to 0). |
+| `paintwear` | `int` | Standard | Mandatory* | Raw IEEE float (uint32) bytes of wear (Defaulted to 0). |
+| `floatvalue` | `float` | Standard | Derived | Human-readable float wear (computed from `paintwear`). |
+| `rarity` | `int` | Standard | Mandatory | Numerical rarity ID. |
+| `quality` | `int` | Standard | Mandatory | Numerical quality ID (e.g., 9 for StatTrak). |
+| `inventory` | `int` | Standard | Mandatory | Bitmask for inventory state/pos. |
+| `origin` | `int` | Standard | Mandatory | Acquisition source ID. |
+| `itemid` | `int` | Standard | Mandatory | Unique uint64 Item ID. |
+| `accountid` | `int` | Standard | Optional | Owner account ID. |
+| `customname` | `str` | Standard | Optional | User-applied name tag. |
+| `musicindex` | `int` | Standard | Optional | ID for Music Kits. |
+| `killeatervalue` | `int` | Standard | Optional | StatTrak value (kills/points). |
+| `killeaterscoretype` | `int` | Standard | Optional | Score tracking type ID (usually 0). |
+| `questid` | `int` | Standard | Optional | Associated Quest/Operation ID. |
+| `dropreason` | `int` | Standard | Optional | How the drop was triggered. |
+| `entindex` | `int` | Standard | Optional | Legacy entity index. |
+| `petindex` | `int` | Standard | Optional | Legacy pet index. |
+| `style` | `int` | Standard | Optional | Selected item style index. |
+| `upgrade_level` | `int` | Standard | Optional | Badge or item level. |
+| `stickers` | `list` | Standard | Optional | List of `Sticker` messages (mapped to [Attachment Objects](#3-attachment-objects)). |
+| `keychains` | `list` | Standard | Optional | List of `Sticker` messages (mapped to [Attachment Objects](#3-attachment-objects)). |
+| `variations` | `list` | Standard | Optional | List of variation `Sticker` messages. |
 
 ### 1.2 Unmasked (Legacy) Links
 Legacy links (containing `S` or `M` prefixes) do **not** carry any property data. They are simple pointers that require external GC resolution.
@@ -78,18 +78,18 @@ Stickers and Keychains (Charms) use a shared sub-structure.
 
 | Field | Type | Source | Status | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| `slot` | `int` | Standard | Mandatory | The physical slot index (0-4 for stickers, 0 for charms). |
-| `stickerId` | `int` | Standard | Mandatory | The definition ID of the attachment (Sticker or Charm). |
-| `wear` | `float` | Standard | Mandatory | Wear/Scrape value (0.0 to 1.0). Defaults to 0.0. |
+| `slot` | `int` | Standard | Mandatory | Slot index (0-4 for stickers, 0 for charms). |
+| `sticker_id` | `int` | Standard | Mandatory | The unique definition ID of the attachment. |
+| `wear` | `float` | Standard | Mandatory | Standard float wear (0.0 to 1.0). |
 | `pattern` | `int` | Standard | Optional* | Unique pattern ID (Defaulted to `0` for regular charms during enrichment). |
-| `rotation` | `float` | Standard | Optional | Custom rotation value. |
-| `scale` | `float` | Standard | Optional | Custom scale value. |
-| `offset_x` / `y` / `z`| `float` | Standard | Optional | Precise coordinate offsets. |
-| `highlight_reel` | `int` | Standard | Optional | Event ID (Highlight Charms only). |
-| `tint_id` | `int` | Standard | Optional | Color ID (Graffiti only). |
-| `wrapped_sticker`| `int` | Standard | Optional | Original sticker ID (Sticker Slabs only). |
-| `name` | `str` | Enriched | Mandatory | Full localized name of the attachment. |
-| `codename` | `str` | Enriched | Mandatory | Internal developer code name. |
-| `material` | `str` | Enriched | Mandatory | Internal material path. |
-| `imageurl` | `str` | Enriched | Optional | Persistent Icon URL for the attachment. |
-| `collection_name`| `str` | Enriched | Optional | Originating capsule or collection. |
+| `highlight_reel` | `int` | Standard | Optional | Event ID (From `highlight_reel` proto field). |
+| `tint_id` | `int` | Standard | Optional | Color ID (From `tint_id` proto field). |
+| `rotation` | `float` | Standard | Optional | Custom rotation (Proto field). |
+| `scale` | `float` | Standard | Optional | Custom scale (Proto field). |
+| `offset_x` / `y` / `z`| `float` | Standard | Optional | Coordinate offsets (Proto fields). |
+| `wrapped_sticker`| `int` | Standard | Optional | Original ID for Slabs (Proto field). |
+| `name` | `str` | Enriched | Mandatory | Full localized name from schema. |
+| `codename` | `str` | Enriched | Mandatory | Internal code name from schema. |
+| `material` | `str` | Enriched | Mandatory | Internal material path from schema. |
+| `imageurl` | `str` | Enriched | Optional | Icon URL from schema. |
+| `collection_name`| `str` | Enriched | Optional | Collection name from schema. |

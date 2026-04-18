@@ -129,7 +129,7 @@ print(json.dumps(info, indent=4, ensure_ascii=False))
     "stickers": [
         {
             "slot": 1,
-            "stickerId": 7257,
+            "sticker_id": 7257,
             "codename": "cph2024_team_navi_gold",
             "material": "econ/stickers/cph2024/navi_gold",
             "name": "Sticker | Natus Vincere (Gold) | Copenhagen 2024",
@@ -141,7 +141,7 @@ print(json.dumps(info, indent=4, ensure_ascii=False))
         },
         {
             "slot": 0,
-            "stickerId": 7261,
+            "sticker_id": 7261,
             "codename": "cph2024_team_vp_gold",
             "material": "econ/stickers/cph2024/vp_gold",
             "name": "Sticker | Virtus.pro (Gold) | Copenhagen 2024",
@@ -153,7 +153,7 @@ print(json.dumps(info, indent=4, ensure_ascii=False))
         },
         {
             "slot": 3,
-            "stickerId": 7277,
+            "sticker_id": 7277,
             "codename": "cph2024_team_vita_gold",
             "material": "econ/stickers/cph2024/vita_gold",
             "name": "Sticker | Vitality (Gold) | Copenhagen 2024",
@@ -165,7 +165,7 @@ print(json.dumps(info, indent=4, ensure_ascii=False))
         },
         {
             "slot": 3,
-            "stickerId": 7273,
+            "sticker_id": 7273,
             "codename": "cph2024_team_spir_gold",
             "material": "econ/stickers/cph2024/spir_gold",
             "name": "Sticker | Team Spirit (Gold) | Copenhagen 2024",
@@ -177,7 +177,7 @@ print(json.dumps(info, indent=4, ensure_ascii=False))
         },
         {
             "slot": 2,
-            "stickerId": 7313,
+            "sticker_id": 7313,
             "codename": "cph2024_team_gl_gold",
             "material": "econ/stickers/cph2024/gl_gold",
             "name": "Sticker | GamerLegion (Gold) | Copenhagen 2024",
@@ -191,7 +191,7 @@ print(json.dumps(info, indent=4, ensure_ascii=False))
     "keychains": [
         {
             "slot": 0,
-            "stickerId": 47,
+            "sticker_id": 47,
             "codename": "kc_missinglink_lilhothead",
             "material": "econ/keychains/missinglink_community_01/kc_missinglink_lilhothead",
             "name": "Charm | Magmatude",

@@ -33,7 +33,7 @@ class TestEnrichedParsing(unittest.TestCase):
             "stickers": [
                 {
                     "slot": 0,
-                    "stickerId": 172,
+                    "sticker_id": 172,
                     "codename": "cologne2014_esl_c",
                     "material": "econ/stickers/cologne2014/esl_c",
                     "name": "Sticker | ESL One Cologne 2014 (Gold)",
@@ -42,7 +42,7 @@ class TestEnrichedParsing(unittest.TestCase):
                 },
                 {
                     "slot": 1,
-                    "stickerId": 143,
+                    "sticker_id": 143,
                     "codename": "cologne2014_ibuypower_holo",
                     "material": "econ/stickers/cologne2014/ibuypower_holo",
                     "name": "Sticker | iBUYPOWER (Holo) | Cologne 2014",
@@ -52,7 +52,7 @@ class TestEnrichedParsing(unittest.TestCase):
                 },
                 {
                     "slot": 2,
-                    "stickerId": 139,
+                    "sticker_id": 139,
                     "codename": "cologne2014_datteam_holo",
                     "material": "econ/stickers/cologne2014/datteam_holo",
                     "name": "Sticker | dAT team (Holo) | Cologne 2014",
@@ -62,7 +62,7 @@ class TestEnrichedParsing(unittest.TestCase):
                 },
                 {
                     "slot": 3,
-                    "stickerId": 60,
+                    "sticker_id": 60,
                     "codename": "kat2014_ibuypower_holo",
                     "material": "econ/stickers/emskatowice2014/ibuypower_holo",
                     "name": "Sticker | iBUYPOWER (Holo) | Katowice 2014",
@@ -161,7 +161,7 @@ class TestEnrichedParsing(unittest.TestCase):
             "stickers": [
                 {
                     "slot": 1,
-                    "stickerId": 4588,
+                    "sticker_id": 4588,
                     "codename": "patch_suprememaster",
                     "material": "econ/patches/case_skillgroups/patch_suprememaster",
                     "name": "Patch | Metal Supreme Master",
@@ -228,7 +228,7 @@ class TestEnrichedParsing(unittest.TestCase):
             "keychains": [
                 {
                     "slot": 0,
-                    "stickerId": 4352,
+                    "sticker_id": 4352,
                     "codename": "berlin2019_signature_dickstacy_foil",
                     "material": "econ/stickers/berlin2019/sig_dickstacy_foil_1355_37",
                     "name": "Sticker Slab | DickStacy (Foil) | Berlin 2019",
@@ -277,7 +277,7 @@ class TestEnrichedParsing(unittest.TestCase):
             "stickers": [
                 {
                     "slot": 1,
-                    "stickerId": 7257,
+                    "sticker_id": 7257,
                     "codename": "cph2024_team_navi_gold",
                     "material": "econ/stickers/cph2024/navi_gold",
                     "name": "Sticker | Natus Vincere (Gold) | Copenhagen 2024",
@@ -289,7 +289,7 @@ class TestEnrichedParsing(unittest.TestCase):
                 },
                 {
                     "slot": 0,
-                    "stickerId": 7261,
+                    "sticker_id": 7261,
                     "codename": "cph2024_team_vp_gold",
                     "material": "econ/stickers/cph2024/vp_gold",
                     "name": "Sticker | Virtus.pro (Gold) | Copenhagen 2024",
@@ -301,7 +301,7 @@ class TestEnrichedParsing(unittest.TestCase):
                 },
                 {
                     "slot": 3,
-                    "stickerId": 7277,
+                    "sticker_id": 7277,
                     "codename": "cph2024_team_vita_gold",
                     "material": "econ/stickers/cph2024/vita_gold",
                     "name": "Sticker | Vitality (Gold) | Copenhagen 2024",
@@ -313,7 +313,7 @@ class TestEnrichedParsing(unittest.TestCase):
                 },
                 {
                     "slot": 3,
-                    "stickerId": 7273,
+                    "sticker_id": 7273,
                     "codename": "cph2024_team_spir_gold",
                     "material": "econ/stickers/cph2024/spir_gold",
                     "name": "Sticker | Team Spirit (Gold) | Copenhagen 2024",
@@ -325,7 +325,7 @@ class TestEnrichedParsing(unittest.TestCase):
                 },
                 {
                     "slot": 2,
-                    "stickerId": 7313,
+                    "sticker_id": 7313,
                     "codename": "cph2024_team_gl_gold",
                     "material": "econ/stickers/cph2024/gl_gold",
                     "name": "Sticker | GamerLegion (Gold) | Copenhagen 2024",
@@ -339,7 +339,7 @@ class TestEnrichedParsing(unittest.TestCase):
             "keychains": [
                 {
                     "slot": 0,
-                    "stickerId": 47,
+                    "sticker_id": 47,
                     "codename": "kc_missinglink_lilhothead",
                     "material": "econ/keychains/missinglink_community_01/kc_missinglink_lilhothead",
                     "name": "Charm | Magmatude",
@@ -409,7 +409,7 @@ class TestEnrichedParsing(unittest.TestCase):
             "stickers": [
                 {
                     "slot": 3,
-                    "stickerId": 103,
+                    "sticker_id": 103,
                     "codename": "comm01_howling_dawn",
                     "material": "econ/stickers/community01/howling_dawn",
                     "name": "Sticker | Howling Dawn",
@@ -420,7 +420,7 @@ class TestEnrichedParsing(unittest.TestCase):
             "keychains": [
                 {
                     "slot": 0,
-                    "stickerId": 47,
+                    "sticker_id": 47,
                     "codename": "kc_missinglink_lilhothead",
                     "material": "econ/keychains/missinglink_community_01/kc_missinglink_lilhothead",
                     "name": "Charm | Magmatude",
@@ -468,7 +468,7 @@ class TestEnrichedParsing(unittest.TestCase):
             "stickers": [
                 {
                     "slot": 1,
-                    "stickerId": 4685,
+                    "sticker_id": 4685,
                     "codename": "broken_fang_battle_scarred",
                     "material": "econ/stickers/broken_fang/battle_scarred",
                     "name": "Sticker | Battle Scarred",
@@ -478,7 +478,7 @@ class TestEnrichedParsing(unittest.TestCase):
                 },
                 {
                     "slot": 2,
-                    "stickerId": 4685,
+                    "sticker_id": 4685,
                     "codename": "broken_fang_battle_scarred",
                     "material": "econ/stickers/broken_fang/battle_scarred",
                     "name": "Sticker | Battle Scarred",
@@ -488,7 +488,7 @@ class TestEnrichedParsing(unittest.TestCase):
                 },
                 {
                     "slot": 3,
-                    "stickerId": 4685,
+                    "sticker_id": 4685,
                     "codename": "broken_fang_battle_scarred",
                     "material": "econ/stickers/broken_fang/battle_scarred",
                     "name": "Sticker | Battle Scarred",
@@ -498,7 +498,7 @@ class TestEnrichedParsing(unittest.TestCase):
                 },
                 {
                     "slot": 4,
-                    "stickerId": 8924,
+                    "sticker_id": 8924,
                     "codename": "aus2025_signature_ex3rcice_1_foil",
                     "material": "econ/stickers/aus2025/sig_ex3rcice_foil",
                     "name": "Sticker | Ex3rcice (Foil) | Austin 2025",
@@ -511,7 +511,7 @@ class TestEnrichedParsing(unittest.TestCase):
                 },
                 {
                     "slot": 4,
-                    "stickerId": 8936,
+                    "sticker_id": 8936,
                     "codename": "aus2025_signature_bodyy_1_foil",
                     "material": "econ/stickers/aus2025/sig_bodyy_foil",
                     "name": "Sticker | bodyy (Foil) | Austin 2025",
@@ -525,7 +525,7 @@ class TestEnrichedParsing(unittest.TestCase):
             "keychains": [
                 {
                     "slot": 0,
-                    "stickerId": 36,
+                    "sticker_id": 36,
                     "codename": "souvenir_highlight",
                     "material": "econ/keychains/aus2025/kc_aus2025",
                     "name": "Souvenir Charm | Austin 2025 Highlight | apEX: Help Is Here",
@@ -572,7 +572,7 @@ class TestEnrichedParsing(unittest.TestCase):
             "stickers": [
                 {
                     "slot": 4,
-                    "stickerId": 6622,
+                    "sticker_id": 6622,
                     "codename": "paris2023_team_vita_holo",
                     "material": "econ/stickers/paris2023/vita_holo",
                     "name": "Sticker | Vitality (Holo) | Paris 2023",
@@ -584,7 +584,7 @@ class TestEnrichedParsing(unittest.TestCase):
                 },
                 {
                     "slot": 4,
-                    "stickerId": 9439,
+                    "sticker_id": 9439,
                     "codename": "aus2025_signature_flamez_32",
                     "material": "econ/stickers/aus2025/sig_flamez_champion",
                     "name": "Sticker | FlameZ (Champion) | Austin 2025",
@@ -597,7 +597,7 @@ class TestEnrichedParsing(unittest.TestCase):
                 },
                 {
                     "slot": 4,
-                    "stickerId": 9439,
+                    "sticker_id": 9439,
                     "codename": "aus2025_signature_flamez_32",
                     "material": "econ/stickers/aus2025/sig_flamez_champion",
                     "name": "Sticker | FlameZ (Champion) | Austin 2025",
@@ -610,7 +610,7 @@ class TestEnrichedParsing(unittest.TestCase):
                 },
                 {
                     "slot": 4,
-                    "stickerId": 9439,
+                    "sticker_id": 9439,
                     "codename": "aus2025_signature_flamez_32",
                     "material": "econ/stickers/aus2025/sig_flamez_champion",
                     "name": "Sticker | FlameZ (Champion) | Austin 2025",
@@ -625,7 +625,7 @@ class TestEnrichedParsing(unittest.TestCase):
             "keychains": [
                 {
                     "slot": 0,
-                    "stickerId": 36,
+                    "sticker_id": 36,
                     "codename": "souvenir_highlight",
                     "material": "econ/keychains/aus2025/kc_aus2025",
                     "name": "Souvenir Charm | Austin 2025 Highlight | flameZ Double Train Kill",

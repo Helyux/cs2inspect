@@ -241,7 +241,7 @@ def enrich_attachments(result: dict[str, Any], schema: ItemSchema) -> None:
                 if s_info:
                     sticker_obj = {
                         "slot": s.get("slot"),
-                        "stickerId": s_id,
+                        "sticker_id": s_id,
                         "codename": s_info.get("codename"),
                         "material": s_info.get("material"),
                         "name": s_info.get("name"),
@@ -282,7 +282,7 @@ def enrich_attachments(result: dict[str, Any], schema: ItemSchema) -> None:
 
                     enriched_stickers.append(sticker_obj)
                 else:
-                    s["stickerId"] = s_id
+                    s["sticker_id"] = s_id
                     enriched_stickers.append(s)
         result["stickers"] = enriched_stickers
 
@@ -329,7 +329,7 @@ def enrich_attachments(result: dict[str, Any], schema: ItemSchema) -> None:
                 if k_info:
                     keychain_obj = {
                         "slot": k.get("slot"),
-                        "stickerId": look_id,
+                        "sticker_id": look_id,
                         "codename": k_info.get("codename"),
                         "material": k_info.get("material"),
                         "name": k_info.get("name"),
@@ -351,7 +351,7 @@ def enrich_attachments(result: dict[str, Any], schema: ItemSchema) -> None:
                         keychain_obj["wrapped_sticker"] = w_id
                     enriched_keychains.append(keychain_obj)
                 else:
-                    k["stickerId"] = k_id
+                    k["sticker_id"] = k_id
                     enriched_keychains.append(k)
         result["keychains"] = enriched_keychains
 
