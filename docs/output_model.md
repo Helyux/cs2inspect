@@ -79,7 +79,8 @@ Stickers and Keychains (Charms) use a shared sub-structure. Fields are optional 
 | Field | Type | Description |
 | :--- | :--- | :--- |
 | `slot` | `int` | The physical slot index (0-4 for stickers, 0 for charms). |
-| `stickerId` | `int` | The definition ID of the attachment. |
+| `stickerId` | `int` | The definition ID of the attachment (Sticker or Charm). |
+| `material` | `str` | Internal material path (Enriched only). |
 | `name` | `str` | Full name of the sticker/charm (Enriched only). |
 | `codename` | `str` | Internal code name (Enriched only). |
 | `imageurl` | `str` | Icon URL (Enriched only). |
@@ -87,4 +88,5 @@ Stickers and Keychains (Charms) use a shared sub-structure. Fields are optional 
 | `wear` | `float` | Wear/Scrape value of the sticker (0.0 to 1.0). |
 | `rotation` | `float` | Custom rotation applied (Stickers 2.0). |
 | `offset_x` / `y` / `z`| `float` | Precise coordinate offsets (Stickers 2.0 and Charms). |
+| `pattern` | `int` | Unique pattern ID for Charms (Enriched only). |
 | `highlight_reel` | `int` | Event ID for Souvenir Highlight Charms. |
