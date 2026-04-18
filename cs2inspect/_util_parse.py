@@ -421,6 +421,7 @@ def build_full_name(result: dict[str, Any], schema: ItemSchema) -> None:
             result["stickers"] = []
         elif weapon == "Charm" and result.get("keychains"):
             charm = result["keychains"][0]
+            result["paintseed"] = charm.get("pattern",0)
             result["full_item_name"] = charm.get("name", weapon)
             result["item_name"] = charm.get("name")
             result["collection_name"] = charm.get("collection_name")
