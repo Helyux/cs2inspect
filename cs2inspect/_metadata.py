@@ -244,7 +244,7 @@ CATEGORY_IDS = {
     1209: "Sticker",
     1349: "Graffiti",
     4609: "Patch",
-    62: "Charm"
+    1355: "Charm"
 }
 
 
