@@ -3,8 +3,8 @@ from typing import Any
 from cs2inspect._schema import ItemSchema, load_schema
 from cs2inspect._util_hex import from_hex
 from cs2inspect._util_link import _link_valid_and_type, unquote_link
-from cs2inspect._util_parse import (RE_MASKED_PAYLOAD, RE_UNMASKED_PAYLOAD, build_full_name, enrich_attachments,
-                                    enrich_enums, extract_payload)
+from cs2inspect._util_parse import (RE_MASKED_PAYLOAD, RE_UNMASKED_PAYLOAD, UnsupportedItemError, build_full_name,
+                                    enrich_attachments, enrich_enums, extract_payload)
 from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
 
 
@@ -51,6 +51,12 @@ def parse(
         else:
             # Fallback for when no schema is available: basic metadata enums only
             enrich_enums(result, None)
+
+        # Final cleanup: omit optional enriched fields if they are missing, None, or empty
+        optional_fields = ["collection_name", "imageurl", "wear_name", "min", "max", "item_name", "weapon_type"]
+        for field in optional_fields:
+            if field in result and result[field] in [None, ""]:
+                del result[field]
 
     return result
 

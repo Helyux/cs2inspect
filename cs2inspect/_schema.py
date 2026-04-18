@@ -35,6 +35,7 @@ class ItemSchema:
         self._stickers = {}
         self._charms = {}
         self._sticker_slabs = {}
+        self._music_kits = {}
         self._initialize()
 
     def _initialize(self):
@@ -150,7 +151,7 @@ class ItemSchema:
             else:
                 self._sticker_slabs[d_idx] = slab_data
 
-        elif key.startswith("sticker-") and def_index is not None:
+        elif (key.startswith("sticker-") or key.startswith("graffiti-")) and def_index is not None:
             d_idx = int(def_index)
             original = item.get("original", {})
             codename = original.get("name") or original.get("loc_name") or "Unknown"
@@ -195,6 +196,25 @@ class ItemSchema:
                 self._charms[d_idx].update(charm_data)
             else:
                 self._charms[d_idx] = charm_data
+
+        elif key.startswith("music_kit-") and def_index is not None:
+            d_idx = int(def_index)
+            kit_data = {
+                "name": item.get("name", "Unknown"),
+                "image": item.get("image", ""),
+                "collection": col_name
+            }
+            if d_idx in self._music_kits:
+                self._music_kits[d_idx].update(kit_data)
+            else:
+                self._music_kits[d_idx] = kit_data
+
+        elif key.startswith("collectible-") and def_index is not None:
+            d_idx = int(def_index)
+            # Register as a weapon name so it's picked up by get_weapon_name
+            w_name = item.get("name")
+            if w_name:
+                self._weapons[d_idx] = w_name
 
         if weapon_id is not None:
             w_id = int(weapon_id)
@@ -386,6 +406,19 @@ class ItemSchema:
         """
 
         return self._charms.get(charm_id)
+
+    def get_music_kit_info(self, music_id: int) -> dict[str, Any] | None:
+        """
+        Fetch music kit metadata by its music ID.
+
+        :param music_id: The music index of the kit.
+        :type music_id: int
+
+        :return: The music kit dictionary or None.
+        :rtype: dict[str, Any] | None
+        """
+
+        return self._music_kits.get(music_id)
 
     def get_highlight_info(self, reel_id: int) -> dict[str, Any] | None:
         """

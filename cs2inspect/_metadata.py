@@ -244,7 +244,31 @@ CATEGORY_IDS = {
     1209: "Sticker",
     1349: "Graffiti",
     4609: "Patch",
-    1355: "Charm"
+    1355: "Charm",
+    1314: "Music Kit",
+    6117: "Pin"
+}
+
+GRAFFITI_TINTS = {
+    1: "Desert Amber",
+    2: "Sahara Pink",
+    3: "Halloween Orange",
+    4: "Valencia Orange",
+    5: "Pallet Tan",
+    6: "Sand Dune",
+    7: "Jungle Green",
+    8: "Commando Green",
+    9: "Tiger Orange",
+    10: "Monotone Gray",
+    11: "Wire Blue",
+    12: "Night Blue",
+    13: "Light Blue",
+    14: "Princess Pink",
+    15: "Violet",
+    16: "Royal Blue",
+    17: "Emerald Green",
+    18: "Brick Red",
+    19: "Danger Red"
 }
 
 

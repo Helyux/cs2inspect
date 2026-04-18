@@ -1,10 +1,15 @@
 from typing import Any
 
-from cs2inspect._metadata import CATEGORY_IDS, Origin, Quality, Rarity, get_wear_name
+from cs2inspect._metadata import CATEGORY_IDS, GRAFFITI_TINTS, Origin, Quality, Rarity, get_wear_name
 from cs2inspect._schema import ItemSchema
 from cs2inspect._util_base import RE_MASKED_PAYLOAD, RE_UNMASKED_PAYLOAD
 from cs2inspect._util_hex import bytes_to_float, from_hex
 from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
+
+
+class UnsupportedItemError(Exception):
+    """Raised when an enriched parse encounters an unknown/unsupported item type."""
+    pass
 
 
 def _proto_to_dict(proto: CEconItemPreviewDataBlock) -> dict[str, Any]:
@@ -125,11 +130,6 @@ def enrich_enums(result: dict[str, Any], schema: ItemSchema | None) -> None:
     :rtype: None
     """
 
-    if "floatvalue" in result:
-        result["wear_name"] = get_wear_name(result["floatvalue"])
-    elif "paintwear" in result:
-        result["wear_name"] = get_wear_name(bytes_to_float(result["paintwear"]))
-
     context = "weapon"
     if schema and "defindex" in result:
         defindex = result["defindex"]
@@ -143,6 +143,16 @@ def enrich_enums(result: dict[str, Any], schema: ItemSchema | None) -> None:
             context = "character"
         elif is_standalone:
             context = "other"
+
+        # Apply wear metadata only for weapons/gloves (non-standalone, non-agent items)
+        # Note: Paintindex > 0 or standard weapon defindexes typically imply wear support.
+        if not is_standalone and not a_info:
+            if "floatvalue" in result:
+                result["wear_name"] = get_wear_name(result["floatvalue"])
+            elif "paintwear" in result:
+                result["wear_name"] = get_wear_name(bytes_to_float(result["paintwear"]))
+
+        # wear_name is now an optional field omitted for non-weapon items.
 
     if "rarity" in result:
         result["rarity_name"] = Rarity.get_name(result["rarity"], context)
@@ -160,8 +170,53 @@ def enrich_enums(result: dict[str, Any], schema: ItemSchema | None) -> None:
             result["imageurl"] = schema.get_image_url(a_info.get("image", ""))
         elif is_standalone:
             result["weapon_type"] = CATEGORY_IDS[defindex]
+            if defindex == 1314: # Music Kit
+                m_idx = result.get("musicindex")
+                if m_idx is not None:
+                    m_info = schema.get_music_kit_info(m_idx)
+                    if m_info:
+                        result["item_name"] = m_info.get("name")
+                        result["imageurl"] = m_info.get("image")
+                        result["collection_name"] = m_info.get("collection")
+            else:
+                result["item_name"] = w_name
         else:
             result["weapon_type"] = w_name
+
+    # Final validation: If enrichment was requested, ensure the item is a supported type.
+    # Unsupported items include Medals, Coins, Storage Units, Trophies, etc.
+    if schema:
+        supported_standalone = ["Sticker", "Graffiti", "Patch", "Charm", "Music Kit", "Pin"]
+        w_type = result.get("weapon_type", "Unknown")
+
+        # An item is considered supported if it is:
+        # 1. A known standalone category (Stickers, Charms, etc.)
+        # 2. An Agent
+        # 3. A standard weapon that is not part of a blacklisted set.
+
+        # Most unsupported items in the schema have specific keywords in their name.
+        # If an item doesn't fit the above categories, or matches a blacklist,
+        # it is treated as an unsupported item for the purpose of enriched parsing.
+
+        is_agent = schema.get_agent_info(result.get("defindex", 0)) is not None
+        is_known_standalone = w_type in supported_standalone
+
+        # Determine if it's a weapon safely
+        local_w_name = "Unknown"
+        if "defindex" in result:
+            local_w_name = schema.get_weapon_name(result["defindex"])
+
+        is_weapon = local_w_name != "Unknown" and not is_known_standalone and not is_agent
+
+        # Blacklist common "Bad" types that get registered as "weapons" in schema
+        bad_keywords = ["Medal", "Trophy", "Coin", "Storage Unit", "Music Kit Box"]
+        is_bad = any(k in w_type for k in bad_keywords)
+
+        # Only raise UnsupportedItemError if we have a defindex to identify the item.
+        # Unmasked links (S/M links) lack defindex in the payload and should not fail here.
+        if "defindex" in result:
+            if (w_type == "Unknown") or (is_weapon and is_bad):
+                raise UnsupportedItemError(f"Unsupported item type: {w_type} (defindex {result.get('defindex')})")
 
 
 def enrich_attachments(result: dict[str, Any], schema: ItemSchema) -> None:
@@ -204,6 +259,27 @@ def enrich_attachments(result: dict[str, Any], schema: ItemSchema) -> None:
                     }
                     # Remove None values to keep the output clean
                     sticker_obj = {k: v for k, v in sticker_obj.items() if v is not None}
+
+                    # Special handling for Graffiti color naming via tint_id
+                    t_id = sticker_obj.get("tint_id")
+                    if t_id and t_id in GRAFFITI_TINTS:
+                        color_name = GRAFFITI_TINTS[t_id]
+                        base_name = sticker_obj.get("name", "Graffiti")
+
+                        # Thorough cleaning of the base name
+                        # 1. Strip common prefixes
+                        for pref in ["Sealed Graffiti | ", "Graffiti | ", "Sealed "]:
+                            if base_name.startswith(pref):
+                                base_name = base_name[len(pref):]
+                                break
+
+                        # 2. Strip existing color suffix like " (Shark White)"
+                        if " (" in base_name:
+                            base_name = base_name.split(" (", 1)[0]
+
+                        # 3. Construct the FULL name: Graffiti | [Design] ([Color])
+                        sticker_obj["name"] = f"Graffiti | {base_name} ({color_name})"
+
                     enriched_stickers.append(sticker_obj)
                 else:
                     s["stickerId"] = s_id
@@ -223,7 +299,7 @@ def enrich_attachments(result: dict[str, Any], schema: ItemSchema) -> None:
                 highlight_reel = k.get("highlight_reel")
 
                 # If it's a keychain and contains a highlight_reel, it's a Souvenir Highlight.
-                # We should NOT fall back to sticker_slabs/stickers as they often share legacy IDs.
+                # Avoid falling back to sticker_slabs/stickers as they often share legacy IDs.
                 if k_info is None and highlight_reel is not None:
                     h_info = schema.get_highlight_info(highlight_reel)
                     if h_info:
@@ -326,10 +402,20 @@ def build_full_name(result: dict[str, Any], schema: ItemSchema) -> None:
     if a_name != "Unknown" and weapon == a_name:
         result["full_item_name"] = weapon
     elif is_standalone:
-        if weapon == "Sticker" and result.get("stickers"):
+        if weapon in ["Sticker", "Graffiti", "Patch"] and result.get("stickers"):
             sticker = result["stickers"][0]
-            result["full_item_name"] = sticker.get("name", weapon)
-            result["item_name"] = sticker.get("name")
+            full_name = sticker.get("name", weapon)
+            result["full_item_name"] = full_name
+
+            # Strip "Type | " or "Sealed Type | " prefix for a clean item_name
+            clean_name = full_name
+            prefixes = [f"{weapon} | ", f"Sealed {weapon} | "]
+            for p in prefixes:
+                if clean_name.startswith(p):
+                    clean_name = clean_name[len(p):]
+                    break
+            result["item_name"] = clean_name
+
             result["collection_name"] = sticker.get("collection_name")
             result["imageurl"] = schema.get_image_url(sticker.get("imageurl"))
             result["stickers"] = []
@@ -340,6 +426,10 @@ def build_full_name(result: dict[str, Any], schema: ItemSchema) -> None:
             result["collection_name"] = charm.get("collection_name")
             result["imageurl"] = schema.get_image_url(charm.get("imageurl"))
             result["keychains"] = []
+        elif weapon == "Music Kit" and result.get("item_name"):
+            result["full_item_name"] = f"Music Kit | {result['item_name']}"
+        elif weapon == "Pin" and result.get("item_name"):
+            result["full_item_name"] = result["item_name"]
         else:
             result["full_item_name"] = weapon
     elif skin and skin != "Unknown":
