@@ -297,6 +297,7 @@ def enrich_attachments(result: dict[str, Any], schema: ItemSchema) -> None:
                 # Prioritize charm lookup.
                 k_info = schema.get_charm_info(look_id)
                 highlight_reel = k.get("highlight_reel")
+                is_regular_charm = k_info is not None
 
                 # If it's a keychain and contains a highlight_reel, it's a Souvenir Highlight.
                 # Avoid falling back to sticker_slabs/stickers as they often share legacy IDs.
@@ -320,7 +321,10 @@ def enrich_attachments(result: dict[str, Any], schema: ItemSchema) -> None:
                         }
                 else:
                     # Generic fallback for standard charms (e.g. Sticker Slabs)
-                    k_info = k_info or schema.get_sticker_slab_info(look_id) or schema.get_sticker_info(look_id)
+                    fallback_info = schema.get_sticker_slab_info(look_id) or schema.get_sticker_info(look_id)
+                    if not k_info and fallback_info:
+                        k_info = fallback_info
+                        is_regular_charm = False
 
                 if k_info:
                     keychain_obj = {
@@ -338,7 +342,7 @@ def enrich_attachments(result: dict[str, Any], schema: ItemSchema) -> None:
                         "offset_x": k.get("offset_x"),
                         "offset_y": k.get("offset_y"),
                         "offset_z": k.get("offset_z"),
-                        "pattern": k.get("pattern"),
+                        "pattern": k.get("pattern", 0 if is_regular_charm else None),
                         "highlight_reel": k.get("highlight_reel"),
                     }
                     # Remove None values to keep the output clean
@@ -415,18 +419,17 @@ def build_full_name(result: dict[str, Any], schema: ItemSchema) -> None:
                     clean_name = clean_name[len(p):]
                     break
             result["item_name"] = clean_name
-
             result["collection_name"] = sticker.get("collection_name")
             result["imageurl"] = schema.get_image_url(sticker.get("imageurl"))
             result["stickers"] = []
         elif weapon == "Charm" and result.get("keychains"):
             charm = result["keychains"][0]
-            result["paintseed"] = charm.get("pattern",0)
+            result["paintseed"] = charm.get("pattern", 0)
             result["full_item_name"] = charm.get("name", weapon)
             result["item_name"] = charm.get("name")
             result["collection_name"] = charm.get("collection_name")
             result["imageurl"] = schema.get_image_url(charm.get("imageurl"))
-            result["keychains"] = []
+            del result["keychains"]  # Remove the keychain list for standalone charms
         elif weapon == "Music Kit" and result.get("item_name"):
             result["full_item_name"] = f"Music Kit | {result['item_name']}"
         elif weapon == "Pin" and result.get("item_name"):

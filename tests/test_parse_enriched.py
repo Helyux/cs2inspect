@@ -385,7 +385,7 @@ class TestEnrichedParsing(unittest.TestCase):
             sticker_id=47,
             offset_x=4.5,
             offset_y=0.5,
-            offset_z=8.9
+            offset_z=8.9,
         )
 
         # 3. Generate new masked link
@@ -429,7 +429,8 @@ class TestEnrichedParsing(unittest.TestCase):
                     "wear": 0.0,
                     "offset_x": 4.5,
                     "offset_y": 0.5,
-                    "offset_z": 8.899999618530273
+                    "offset_z": 8.899999618530273,
+                    "pattern": 0
                 }
             ],
             "floatvalue": 0.25706347823143005,

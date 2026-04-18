@@ -30,24 +30,23 @@ class TestCharms(unittest.TestCase):
             'paintindex': 0,
             'rarity': 3,
             'quality': 12,
-            'paintwear': 0,
-            'paintseed': 0,
             'inventory': 0,
             'origin': 21,
-            'keychains': [],
+            'paintseed': 0,
+            'paintwear': 0,
             'floatvalue': 0.0,
             'rarity_name': 'High Grade',
             'origin_name': 'Tournament Drop',
             'quality_name': 'Souvenir',
             'weapon_type': 'Charm',
             'item_name': 'Souvenir Charm | Budapest 2025 Highlight | karrigan vs Vitality on Overpass',
+            'full_item_name': 'Souvenir Charm | Budapest 2025 Highlight | karrigan vs Vitality on Overpass',
             'collection_name': 'Budapest 2025',
-            'imageurl': 'https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGI6zwki4Uf_a0IWjIH_FtQQgu4z31VvyRU-hzMOurHcDvfOrOPFucfWWDDaTxbwl5LBvSnrgxhsk4TjSn437J3zGOFcmCYwwG7A7om1dgw',
-            'full_item_name': 'Souvenir Charm | Budapest 2025 Highlight | karrigan vs Vitality on Overpass'
+            'imageurl': 'https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGI6zwki4Uf_a0IWjIH_FtQQgu4z31VvyRU-hzMOurHcDvfOrOPFucfWWDDaTxbwl5LBvSnrgxhsk4TjSn437J3zGOFcmCYwwG7A7om1dgw'
         }
         self.assertEqual(res1, expected1)
 
-        # 2. Normal Charm
+        # 2. Regular Charm
         link2 = "steam://run/730//+csgo_econ_action_preview%20D3C3645A58066BD2CB18D9F3D3FBD6E3D7BB50535353DFA3D371D2D4DBD3C3DA8328B35075EE77"
         res2 = cs2inspect.parse(link2, schema=self.schema)
         expected2 = {
@@ -56,20 +55,19 @@ class TestCharms(unittest.TestCase):
             'paintindex': 0,
             'rarity': 5,
             'quality': 4,
-            'paintwear': 0,
-            'paintseed': 0,
             'inventory': 3221225475,
             'origin': 0,
-            'keychains': [],
+            'paintseed': 12411,
+            'paintwear': 0,
             'floatvalue': 0.0,
             'rarity_name': 'Exotic',
             'origin_name': 'Timed Drop',
             'quality_name': 'Unique',
             'weapon_type': 'Charm',
             'item_name': "Charm | Lil' Monster",
+            'full_item_name': "Charm | Lil' Monster",
             'collection_name': 'Missing Link Charm Collection',
-            'imageurl': 'https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGI6zwki4Uf_a0IWsPGiE7Fhy-I764RbsQiL8l4Xz9Cxc4_ugY5tgL_6AGmKCj79wtOVrTijixU0m5m3UntioI3PEZldzCpd1FOJfsxXtmtCxNezk5gTAy9USJfGXAGI',
-            'full_item_name': "Charm | Lil' Monster"
+            'imageurl': 'https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGI6zwki4Uf_a0IWsPGiE7Fhy-I764RbsQiL8l4Xz9Cxc4_ugY5tgL_6AGmKCj79wtOVrTijixU0m5m3UntioI3PEZldzCpd1FOJfsxXtmtCxNezk5gTAy9USJfGXAGI'
         }
         self.assertEqual(res2, expected2)
 
@@ -82,19 +80,18 @@ class TestCharms(unittest.TestCase):
             'paintindex': 0,
             'rarity': 3,
             'quality': 8,
-            'paintwear': 0,
-            'paintseed': 0,
             'inventory': 0,
             'origin': 0,
-            'keychains': [],
+            'paintseed': 0,
+            'paintwear': 0,
             'floatvalue': 0.0,
             'rarity_name': 'High Grade',
             'origin_name': 'Timed Drop',
             'quality_name': 'Customized',
             'weapon_type': 'Charm',
             'item_name': 'Sticker Slab | iBUYPOWER | DreamHack 2014',
-            'imageurl': 'https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjM6pIinHtAI6_YXh80noVhjjocezqHdkvKXgMfI8JamXWjLAkbd05LVvFnG1xB9-tTvQztatc3mRbAUmDsAmTLVfsw74zIN3tXHXgw',
-            'full_item_name': 'Sticker Slab | iBUYPOWER | DreamHack 2014'
+            'full_item_name': 'Sticker Slab | iBUYPOWER | DreamHack 2014',
+            'imageurl': 'https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjM6pIinHtAI6_YXh80noVhjjocezqHdkvKXgMfI8JamXWjLAkbd05LVvFnG1xB9-tTvQztatc3mRbAUmDsAmTLVfsw74zIN3tXHXgw'
         }
         self.assertEqual(res3, expected_res3)
 
