@@ -91,23 +91,32 @@ print(proto.paintseed)  # 838
 
 ---
 
-## 3. Smart Enrichment
+## 3. Schema Enrichment
 
-Resolve numeric IDs to human-readable names using an external metadata schema.
+Resolve numeric IDs to human-readable names using an external metadata schema. Enrichment is **disabled by default** to keep parsing fast and lightweight; you must either set `enrich=True` or provide a valid `schema` instance/path.
+
+### Automatic Schema Loading
+If you have a `cs2schema.json` file in your current directory, you can simply enable enrichment with the `enrich` flag.
 
 ```python
 import cs2inspect
 import json
 
-# One-time setup: download the latest item/skin database
-# The library automatically remembers this path locally across restarts!
-cs2inspect.download_schema(path="my_schema.json") # Default is 'cs2schema.json'
-
-# Parse with enrichment enabled
 link = "steam://run/730//+csgo_econ_action_preview%200D1DC5E9CAE5BB0C150A2D860525093D043599ADABE20E4DBB0E450D5DD0076F19050C1DD43510C0C1013230710D96B0488D33ABB66F19050D1DD0351030071A3230BD25CAB0480D99D8376F19050E1DE03510C0C1013230D0F0A73348ED1813316F19050E1DE4351088E61C3230FBB9443348F58BAA306F19050F1D9C341088E61C3230014B1A33484DE99EB6650C7D05AF0C1A050D1D2230EC64104C4828251932404AB2884D5D8E880CEBE9FCE9"
-info = cs2inspect.parse(link, enrich=True)
 
-print(json.dumps(info, indent=4, ensure_ascii=False))
+# Download the latest item/skin schema (one-time setup)
+cs2inspect.download_schema()
+
+# Parse with enrichment enabled (searches for 'cs2schema.json' by default)
+info = cs2inspect.parse(link, enrich=True)
+```
+
+### Custom Schema Paths
+You can also pass a path directly to the `schema` parameter. This **automatically enables enrichment**, even if `enrich=True` is omitted.
+
+```python
+# Providing a path automatically enables enrichment
+info = cs2inspect.parse(link, schema="data/my_custom_schema.json")
 ```
 
 <details>
