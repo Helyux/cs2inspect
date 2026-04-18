@@ -56,7 +56,7 @@ These fields are added when a `schema` is provided (or `enrich=True` is used) an
 > Enrichment only works for **Masked** links. **Unmasked** links lack the technical properties (like `defindex`) required to perform metadata lookups. For legacy links, the result will only contain the raw IDs listed in Section 1.2.
 
 > [!NOTE]
-> Following the v0.4.1 update, enriched fields that are not applicable to the item (return `None` or `""`) are omitted from the dictionary to keep the output clean.
+> Following the v0.5.0 update, enriched fields that are not applicable to the item (return `None` or `""`) are omitted from the dictionary to keep the output clean.
 
 | Field | Type | Description | Status |
 | :--- | :--- | :--- | :--- |
