@@ -31,10 +31,24 @@
 pip install cs2inspect
 ```
 
-> [!IMPORTANT]
-> Since version 7.x of Protobuf, this package now requires **Python 3.10+**.
 
 ## Quick Start
+
+### Link Creation
+```python
+import cs2inspect
+
+# Create a modern 'masked' link using the Builder
+proto = cs2inspect.Builder(
+    defindex=7,
+    paintindex=941,
+    paintseed=0,
+    paintwear=0.15,
+    rarity=5
+)
+link = cs2inspect.link(proto.build())
+print(link) # steam://rungame/730/76561202255233023/+csgo_econ_action_preview%2000180720AD072805389AB3E6F00340006F59908E
+```
 
 ### Basic Parsing
 ```python
