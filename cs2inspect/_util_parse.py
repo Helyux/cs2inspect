@@ -295,7 +295,7 @@ def enrich_attachments(result: dict[str, Any], schema: ItemSchema) -> None:
 
             if look_id is not None:
                 # Prioritize charm lookup.
-                k_info = schema.get_charm_info(look_id)
+                k_info = schema.get_charm_info(k_id)
                 highlight_reel = k.get("highlight_reel")
                 is_regular_charm = k_info is not None
 
