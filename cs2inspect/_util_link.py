@@ -1,6 +1,6 @@
 import urllib.parse
 
-from cs2inspect._util_base import RE_MASKED_LINK, RE_UNMASKED_LINK
+from ._util_base import RE_MASKED_LINK, RE_UNMASKED_LINK
 
 
 def _link_valid_and_type(inspect: str) -> tuple[bool, str | None]:
@@ -103,7 +103,3 @@ def quote_link(inspect: str) -> str:
     """
 
     return urllib.parse.quote(inspect, safe=":/+")
-
-
-if __name__ == "__main__":
-    exit(1)

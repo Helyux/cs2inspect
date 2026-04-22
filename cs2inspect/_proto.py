@@ -1,9 +1,9 @@
 from dataclasses import dataclass, field
 from typing import Any
 
-from cs2inspect._metadata import Rarity
-from cs2inspect._util_hex import float_to_bytes
-from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
+from ._metadata import Rarity
+from ._util_hex import float_to_uint32
+from .econ_pb2 import CEconItemPreviewDataBlock
 
 _COSMETIC_FIELDS = (
     "slot",
@@ -52,7 +52,7 @@ class Builder:
             "defindex": self.defindex,
             "paintindex": self.paintindex,
             "paintseed": self.paintseed,
-            "paintwear": float_to_bytes(self.paintwear),
+            "paintwear": float_to_uint32(self.paintwear),
             "rarity": Rarity.parse(self.rarity),
         }
 
@@ -117,7 +117,3 @@ class Builder:
             preview_items.append(CEconItemPreviewDataBlock.Sticker(**preview_kwargs))
 
         return preview_items
-
-
-if __name__ == "__main__":
-    exit(1)

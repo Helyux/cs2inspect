@@ -1,7 +1,7 @@
 from typing import Any
 
-from cs2inspect._util_hex import bytes_to_float
-from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
+from ._util_hex import uint32_to_float
+from .econ_pb2 import CEconItemPreviewDataBlock
 
 
 def _format_float(value: float, precision: int = 8) -> str:
@@ -9,13 +9,13 @@ def _format_float(value: float, precision: int = 8) -> str:
     return formatted or "0"
 
 
-def _serialize_item_pairs(items: list[dict[str, Any]], pad_to: int | None = None) -> list[str]:
+def _serialize_item_pairs(items: list[dict[str, Any]], slot_count: int | None = None) -> list[str]:
     serialized: list[str] = []
     filtered_items = [item for item in items if item.get("sticker_id")]
 
-    if pad_to is not None:
+    if slot_count is not None:
         slot_map = {item.get("slot", 0): item for item in filtered_items}
-        for slot in range(pad_to):
+        for slot in range(slot_count):
             item = slot_map.get(slot)
             if item:
                 serialized.append(str(item.get("sticker_id", 0)))
@@ -52,7 +52,7 @@ def _build_gen_string(data: dict[str, Any], stickers: list[dict[str, Any]], keyc
         paintwear,
     ]
 
-    parts.extend(_serialize_item_pairs(stickers, pad_to=5))
+    parts.extend(_serialize_item_pairs(stickers, slot_count=5))
     parts.extend(_serialize_item_pairs(keychains))
 
     return " ".join(parts)
@@ -91,12 +91,8 @@ def build_gen_from_datablock(data: CEconItemPreviewDataBlock) -> str:
         "defindex": data.defindex,
         "paintindex": data.paintindex,
         "paintseed": data.paintseed,
-        "paintwear": bytes_to_float(data.paintwear),
+        "paintwear": uint32_to_float(data.paintwear),
         "stickers": [{"slot": s.slot, "sticker_id": s.sticker_id, "wear": s.wear} for s in data.stickers],
         "keychains": [{"slot": k.slot, "sticker_id": k.sticker_id, "wear": k.wear} for k in data.keychains],
     }
     return _build_gen_string(data_dict, data_dict["stickers"], data_dict["keychains"])
-
-
-if __name__ == "__main__":
-    exit(1)

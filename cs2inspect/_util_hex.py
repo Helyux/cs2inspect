@@ -1,22 +1,18 @@
 import struct
 import zlib
 
-from cs2inspect._util_base import MAX_HEX_PAYLOAD_SIZE
-from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
+from ._util_base import MAX_HEX_PAYLOAD_SIZE
+from .econ_pb2 import CEconItemPreviewDataBlock
 
 
-def float_to_bytes(float_value: float) -> int:
+def float_to_uint32(float_value: float) -> int:
     float_bytes = struct.pack(">f", float_value)
     return struct.unpack(">I", float_bytes)[0]
 
 
-def bytes_to_float(int_value: int) -> float:
+def uint32_to_float(int_value: int) -> float:
     int_bytes = struct.pack(">I", int_value)
     return struct.unpack(">f", int_bytes)[0]
-
-
-def hex_to_bytes(hex_str: str) -> bytes:
-    return bytes.fromhex(hex_str)
 
 
 def to_hex(data_block: CEconItemPreviewDataBlock) -> str:
@@ -58,7 +54,7 @@ def from_hex(hex_str: str) -> CEconItemPreviewDataBlock:
         raise ValueError(f"Hex payload too large ({len(hex_str)} chars), maximum is {MAX_HEX_PAYLOAD_SIZE}")
 
     # Convert hex string to bytes
-    data_bytes = hex_to_bytes(hex_str)
+    data_bytes = bytes.fromhex(hex_str)
 
     if not data_bytes:
         raise ValueError("Empty hex string")
@@ -97,7 +93,3 @@ def from_hex(hex_str: str) -> CEconItemPreviewDataBlock:
     data_block.ParseFromString(data_bytes)
 
     return data_block
-
-
-if __name__ == "__main__":
-    exit(1)
