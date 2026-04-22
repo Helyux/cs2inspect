@@ -3,16 +3,19 @@ from typing import Any
 from cs2inspect._schema import ItemSchema, load_schema
 from cs2inspect._util_hex import from_hex
 from cs2inspect._util_link import _link_valid_and_type, unquote_link
-from cs2inspect._util_parse import (RE_MASKED_PAYLOAD, RE_UNMASKED_PAYLOAD, UnsupportedItemError, build_full_name,
-                                    enrich_attachments, enrich_enums, extract_payload)
+from cs2inspect._util_parse import (
+    RE_MASKED_PAYLOAD,
+    RE_UNMASKED_PAYLOAD,
+    UnsupportedItemError,  # noqa: F401 — re-exported via __init__.py
+    build_full_name,
+    enrich_attachments,
+    enrich_enums,
+    extract_payload,
+)
 from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
 
 
-def parse(
-    inspect_link: str,
-    enrich: bool = False,
-    schema: ItemSchema | str | None = None
-) -> dict[str, Any]:
+def parse(inspect_link: str, enrich: bool = False, schema: ItemSchema | str | None = None) -> dict[str, Any]:
     """
     Parse a valid inspect link and extract its properties as a dictionary.
 
@@ -82,26 +85,26 @@ def unlink(inspect_link: str) -> dict[str, Any] | CEconItemPreviewDataBlock:
 
     inspect_link = unquote_link(inspect_link)
 
-    if type_str == 'masked':
+    if type_str == "masked":
         match = RE_MASKED_PAYLOAD.search(inspect_link)
         if match:
             return from_hex(match.group(1))
-    elif type_str == 'unmasked':
+    elif type_str == "unmasked":
         match = RE_UNMASKED_PAYLOAD.search(inspect_link)
         if match:
             location_type = match.group(1).upper()
             location_id = match.group(2)
             asset_id = match.group(3)
             class_id = match.group(4)
-            data = {'asset_id': asset_id, 'class_id': class_id}
-            if location_type == 'M':
-                data['market_id'] = location_id
+            data = {"asset_id": asset_id, "class_id": class_id}
+            if location_type == "M":
+                data["market_id"] = location_id
             else:
-                data['owner_id'] = location_id
+                data["owner_id"] = location_id
             return data
 
     raise ValueError("Could not unlink the provided string")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     exit(1)

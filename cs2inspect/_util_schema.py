@@ -6,10 +6,24 @@ from ._util_base import HIGHLIGHTS_URL, SCHEMA_URL
 
 # Keys to KEEP in each item to minimize footprint while preserving enrichment capability.
 SCHEMA_PRUNE_KEYS = {
-    "id", "def_index", "name", "image", "thumbnail", "phase",
-    "weapon", "paint_index", "pattern", "min_float", "max_float",
-    "original", "collections", "crates", "contains", "contains_rare",
-    "loot_list", "market_hash_name"
+    "id",
+    "def_index",
+    "name",
+    "image",
+    "thumbnail",
+    "phase",
+    "weapon",
+    "paint_index",
+    "pattern",
+    "min_float",
+    "max_float",
+    "original",
+    "collections",
+    "crates",
+    "contains",
+    "contains_rare",
+    "loot_list",
+    "market_hash_name",
 }
 
 # Structural keys that only need the 'id' for internal linking (collection resolution).
@@ -57,6 +71,7 @@ def prune_item(item: Any) -> Any:
 
     return pruned
 
+
 def prune_and_bundle(raw_schema: dict[str, Any], highlights_data: list[dict[str, Any]]) -> dict[str, Any]:
     """
     Consolidate the raw schema and external highlights into a single optimized blob.
@@ -77,10 +92,8 @@ def prune_and_bundle(raw_schema: dict[str, Any], highlights_data: list[dict[str,
     for key, item in raw_schema.items():
         pruned_items[key] = prune_item(item)
 
-    return {
-        "items": pruned_items,
-        "highlights": highlights_data
-    }
+    return {"items": pruned_items, "highlights": highlights_data}
+
 
 def fetch_and_update_schema(output_path: str, timeout: float = 60.0) -> bool:
     """
@@ -96,28 +109,29 @@ def fetch_and_update_schema(output_path: str, timeout: float = 60.0) -> bool:
     """
 
     try:
-        headers = {'User-Agent': 'cs2inspect'}
+        headers = {"User-Agent": "cs2inspect"}
 
         # 1. Download Schema
         req_s = urllib.request.Request(SCHEMA_URL, headers=headers)
         with urllib.request.urlopen(req_s, timeout=timeout) as resp:
-            raw_schema = json.loads(resp.read().decode('utf-8'))
+            raw_schema = json.loads(resp.read().decode("utf-8"))
 
         # 2. Download Highlights
         req_h = urllib.request.Request(HIGHLIGHTS_URL, headers=headers)
         with urllib.request.urlopen(req_h, timeout=timeout) as resp:
-            highlights = json.loads(resp.read().decode('utf-8'))
+            highlights = json.loads(resp.read().decode("utf-8"))
 
         # 3. Optimize
         bundled = prune_and_bundle(raw_schema, highlights)
 
         # 4. Save
         with open(output_path, "w", encoding="utf-8") as f:
-            json.dump(bundled, f, separators=(',', ':'))
+            json.dump(bundled, f, separators=(",", ":"))
 
         return True
     except Exception as e:
         # We don't want to crash the main library if update fails
         import sys
+
         print(f"cs2inspect: Failed to update schema: {e}", file=sys.stderr)
         return False

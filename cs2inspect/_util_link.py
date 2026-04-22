@@ -18,8 +18,8 @@ def _link_valid_and_type(inspect: str) -> tuple[bool, str | None]:
         inspect = quote_link(inspect)
 
     patterns = {
-        'unmasked': RE_UNMASKED_LINK,
-        'masked': RE_MASKED_LINK,
+        "unmasked": RE_UNMASKED_LINK,
+        "masked": RE_MASKED_LINK,
     }
 
     for link_type_str, pattern in patterns.items():
@@ -105,5 +105,5 @@ def quote_link(inspect: str) -> str:
     return urllib.parse.quote(inspect, safe=":/+")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     exit(1)

@@ -21,14 +21,14 @@ def _link_from_dict(data: dict[str, Any]) -> str | None:
     required_keys = {"asset_id", "class_id"}
     if not required_keys.issubset(data.keys()):
         return None
-    if 'market_id' not in data and 'owner_id' not in data:
+    if "market_id" not in data and "owner_id" not in data:
         return None
     return link_unmasked(
-        asset_id=data['asset_id'],
-        class_id=data['class_id'],
-        market_id=data.get('market_id'),
-        owner_id=data.get('owner_id'),
-        base=data.get('base', INSPECT_BASE)
+        asset_id=data["asset_id"],
+        class_id=data["class_id"],
+        market_id=data.get("market_id"),
+        owner_id=data.get("owner_id"),
+        base=data.get("base", INSPECT_BASE),
     )
 
 
@@ -113,9 +113,9 @@ def link_masked(data_block: CEconItemPreviewDataBlock, base: str = INSPECT_BASE)
     return inspect_link if is_link_valid(inspect_link) else None
 
 
-def link_unmasked(asset_id: str, class_id: str,
-                  market_id: str | None = None, owner_id: str | None = None,
-                  base: str = INSPECT_BASE) -> str | None:
+def link_unmasked(
+    asset_id: str, class_id: str, market_id: str | None = None, owner_id: str | None = None, base: str = INSPECT_BASE
+) -> str | None:
     """
     Generate an unmasked inspect link (D/A/S/M format) from the given IDs.
 
@@ -139,5 +139,5 @@ def link_unmasked(asset_id: str, class_id: str,
     return inspect_link if is_link_valid(inspect_link) else None
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     exit(1)

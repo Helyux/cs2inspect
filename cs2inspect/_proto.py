@@ -119,5 +119,5 @@ class Builder:
         return preview_items
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     exit(1)

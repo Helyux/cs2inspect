@@ -9,7 +9,7 @@ import platformdirs
 from ._util_schema import fetch_and_update_schema
 
 # Cache to store loaded ItemSchema instances to avoid redundant filesystem reads.
-_SCHEMA_CACHE: dict[str, 'ItemSchema'] = {}
+_SCHEMA_CACHE: dict[str, "ItemSchema"] = {}
 
 
 class ItemSchema:
@@ -55,9 +55,9 @@ class ItemSchema:
             children_keys = ("contains", "contains_rare", "loot_list")
             all_children = []
             for ck in children_keys:
-                 c_list = item.get(ck)
-                 if c_list and isinstance(c_list, list):
-                      all_children.extend(c_list)
+                c_list = item.get(ck)
+                if c_list and isinstance(c_list, list):
+                    all_children.extend(c_list)
 
             if all_children:
                 nested_parents.append((key, item, all_children))
@@ -67,15 +67,15 @@ class ItemSchema:
         for key, item, all_children in nested_parents:
             col_name = item.get("name")
             if key.startswith("crate-") and key in crate_to_col:
-                 col_name = crate_to_col[key]
+                col_name = crate_to_col[key]
 
             if col_name:
                 for child in all_children:
                     child_id = child.get("id")
                     if child_id:
-                         # Don't overwrite if a primary collection- level mapping was already found
-                         if not (child_id in nested_to_col and key.startswith("crate-")):
-                              nested_to_col[child_id] = col_name
+                        # Don't overwrite if a primary collection- level mapping was already found
+                        if not (child_id in nested_to_col and key.startswith("crate-")):
+                            nested_to_col[child_id] = col_name
 
         self._nested_to_col = nested_to_col
 
@@ -122,10 +122,7 @@ class ItemSchema:
 
         if key.startswith("agent-") and def_index is not None:
             d_idx = int(def_index)
-            agent_data = {
-                "name": item.get("name"),
-                "image": item.get("image", "")
-            }
+            agent_data = {"name": item.get("name"), "image": item.get("image", "")}
             if col_name:
                 agent_data["collection"] = col_name
 
@@ -141,7 +138,7 @@ class ItemSchema:
                 "name": item.get("name", "Unknown"),
                 "codename": original.get("name", "Unknown"),
                 "material": original.get("image_inventory", "Unknown"),
-                "image": item.get("image", "")
+                "image": item.get("image", ""),
             }
             if col_name:
                 slab_data["collection"] = col_name
@@ -162,7 +159,7 @@ class ItemSchema:
                 "name": item.get("name", "Unknown"),
                 "codename": codename,
                 "material": original.get("image_inventory", "Unknown"),
-                "image": item.get("image", "")
+                "image": item.get("image", ""),
             }
             if col_name:
                 sticker_data["collection"] = col_name
@@ -181,13 +178,13 @@ class ItemSchema:
 
             # Clean up the keychain_ prefix if it exists to get better codenames
             if codename.startswith("keychain_"):
-                codename = codename[len("keychain_"):]
+                codename = codename[len("keychain_") :]
 
             charm_data = {
                 "name": item.get("name", "Unknown"),
                 "codename": codename,
                 "material": original.get("image_inventory", "Unknown"),
-                "image": item.get("image", "")
+                "image": item.get("image", ""),
             }
             if col_name:
                 charm_data["collection"] = col_name
@@ -199,11 +196,7 @@ class ItemSchema:
 
         elif key.startswith("music_kit-") and def_index is not None:
             d_idx = int(def_index)
-            kit_data = {
-                "name": item.get("name", "Unknown"),
-                "image": item.get("image", ""),
-                "collection": col_name
-            }
+            kit_data = {"name": item.get("name", "Unknown"), "image": item.get("image", ""), "collection": col_name}
             if d_idx in self._music_kits:
                 self._music_kits[d_idx].update(kit_data)
             else:
@@ -233,9 +226,9 @@ class ItemSchema:
                     if s_key not in self._skins:
                         self._skins[s_key] = {
                             "name": skin_name,
-                            "images": {}, # Wear-specific images (0-4)
+                            "images": {},  # Wear-specific images (0-4)
                             "min_float": item.get("min_float"),
-                            "max_float": item.get("max_float")
+                            "max_float": item.get("max_float"),
                         }
 
                     # Update base info
@@ -259,12 +252,12 @@ class ItemSchema:
         # Traverse nested children for structural resolution
         children_keys = ["contains", "contains_rare", "loot_list"]
         for ck in children_keys:
-             c_list = item.get(ck)
-             if c_list and isinstance(c_list, list):
-                  for child in c_list:
-                       child_id = child.get("id", "")
-                       if child_id:
-                            self._process_item(child_id, child, parent_collection=col_name)
+            c_list = item.get(ck)
+            if c_list and isinstance(c_list, list):
+                for child in c_list:
+                    child_id = child.get("id", "")
+                    if child_id:
+                        self._process_item(child_id, child, parent_collection=col_name)
 
     def get_weapon_name(self, weapon_id: int) -> str:
         """
@@ -319,11 +312,15 @@ class ItemSchema:
         :rtype: int
         """
 
-        if float_val < 0.07: return 0 # Factory New
-        if float_val < 0.15: return 1 # Minimal Wear
-        if float_val < 0.38: return 2 # Field-Tested
-        if float_val < 0.45: return 3 # Well-Worn
-        return 4 # Battle-Scarred
+        if float_val < 0.07:
+            return 0  # Factory New
+        if float_val < 0.15:
+            return 1  # Minimal Wear
+        if float_val < 0.38:
+            return 2  # Field-Tested
+        if float_val < 0.45:
+            return 3  # Well-Worn
+        return 4  # Battle-Scarred
 
     def get_skin_info(self, weapon_id: int, paint_index: int, float_val: float | None = None) -> dict[str, Any] | None:
         """
@@ -471,11 +468,11 @@ def get_config_path() -> Path:
             except OSError:
                 return old_path
         elif very_old_path.exists():
-             try:
-                 very_old_path.rename(new_path)
-                 return new_path
-             except OSError:
-                 return very_old_path
+            try:
+                very_old_path.rename(new_path)
+                return new_path
+            except OSError:
+                return very_old_path
 
     return new_path
 
@@ -525,7 +522,7 @@ def load_schema_path() -> str | None:
         Path(__file__).parent / "cs2schema.json",
         Path.cwd() / "cs2_schema.json",
         Path(__file__).parent.parent / "cs2_schema.json",
-        Path(__file__).parent / "cs2_schema.json"
+        Path(__file__).parent / "cs2_schema.json",
     ]
 
     for f in fallbacks:
@@ -584,8 +581,8 @@ def load_schema(path: str | None = None, raise_on_error: bool = False) -> ItemSc
     try:
         mtime = os.path.getmtime(path_str)
         if (time.time() - mtime) > (30 * 24 * 60 * 60):
-             # Trigger auto-update
-             fetch_and_update_schema(path_str)
+            # Trigger auto-update
+            fetch_and_update_schema(path_str)
     except (OSError, OverflowError):
         pass
 
@@ -602,5 +599,5 @@ def load_schema(path: str | None = None, raise_on_error: bool = False) -> ItemSc
         return None
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     exit(1)

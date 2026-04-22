@@ -9,6 +9,7 @@ from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
 
 class UnsupportedItemError(Exception):
     """Raised when an enriched parse encounters an unknown/unsupported item type."""
+
     pass
 
 
@@ -25,10 +26,26 @@ def _proto_to_dict(proto: CEconItemPreviewDataBlock) -> dict[str, Any]:
 
     # Whitelist of scalar proto fields to extract
     scalar_fields = [
-        "accountid", "itemid", "defindex", "paintindex", "rarity", "quality",
-        "paintwear", "paintseed", "killeaterscoretype", "killeatervalue",
-        "customname", "inventory", "origin", "questid", "dropreason",
-        "musicindex", "entindex", "petindex", "style", "upgrade_level",
+        "accountid",
+        "itemid",
+        "defindex",
+        "paintindex",
+        "rarity",
+        "quality",
+        "paintwear",
+        "paintseed",
+        "killeaterscoretype",
+        "killeatervalue",
+        "customname",
+        "inventory",
+        "origin",
+        "questid",
+        "dropreason",
+        "musicindex",
+        "entindex",
+        "petindex",
+        "style",
+        "upgrade_level",
     ]
 
     result = {}
@@ -74,23 +91,23 @@ def extract_payload(inspect_link: str, type_str: str) -> dict[str, Any]:
 
     result = {}
 
-    if type_str == 'masked':
+    if type_str == "masked":
         match = RE_MASKED_PAYLOAD.search(inspect_link)
         if match:
             proto = from_hex(match.group(1))
             result = _proto_to_dict(proto)
-    elif type_str == 'unmasked':
+    elif type_str == "unmasked":
         match = RE_UNMASKED_PAYLOAD.search(inspect_link)
         if match:
             location_type = match.group(1).upper()
             location_id = match.group(2)
             asset_id = match.group(3)
             class_id = match.group(4)
-            result = {'asset_id': asset_id, 'class_id': class_id}
-            if location_type == 'M':
-                result['market_id'] = location_id
+            result = {"asset_id": asset_id, "class_id": class_id}
+            if location_type == "M":
+                result["market_id"] = location_id
             else:
-                result['owner_id'] = location_id
+                result["owner_id"] = location_id
     else:
         raise ValueError("Could not parse link")
 
@@ -153,7 +170,7 @@ def enrich_enums(result: dict[str, Any], schema: ItemSchema | None) -> None:
             result["imageurl"] = schema.get_image_url(a_info.get("image", ""))
         elif is_standalone:
             result["weapon_type"] = CATEGORY_IDS[defindex]
-            if defindex == 1314: # Music Kit
+            if defindex == 1314:  # Music Kit
                 m_idx = result.get("musicindex")
                 if m_idx is not None:
                     m_info = schema.get_music_kit_info(m_idx)
@@ -253,7 +270,7 @@ def enrich_attachments(result: dict[str, Any], schema: ItemSchema) -> None:
                         # 1. Strip common prefixes
                         for pref in ["Sealed Graffiti | ", "Graffiti | ", "Sealed "]:
                             if base_name.startswith(pref):
-                                base_name = base_name[len(pref):]
+                                base_name = base_name[len(pref) :]
                                 break
 
                         # 2. Strip existing color suffix like " (Shark White)"
@@ -292,7 +309,7 @@ def enrich_attachments(result: dict[str, Any], schema: ItemSchema) -> None:
                             "codename": "souvenir_highlight",
                             "material": h_info.get("original", {}).get("image_inventory", "econ/stickers/default"),
                             "image": h_info.get("image", ""),
-                            "collection": h_info.get("tournament_event")
+                            "collection": h_info.get("tournament_event"),
                         }
                     else:
                         k_info = {
@@ -300,7 +317,7 @@ def enrich_attachments(result: dict[str, Any], schema: ItemSchema) -> None:
                             "codename": "souvenir_highlight",
                             "material": "econ/stickers/default",
                             "image": "",
-                            "collection": None
+                            "collection": None,
                         }
                 else:
                     # Generic fallback for standard charms (e.g. Sticker Slabs)
@@ -367,7 +384,6 @@ def build_full_name(result: dict[str, Any], schema: ItemSchema) -> None:
         if skin_info.get("collection"):
             result["collection_name"] = skin_info.get("collection")
 
-    w_name = schema.get_weapon_name(defindex)
     a_name = schema.get_agent_name(defindex)
     is_standalone = defindex in CATEGORY_IDS
 
@@ -399,7 +415,7 @@ def build_full_name(result: dict[str, Any], schema: ItemSchema) -> None:
             prefixes = [f"{weapon} | ", f"Sealed {weapon} | "]
             for p in prefixes:
                 if clean_name.startswith(p):
-                    clean_name = clean_name[len(p):]
+                    clean_name = clean_name[len(p) :]
                     break
             result["item_name"] = clean_name
             result["collection_name"] = sticker.get("collection_name")
@@ -408,7 +424,7 @@ def build_full_name(result: dict[str, Any], schema: ItemSchema) -> None:
         elif weapon == "Charm" and result.get("keychains"):
             charm = result["keychains"][0]
             result["paintseed"] = charm.get("pattern", 0)
-            result["paintindex"] = charm.get("sticker_id",0)
+            result["paintindex"] = charm.get("sticker_id", 0)
             result["full_item_name"] = charm.get("name", weapon)
             result["item_name"] = charm.get("name")
             result["collection_name"] = charm.get("collection_name")
@@ -426,5 +442,5 @@ def build_full_name(result: dict[str, Any], schema: ItemSchema) -> None:
         result["full_item_name"] = f"{prefix}{weapon}{wear}"
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     exit(1)

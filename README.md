@@ -86,7 +86,7 @@ For detailed information, please refer to the following docs:
 `cs2inspect` is a local, offline decoder. **Masked/Modern links** (binary Protobuf payload) are fully supported with offline enrichment of stickers, floats, and charms. **Unmasked/Legacy links** (S/M A D pointers) have only minimal support as they contain no binary property data; resolving their attributes requires a call to the **GameCoordinator (GC)**, which is outside the scope of this offline library.
 
 ## Contributing
-Contributions are welcome! Open an issue or submit a pull request.
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 
 ## License
 GPLv3 License. See the LICENSE file for details.

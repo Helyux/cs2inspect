@@ -56,7 +56,7 @@ class Rarity(IntEnum):
                 cls.CLASSIFIED: "Exotic",
                 cls.COVERT: "Extraordinary",
                 cls.CONTRABAND: "Contraband",
-            }
+            },
         }
 
         # Fallback to weapon track if context is unknown
@@ -88,34 +88,28 @@ class Rarity(IntEnum):
                     "MASTER": 6,
                     "EXTRAORDINARY": 6,
                     "ANCIENT": 6,
-                    "UNUSUAL": 99, # Special case for Gloves/Knives Star
-
+                    "UNUSUAL": 99,  # Special case for Gloves/Knives Star
                     # ID 5: Legendary
                     "SUPERIOR": 5,
                     "EXOTIC": 5,
                     "LEGENDARY": 5,
-
                     # ID 4: Mythical
                     "EXCEPTIONAL": 4,
                     "REMARKABLE": 4,
                     "MYTHICAL": 4,
-
                     # ID 3: Rare
                     "DISTINGUISHED": 3,
                     "HIGH_GRADE": 3,
                     "RARE": 3,
                     "MIL_SPEC": 3,
-
                     # ID 2: Uncommon
                     "MEDIUM_GRADE": 2,
                     "UNCOMMON": 2,
                     "INDUSTRIAL": 2,
-
                     # ID 1: Common
                     "BASE_GRADE": 1,
                     "COMMON": 1,
                     "CONSUMER": 1,
-
                     # ID 0: Default
                     "DEFAULT": 0,
                 }
@@ -165,6 +159,7 @@ class Quality(IntEnum):
             cls.VOLATILE: "Volatile",
         }
         return names.get(value, "Unknown")
+
 
 # Source:
 # https://raw.githubusercontent.com/SteamDatabase/SteamTracking/b5cba7a22ab899d6d423380cff21cec707b7c947/ItemSchema/CounterStrikeGlobalOffensive.json
@@ -227,7 +222,6 @@ class Origin(IntEnum):
         return names.get(value, "Unknown")
 
 
-
 def get_wear_name(wear: float) -> str:
     if wear < 0.07:
         return "Factory New"
@@ -240,14 +234,7 @@ def get_wear_name(wear: float) -> str:
     return "Battle-Scarred"
 
 
-CATEGORY_IDS = {
-    1209: "Sticker",
-    1349: "Graffiti",
-    4609: "Patch",
-    1355: "Charm",
-    1314: "Music Kit",
-    6117: "Pin"
-}
+CATEGORY_IDS = {1209: "Sticker", 1349: "Graffiti", 4609: "Patch", 1355: "Charm", 1314: "Music Kit", 6117: "Pin"}
 
 GRAFFITI_TINTS = {
     1: "Desert Amber",
@@ -268,9 +255,9 @@ GRAFFITI_TINTS = {
     16: "Royal Blue",
     17: "Emerald Green",
     18: "Brick Red",
-    19: "Danger Red"
+    19: "Danger Red",
 }
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     exit(1)
