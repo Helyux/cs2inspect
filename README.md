@@ -20,7 +20,7 @@
 - Creating 'unmasked' inspect links (containing the owners steam id)
 - Creating 'masked' (XOR-capable) inspect links
 - Decoding/Parsing inspect links back into data or protobuf objects
-- Parsing Enrichment: Resolve numeric IDs to human-readable names (Weapon, Skin, Rarity, Origin, Quality, etc.)
+- Schema Enrichment (Parsing): Resolve numeric IDs to human-readable names (Weapon, Skin, Rarity, Origin, Quality, etc.)
 - Creating gen codes
 - Creating console pasteable inspect links
 - Checking inspect link validity (robust regex supporting modern CS2 formats)
@@ -47,7 +47,7 @@ proto = cs2inspect.Builder(
     rarity=5
 )
 link = cs2inspect.link(proto.build())
-print(link) # steam://rungame/730/76561202255233023/+csgo_econ_action_preview%2000180720AD072805389AB3E6F00340006F59908E
+print(link) # steam://run/730//+csgo_econ_action_preview%2000180720AD072805389AB3E6F00340006F59908E
 ```
 
 ### Basic Parsing
@@ -62,7 +62,7 @@ print(data['defindex'])    # 26 (PP-Bizon)
 print(data['floatvalue'])  # 0.05357979
 ```
 
-### Smart Enrichment
+### Schema Enrichment
 ```python
 import cs2inspect
 
@@ -70,7 +70,7 @@ import cs2inspect
 cs2inspect.download_schema()
 info = cs2inspect.parse(link, enrich=True)
 
-print(info['full_item_name']) # AK-47 | Slate (Minimal Wear)
+print(info['full_item_name']) # StatTrak™ PP-Bizon | High Roller (Factory New)
 ```
 
 ## Documentation
