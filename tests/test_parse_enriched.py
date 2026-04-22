@@ -38,7 +38,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "material": "econ/stickers/cologne2014/esl_c",
                     "name": "Sticker | ESL One Cologne 2014 (Gold)",
                     "imageurl": "https://cdn.steamstatic.com/apps/730/icons/econ/stickers/cologne2014/esl_c.10931e51b1bc7dbfa327168a517ce74337f9092c.png",
-                    "wear": 0.0
+                    "wear": 0.0,
                 },
                 {
                     "slot": 1,
@@ -48,7 +48,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "name": "Sticker | iBUYPOWER (Holo) | Cologne 2014",
                     "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmuOXSQ61MnpNagpVDlVAThkYHl7x1T4P6hJqU0dqfKWWHCmbZz5Lc4Hyrjwk0j4zuGn9moJCnGbwYjWcRwFu5Y5hWm0oqwCnjbiRQ",
                     "collection_name": "ESL One Cologne 2014 Challengers",
-                    "wear": 0.0
+                    "wear": 0.0,
                 },
                 {
                     "slot": 2,
@@ -58,7 +58,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "name": "Sticker | dAT team (Holo) | Cologne 2014",
                     "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmuOXSQ61MnpNagpV3mVQn0n5vf9S1X4LyrPPc8dfKWXWLCwrZw5-VoSSyxlkwl5z_WnI36dX7DagMmWJslRLRbrFDmxb6Jc4yR",
                     "collection_name": "ESL One Cologne 2014 Challengers",
-                    "wear": 0.0
+                    "wear": 0.0,
                 },
                 {
                     "slot": 3,
@@ -68,8 +68,8 @@ class TestEnrichedParsing(unittest.TestCase):
                     "name": "Sticker | iBUYPOWER (Holo) | Katowice 2014",
                     "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjM-sJnCW8Vli_YTxuAm2FVL4nIP57S1M6uCRYKthL77KW2XAkr91tLQ-S33iwhly62jcn9yrcy2fOlBxA5JyRuVf40W7xoC2Kaq8sK3FB_Eg",
                     "collection_name": "EMS Katowice 2014 Challengers",
-                    "wear": 0.0
-                }
+                    "wear": 0.0,
+                },
             ],
             "floatvalue": 0.058770786970853806,
             "wear_name": "Factory New",
@@ -81,7 +81,7 @@ class TestEnrichedParsing(unittest.TestCase):
             "min": 0,
             "max": 0.7,
             "collection_name": "The Cobblestone Collection",
-            "full_item_name": "Souvenir AWP | Dragon Lore (Factory New)"
+            "full_item_name": "Souvenir AWP | Dragon Lore (Factory New)",
         }
         self.assertEqual(res, expected)
 
@@ -113,7 +113,7 @@ class TestEnrichedParsing(unittest.TestCase):
             "min": 0,
             "max": 0.08,
             "collection_name": "The Chroma Collection",
-            "full_item_name": "★ StatTrak™ Gut Knife | Doppler (Factory New)"
+            "full_item_name": "★ StatTrak™ Gut Knife | Doppler (Factory New)",
         }
         self.assertEqual(res, expected)
 
@@ -139,7 +139,7 @@ class TestEnrichedParsing(unittest.TestCase):
             "min": 0.06,
             "max": 0.8,
             "collection_name": "The Dead Hand Collection",
-            "full_item_name": "★ Specialist Gloves | Pillow Punchers (Minimal Wear)"
+            "full_item_name": "★ Specialist Gloves | Pillow Punchers (Minimal Wear)",
         }
         self.assertEqual(res, expected)
 
@@ -168,7 +168,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJW3z0i4VeWbwMuyMESE7l95-IDm5Uz3UlLhn4Lj9R1I-uK8baloLfGAGmKCj-0j5LlrG3Dnxkpz5WnRmdirdnuSaVMlA5R5Q-MOukG4xILgMbvm4lPAy9USsZqlN38",
                     "collection_name": "Metal Skill Group Patch Collection",
                     "wear": 0.0,
-                    "scale": 1.0780394077301025
+                    "scale": 1.0780394077301025,
                 }
             ],
             "floatvalue": 0.0,
@@ -178,7 +178,7 @@ class TestEnrichedParsing(unittest.TestCase):
             "weapon_type": "Lt. Commander Ricksaw | NSWC SEAL",
             "collection_name": "Shattered Web Agents",
             "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nz6XRk-fO8YaVjNPndVz-Ul74hsbNoHi21kUly6mrQzNagcijBPQEnCsciTOdY4Rm6m4XvN_SiuVLIl2LQXw",
-            "full_item_name": "Lt. Commander Ricksaw | NSWC SEAL"
+            "full_item_name": "Lt. Commander Ricksaw | NSWC SEAL",
         }
         self.assertEqual(res, expected)
 
@@ -206,7 +206,7 @@ class TestEnrichedParsing(unittest.TestCase):
             "item_name": "Team Liquid (Holo) | Katowice 2019",
             "full_item_name": "Sticker | Team Liquid (Holo) | Katowice 2019",
             "collection_name": "Katowice 2019 Legends (Holo/Foil)",
-            "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMGgIXSA7FVwptelsxbrSAzOlpns8mwLufGoPfE_dfWWDz6WmLkl6eNtHXqxkE506jvQz92td3KeawN0D5t5W6dU5XuG2_2o"
+            "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMGgIXSA7FVwptelsxbrSAzOlpns8mwLufGoPfE_dfWWDz6WmLkl6eNtHXqxkE506jvQz92td3KeawN0D5t5W6dU5XuG2_2o",
         }
         self.assertEqual(res, expected)
 
@@ -237,7 +237,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "offset_x": 1.0036118030548096,
                     "offset_y": 0.38463011384010315,
                     "offset_z": 7.857975959777832,
-                    "wrapped_sticker": 4352
+                    "wrapped_sticker": 4352,
                 }
             ],
             "floatvalue": 0.026446105912327766,
@@ -251,7 +251,7 @@ class TestEnrichedParsing(unittest.TestCase):
             "min": 0,
             "max": 0.08,
             "collection_name": "The Chop Shop Collection",
-            "full_item_name": "M4A1-S | Hot Rod (Factory New)"
+            "full_item_name": "M4A1-S | Hot Rod (Factory New)",
         }
         self.assertEqual(res, expected)
         # Base rarity of the weapon is not verified here as it is tested elsewhere
@@ -285,7 +285,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "collection_name": "Copenhagen 2024 Legends Sticker Capsule",
                     "wear": 0.550000011920929,
                     "offset_x": -0.07568451762199402,
-                    "offset_y": -0.005073368549346924
+                    "offset_y": -0.005073368549346924,
                 },
                 {
                     "slot": 0,
@@ -297,7 +297,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "collection_name": "Copenhagen 2024 Legends Sticker Capsule",
                     "wear": 0.5899999737739563,
                     "offset_x": -0.09724557399749756,
-                    "offset_y": 0.001629471778869629
+                    "offset_y": 0.001629471778869629,
                 },
                 {
                     "slot": 3,
@@ -309,7 +309,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "collection_name": "Copenhagen 2024 Legends Sticker Capsule",
                     "wear": 0.550000011920929,
                     "offset_x": 0.33396807312965393,
-                    "offset_y": 0.009648770093917847
+                    "offset_y": 0.009648770093917847,
                 },
                 {
                     "slot": 3,
@@ -321,7 +321,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "collection_name": "Copenhagen 2024 Legends Sticker Capsule",
                     "wear": 0.5699999928474426,
                     "offset_x": 0.1969793736934662,
-                    "offset_y": 0.08180040121078491
+                    "offset_y": 0.08180040121078491,
                 },
                 {
                     "slot": 2,
@@ -333,8 +333,8 @@ class TestEnrichedParsing(unittest.TestCase):
                     "collection_name": "Copenhagen 2024 Challengers Sticker Capsule",
                     "wear": 0.5699999928474426,
                     "offset_x": 0.14772814512252808,
-                    "offset_y": -0.004513293504714966
-                }
+                    "offset_y": -0.004513293504714966,
+                },
             ],
             "keychains": [
                 {
@@ -349,7 +349,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "offset_x": 9.838349342346191,
                     "offset_y": 0.5787375569343567,
                     "offset_z": 4.179599285125732,
-                    "pattern": 17027
+                    "pattern": 17027,
                 }
             ],
             "floatvalue": 0.11404433846473694,
@@ -363,7 +363,7 @@ class TestEnrichedParsing(unittest.TestCase):
             "min": 0,
             "max": 1,
             "collection_name": "The Snakebite Collection",
-            "full_item_name": "StatTrak™ AK-47 | Slate (Minimal Wear)"
+            "full_item_name": "StatTrak™ AK-47 | Slate (Minimal Wear)",
         }
 
         # Exhaustive 1:1 Parity Check
@@ -376,8 +376,8 @@ class TestEnrichedParsing(unittest.TestCase):
 
         # 1. Unlink to get protobuf
         proto = cs2inspect.unlink(original_link)
-        self.assertEqual(proto.defindex, 16) # M4A4
-        self.assertEqual(proto.paintindex, 309) # Howl
+        self.assertEqual(proto.defindex, 16)  # M4A4
+        self.assertEqual(proto.paintindex, 309)  # Howl
 
         # 2. Add Charm (Magmatude ID 47) using Builder/Protobuf
         proto.keychains.add(
@@ -414,7 +414,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "material": "econ/stickers/community01/howling_dawn",
                     "name": "Sticker | Howling Dawn",
                     "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMmuOHaC619h7delpVHoVhH4kJHf-SNM4bz9bKY_dPWQWDCUkLxy57g_H3DgkB5w42uAzIv4I3meOAQlApdwFO5YrFDmxUNp_lL7",
-                    "wear": 0.0
+                    "wear": 0.0,
                 }
             ],
             "keychains": [
@@ -430,7 +430,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "offset_x": 4.5,
                     "offset_y": 0.5,
                     "offset_z": 8.899999618530273,
-                    "pattern": 0
+                    "pattern": 0,
                 }
             ],
             "floatvalue": 0.25706347823143005,
@@ -443,7 +443,7 @@ class TestEnrichedParsing(unittest.TestCase):
             "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyL8ypexwiFO0P_6afVSKP-EAm6extF7teVgWiT9wh5_5zyAwo6oeSrDawUkCMN0QbEM5BO-wNazMe3qsgHZg4wQyy-t2jQJsHi3nDJ37A",
             "min": 0,
             "max": 0.4,
-            "full_item_name": "StatTrak™ M4A4 | Howl (Field-Tested)"
+            "full_item_name": "StatTrak™ M4A4 | Howl (Field-Tested)",
         }
         self.assertEqual(res, expected)
 
@@ -474,7 +474,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "name": "Sticker | Battle Scarred",
                     "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMizOnCS62lz9YnzpVvmVQn9m6nz_iNJ_feqJv09eKfKWGbDkeh1sbVtFnC2xE9_4mvdwtf9IHmVPFN0A5QmRuID5EOm0oqw3DPInuo",
                     "collection_name": "Broken Fang Sticker Collection",
-                    "wear": 0.0
+                    "wear": 0.0,
                 },
                 {
                     "slot": 2,
@@ -484,7 +484,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "name": "Sticker | Battle Scarred",
                     "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMizOnCS62lz9YnzpVvmVQn9m6nz_iNJ_feqJv09eKfKWGbDkeh1sbVtFnC2xE9_4mvdwtf9IHmVPFN0A5QmRuID5EOm0oqw3DPInuo",
                     "collection_name": "Broken Fang Sticker Collection",
-                    "wear": 0.0
+                    "wear": 0.0,
                 },
                 {
                     "slot": 3,
@@ -494,7 +494,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "name": "Sticker | Battle Scarred",
                     "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjMizOnCS62lz9YnzpVvmVQn9m6nz_iNJ_feqJv09eKfKWGbDkeh1sbVtFnC2xE9_4mvdwtf9IHmVPFN0A5QmRuID5EOm0oqw3DPInuo",
                     "collection_name": "Broken Fang Sticker Collection",
-                    "wear": 0.0
+                    "wear": 0.0,
                 },
                 {
                     "slot": 4,
@@ -507,7 +507,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "wear": 0.0,
                     "rotation": -6.0,
                     "offset_x": 0.4290199875831604,
-                    "offset_y": 0.09887716174125671
+                    "offset_y": 0.09887716174125671,
                 },
                 {
                     "slot": 4,
@@ -519,8 +519,8 @@ class TestEnrichedParsing(unittest.TestCase):
                     "collection_name": "Austin 2025 Challengers Autograph Capsule",
                     "wear": 0.0,
                     "offset_x": 0.27328333258628845,
-                    "offset_y": -0.0008028149604797363
-                }
+                    "offset_y": -0.0008028149604797363,
+                },
             ],
             "keychains": [
                 {
@@ -535,7 +535,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "offset_x": 7.433119773864746,
                     "offset_y": 0.4109402596950531,
                     "offset_z": 5.718101501464844,
-                    "highlight_reel": 375
+                    "highlight_reel": 375,
                 }
             ],
             "floatvalue": 0.11445185542106628,
@@ -549,7 +549,7 @@ class TestEnrichedParsing(unittest.TestCase):
             "min": 0,
             "max": 0.5,
             "collection_name": "The Breakout Collection",
-            "full_item_name": "StatTrak™ M4A1-S | Cyrex (Minimal Wear)"
+            "full_item_name": "StatTrak™ M4A1-S | Cyrex (Minimal Wear)",
         }
         self.assertEqual(res, expected)
 
@@ -580,7 +580,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "collection_name": "Paris 2023 Legends Sticker Capsule",
                     "wear": 0.7400000095367432,
                     "offset_x": 0.4192569851875305,
-                    "offset_y": 0.019300460815429688
+                    "offset_y": 0.019300460815429688,
                 },
                 {
                     "slot": 4,
@@ -593,7 +593,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "wear": 0.949999988079071,
                     "rotation": 15.0,
                     "offset_x": 0.4086448848247528,
-                    "offset_y": 0.00020644068717956543
+                    "offset_y": 0.00020644068717956543,
                 },
                 {
                     "slot": 4,
@@ -606,7 +606,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "wear": 0.8600000143051147,
                     "rotation": 6.0,
                     "offset_x": 0.41930267214775085,
-                    "offset_y": 0.03389903903007507
+                    "offset_y": 0.03389903903007507,
                 },
                 {
                     "slot": 4,
@@ -619,8 +619,8 @@ class TestEnrichedParsing(unittest.TestCase):
                     "wear": 0.8399999737739563,
                     "rotation": 9.0,
                     "offset_x": 0.4136018455028534,
-                    "offset_y": 0.015065997838973999
-                }
+                    "offset_y": 0.015065997838973999,
+                },
             ],
             "keychains": [
                 {
@@ -635,7 +635,7 @@ class TestEnrichedParsing(unittest.TestCase):
                     "offset_x": 0.9728495478630066,
                     "offset_y": 0.3318380117416382,
                     "offset_z": 7.366232872009277,
-                    "highlight_reel": 323
+                    "highlight_reel": 323,
                 }
             ],
             "floatvalue": 0.2251126617193222,
@@ -649,11 +649,12 @@ class TestEnrichedParsing(unittest.TestCase):
             "min": 0,
             "max": 0.7,
             "collection_name": "Limited Edition Item",
-            "full_item_name": "M4A1-S | Solitude (Field-Tested)"
+            "full_item_name": "M4A1-S | Solitude (Field-Tested)",
         }
 
         # Exhaustive 1:1 Parity Check
         self.assertEqual(res, expected)
+
 
 if __name__ == "__main__":
     unittest.main()

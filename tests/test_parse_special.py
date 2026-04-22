@@ -41,7 +41,7 @@ class TestUnsupportedAndSpecial(unittest.TestCase):
             "weapon_type": "Music Kit",
             "item_name": "Valve, CS:GO",
             "imageurl": "https://cdn.steamstatic.com/apps/730/icons/econ/music_kits/valve_01.a22bb7e41ed9f28f93ac66f80f74716560236318.png",
-            "full_item_name": "Music Kit | Valve, CS:GO"
+            "full_item_name": "Music Kit | Valve, CS:GO",
         }
         self.assertEqual(res, expected)
 
@@ -67,7 +67,7 @@ class TestUnsupportedAndSpecial(unittest.TestCase):
             "quality_name": "Unique",
             "weapon_type": "Pin",
             "item_name": "Cobblestone Pin",
-            "full_item_name": "Cobblestone Pin"
+            "full_item_name": "Cobblestone Pin",
         }
         self.assertEqual(res, expected)
 
@@ -95,14 +95,14 @@ class TestUnsupportedAndSpecial(unittest.TestCase):
             "weapon_type": "Graffiti",
             "item_name": "Popdog (Wire Blue)",
             "imageurl": "https://community.akamai.steamstatic.com/economy/image/IzMF03bi9WpSBq-S-ekoE33L-iLqGFHVaU25ZzQNQcXdB2ozio1RrlIWFK3UfvMYB8UsvjiMXojflsZalyxSh31CIyHz2GZ-KuFpPsrTzBG0se2dGHvwJjKWe3nYRQ4_H-JcNDmK-Tvw5u3AFD7PROt5FltQdfQE8m1JaMrYNxEjlNlc7Wa3m0tvEwMkZsxWfBbmySUQYL50EaZR17I",
-            "full_item_name": "Graffiti | Popdog (Wire Blue)"
+            "full_item_name": "Graffiti | Popdog (Wire Blue)",
         }
         self.assertEqual(res, expected)
 
     def test_unsupported_season_medal(self):
         self.skip_if_no_schema()
         link = "steam://run/730//+csgo_econ_action_preview%20C1D10F64634476C0D968E9E1C1E9C7F1C5A9FEB1C802B9D731"
-        with self.assertRaises(cs2inspect.UnsupportedItemError) as cm:
+        with self.assertRaises(cs2inspect.UnsupportedItemError):
             cs2inspect.parse(link, schema=self.schema)
 
     def test_unsupported_service_medal(self):
@@ -128,6 +128,7 @@ class TestUnsupportedAndSpecial(unittest.TestCase):
         link = "steam://run/730//+csgo_econ_action_preview%20F0E04914707EF7E877F7D0F0D8F6C0F498AD80F9A1D9AF04"
         with self.assertRaises(cs2inspect.UnsupportedItemError):
             cs2inspect.parse(link, schema=self.schema)
+
 
 if __name__ == "__main__":
     unittest.main()

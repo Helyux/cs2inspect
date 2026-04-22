@@ -4,7 +4,6 @@ import cs2inspect
 
 
 class TestHexRoundtrip(unittest.TestCase):
-
     def test_protobuf_hex_roundtrip(self):
         builder = cs2inspect.Builder(
             defindex=7,
@@ -12,11 +11,16 @@ class TestHexRoundtrip(unittest.TestCase):
             paintseed=2,
             paintwear=0.22540508210659027,
             rarity=5,
-            stickers=[{'slot': 2, 'sticker_id': 7203, 'wear': 0}],
-            keychains=[{'slot': 0, 'sticker_id': 36,
-                        'offset_x': 4.515311241149902,
-                        'offset_y': 0.5914779901504517,
-                        'offset_z': 8.906611442565918}]
+            stickers=[{"slot": 2, "sticker_id": 7203, "wear": 0}],
+            keychains=[
+                {
+                    "slot": 0,
+                    "sticker_id": 36,
+                    "offset_x": 4.515311241149902,
+                    "offset_y": 0.5914779901504517,
+                    "offset_z": 8.906611442565918,
+                }
+            ],
         )
 
         protobuf_original = builder.build()
@@ -29,8 +33,11 @@ class TestHexRoundtrip(unittest.TestCase):
 
     def test_from_hex_rejects_corrupted_crc(self):
         builder = cs2inspect.Builder(
-            defindex=7, paintindex=941, paintseed=2,
-            paintwear=0.22540508210659027, rarity=5,
+            defindex=7,
+            paintindex=941,
+            paintseed=2,
+            paintwear=0.22540508210659027,
+            rarity=5,
         )
         hex_string = cs2inspect.to_hex(builder.build())
 
@@ -54,5 +61,5 @@ class TestHexRoundtrip(unittest.TestCase):
             cs2inspect.from_hex("00AABB")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

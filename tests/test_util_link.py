@@ -1,6 +1,9 @@
+# ruff: noqa: E501
 import unittest
 
 import cs2inspect
+
+# fmt: off
 
 inspect_links = [
     ["masked", "%2000188004202628063003388783EBE60340AC0369DA0A5E"],
@@ -32,18 +35,20 @@ inspect_links = [
     [None, "0018F90320A2032806300f338818EAED20340CA01B473CF7A"],
     [None, "0018F90320A20328063-00338818EAED20340CA01B473CF7A"],
 ]
+# fmt: on
 
 
 class TestLinkType(unittest.TestCase):
-
     def test_link_type_cases(self):
         prefix = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview"
 
         for expected_result, test_case in inspect_links:
             with self.subTest(test_case=test_case):
                 inspect_link = prefix + test_case
-                self.assertEqual(cs2inspect.link_type(inspect_link), expected_result, f"Failed for link: {inspect_link}")
+                self.assertEqual(
+                    cs2inspect.link_type(inspect_link), expected_result, f"Failed for link: {inspect_link}"
+                )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
