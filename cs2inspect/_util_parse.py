@@ -296,8 +296,9 @@ def enrich_attachments(result: dict[str, Any], schema: ItemSchema) -> None:
             look_id = wrapped_id if wrapped_id is not None else keychain_id
 
             if look_id is not None:
-                # Prioritize charm lookup.
-                keychain_info = schema.get_charm_info(look_id)
+                # Prioritize charm lookup using the base item ID (keychain_id).
+                # This prevents collisions where a wrapped sticker ID matches a legacy charm ID.
+                keychain_info = schema.get_charm_info(keychain_id)
                 highlight_reel = keychain.get("highlight_reel")
                 is_regular_charm = keychain_info is not None
 

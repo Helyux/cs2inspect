@@ -655,6 +655,103 @@ class TestEnrichedParsing(unittest.TestCase):
         # Exhaustive 1:1 Parity Check
         self.assertEqual(res, expected)
 
+    def test_m4a1s_black_lotus_with_sticker_slab_collision(self):
+        self.skip_if_no_schema()
+        # M4A1-S | Black Lotus with Sticker Slab wrapping Lucky 13 (ID 13 collision)
+        # Verify it resolves to "Lucky 13" slab, not "Dinner Dog" charm.
+        link = "steam://run/730//+csgo_econ_action_preview%208292215C625139839ABEA20C8BAA87B286BA1F003E7B81C24C84EA90F28A2083978A8292A7BFD6EC02BDC718642BBCCF47CE6FC2E28FBBF3E916"
+        res = cs2inspect.parse(link, schema=self.schema)
+
+        expected = {
+            "itemid": 50373078819,
+            "defindex": 60,
+            "paintindex": 1166,
+            "rarity": 5,
+            "quality": 4,
+            "paintwear": 1060045085,
+            "paintseed": 846,
+            "inventory": 18,
+            "origin": 8,
+            "keychains": [
+                {
+                    "slot": 0,
+                    "sticker_id": 13,
+                    "codename": "std_thirteen",
+                    "material": "econ/stickers/standard/thirteen_1355_37",
+                    "name": "Sticker Slab | Lucky 13",
+                    "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai0ki7VeTHjNm1NHWT5ERxu5P840vzRBj_ocezqHdkvKXgOPw1dabBWTfBkL8ntrY8HXnjxR5-4DjXntioeX-WbAckCcBzE-MLsQ74zIMGCxgywg",
+                    "wear": 0.0,
+                    "offset_x": 1.0033669471740723,
+                    "offset_y": 0.3318374752998352,
+                    "offset_z": 7.415621280670166,
+                    "wrapped_sticker": 13,
+                }
+            ],
+            "floatvalue": 0.683610737323761,
+            "wear_name": "Battle-Scarred",
+            "weapon_type": "M4A1-S",
+            "rarity_name": "Classified",
+            "origin_name": "Found in Crate",
+            "quality_name": "Unique",
+            "item_name": "Black Lotus",
+            "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyL8ypexwjFS4_ega6F_H_3HDzaD_ux6seJicCW8gQg0jDWAm5ngbynCalJyDpMlQONYtkPpldTlYr7qtAPc2NhByiX4jikav3tj5O4LU6A7uvqArAmeAQg",
+            "min": 0,
+            "max": 0.7,
+            "collection_name": "The Kilowatt Collection",
+            "full_item_name": "M4A1-S | Black Lotus (Battle-Scarred)",
+        }
+
+        self.assertEqual(res, expected)
+
+    def test_m4a1s_black_lotus_with_diner_dog_charm_collision_proof(self):
+        self.skip_if_no_schema()
+        # 1. Start with the EXACT SAME Sticker Slab link as the test above
+        link = "steam://run/730//+csgo_econ_action_preview%208292215C625139839ABEA20C8BAA87B286BA1F003E7B81C24C84EA90F28A2083978A8292A7BFD6EC02BDC718642BBCCF47CE6FC2E28FBBF3E916"
+
+        # Parse original to get base data (to prove only keychains differ)
+        slab_res = cs2inspect.parse(link, schema=self.schema)
+
+        # 2. Unlink to get the protobuf
+        proto = cs2inspect.unlink(link)
+
+        # 3. Modify: Swap the Sticker Slab for a regular "Diner Dog" charm (ID 13)
+        # We preserve the exact offsets from the original link for perfect parity.
+        orig_kc = slab_res["keychains"][0]
+        del proto.keychains[:]
+        proto.keychains.add(
+            slot=0,
+            sticker_id=13,
+            offset_x=orig_kc["offset_x"],
+            offset_y=orig_kc["offset_y"],
+            offset_z=orig_kc["offset_z"],
+        )
+
+        # 4. Generate new link and parse it
+        new_link = cs2inspect.link(proto)
+        res = cs2inspect.parse(new_link, schema=self.schema)
+
+        # 5. Construct expected from original but with swapped keychain metadata
+        expected = slab_res.copy()
+        expected["keychains"] = [
+            {
+                "slot": 0,
+                "sticker_id": 13,
+                "codename": "kc_missinglink_sam_shape",
+                "material": "econ/keychains/missinglink/kc_missinglink_sam_shape",
+                "name": "Charm | Diner Dog",
+                "imageurl": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGI6zwki4Uf_a0IWsPGiE7Fhy-I764RbsQiL8l4Xz9Cxc4_ugY5t-If2sHW-R0es44ec6GCziw0om4W7TzNuqcX2UZg9xA5RzF-QDsRa9ktXvYevg7wPe2JUFk3ucEH-vmw",
+                "collection_name": "Missing Link Charm Collection",
+                "wear": 0.0,
+                "offset_x": orig_kc["offset_x"],
+                "offset_y": orig_kc["offset_y"],
+                "offset_z": orig_kc["offset_z"],
+                "pattern": 0,
+            }
+        ]
+
+        # Verify full parity - the only difference should be the keychain info
+        self.assertEqual(res, expected)
+
 
 if __name__ == "__main__":
     unittest.main()
