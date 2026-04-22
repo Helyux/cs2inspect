@@ -9,10 +9,13 @@ import platformdirs
 from ._util_schema import fetch_and_update_schema
 
 # Cache to store loaded ItemSchema instances to avoid redundant filesystem reads.
-_SCHEMA_CACHE: dict[str, "ItemSchema"] = {}
+_SCHEMA_CACHE: "ItemSchema | None" = None
 
 
 class ItemSchema:
+    def __repr__(self) -> str:
+        return "<ItemSchema>"
+
     def __init__(self, data: dict[str, Any]):
         """
         Initialize the schema and parse the raw JSON metadata natively.
@@ -21,13 +24,13 @@ class ItemSchema:
         :type data: dict[str, Any]
         """
 
-        self._data = data.get("items", {}) if "items" in data else data
+        self._data = data.get("items", data)
         self._highlights = {}
         if "highlights" in data:
             for h in data["highlights"]:
-                d_idx = h.get("def_index")
-                if d_idx:
-                    self._highlights[int(d_idx)] = h
+                def_index = h.get("def_index")
+                if def_index:
+                    self._highlights[int(def_index)] = h
 
         self._weapons = {}
         self._skins = {}
@@ -45,19 +48,19 @@ class ItemSchema:
         # Pass 1: Build crate mapping and collect items with nested children
         for key, item in self._data.items():
             if key.startswith("collection-") and "crates" in item and isinstance(item["crates"], list):
-                col_name = item.get("name")
-                if col_name:
+                collection_name = item.get("name")
+                if collection_name:
                     for crate in item["crates"]:
                         crate_id = crate.get("id")
                         if crate_id:
-                            crate_to_col[crate_id] = col_name
+                            crate_to_col[crate_id] = collection_name
 
             children_keys = ("contains", "contains_rare", "loot_list")
             all_children = []
-            for ck in children_keys:
-                c_list = item.get(ck)
-                if c_list and isinstance(c_list, list):
-                    all_children.extend(c_list)
+            for child_key in children_keys:
+                child_list = item.get(child_key)
+                if child_list and isinstance(child_list, list):
+                    all_children.extend(child_list)
 
             if all_children:
                 nested_parents.append((key, item, all_children))
@@ -65,17 +68,17 @@ class ItemSchema:
         # Pass 2: Resolve nested items
         nested_to_col = {}
         for key, item, all_children in nested_parents:
-            col_name = item.get("name")
+            collection_name = item.get("name")
             if key.startswith("crate-") and key in crate_to_col:
-                col_name = crate_to_col[key]
+                collection_name = crate_to_col[key]
 
-            if col_name:
+            if collection_name:
                 for child in all_children:
                     child_id = child.get("id")
                     if child_id:
                         # Don't overwrite if a primary collection- level mapping was already found
                         if not (child_id in nested_to_col and key.startswith("crate-")):
-                            nested_to_col[child_id] = col_name
+                            nested_to_col[child_id] = collection_name
 
         self._nested_to_col = nested_to_col
 
@@ -100,8 +103,8 @@ class ItemSchema:
         def_index = item.get("def_index")
 
         # Associate item with its collection based on its ID or parent context
-        col_name = parent_collection
-        if not col_name:
+        collection_name = parent_collection
+        if not collection_name:
             # Check if this key matches a nested ID (remove wear-level suffix for skins e.g. '_0')
             check_key = key
             wear_tier = None
@@ -112,27 +115,27 @@ class ItemSchema:
                 if parts[1].isdigit():
                     wear_tier = int(parts[1])
 
-            col_name = self._nested_to_col.get(check_key)
+            collection_name = self._nested_to_col.get(check_key)
 
             # Fallback to direct 'collections' list if present (common for Agents)
-            if not col_name:
+            if not collection_name:
                 cols = item.get("collections", [])
                 if cols and isinstance(cols, list) and len(cols) > 0:
-                    col_name = cols[0].get("name")
+                    collection_name = cols[0].get("name")
 
         if key.startswith("agent-") and def_index is not None:
-            d_idx = int(def_index)
+            def_index = int(def_index)
             agent_data = {"name": item.get("name"), "image": item.get("image", "")}
-            if col_name:
-                agent_data["collection"] = col_name
+            if collection_name:
+                agent_data["collection"] = collection_name
 
-            if d_idx in self._agents:
-                self._agents[d_idx].update(agent_data)
+            if def_index in self._agents:
+                self._agents[def_index].update(agent_data)
             else:
-                self._agents[d_idx] = agent_data
+                self._agents[def_index] = agent_data
 
         elif (key.startswith("sticker_slab-") or key.startswith("patch-")) and def_index is not None:
-            d_idx = int(def_index)
+            def_index = int(def_index)
             original = item.get("original", {})
             slab_data = {
                 "name": item.get("name", "Unknown"),
@@ -140,16 +143,16 @@ class ItemSchema:
                 "material": original.get("image_inventory", "Unknown"),
                 "image": item.get("image", ""),
             }
-            if col_name:
-                slab_data["collection"] = col_name
+            if collection_name:
+                slab_data["collection"] = collection_name
 
-            if d_idx in self._sticker_slabs:
-                self._sticker_slabs[d_idx].update(slab_data)
+            if def_index in self._sticker_slabs:
+                self._sticker_slabs[def_index].update(slab_data)
             else:
-                self._sticker_slabs[d_idx] = slab_data
+                self._sticker_slabs[def_index] = slab_data
 
         elif (key.startswith("sticker-") or key.startswith("graffiti-")) and def_index is not None:
-            d_idx = int(def_index)
+            def_index = int(def_index)
             original = item.get("original", {})
             codename = original.get("name") or original.get("loc_name") or "Unknown"
             if codename.startswith("#"):
@@ -161,16 +164,16 @@ class ItemSchema:
                 "material": original.get("image_inventory", "Unknown"),
                 "image": item.get("image", ""),
             }
-            if col_name:
-                sticker_data["collection"] = col_name
+            if collection_name:
+                sticker_data["collection"] = collection_name
 
-            if d_idx in self._stickers:
-                self._stickers[d_idx].update(sticker_data)
+            if def_index in self._stickers:
+                self._stickers[def_index].update(sticker_data)
             else:
-                self._stickers[d_idx] = sticker_data
+                self._stickers[def_index] = sticker_data
 
         elif (key.startswith("charm-") or key.startswith("keychain-")) and def_index is not None:
-            d_idx = int(def_index)
+            def_index = int(def_index)
             original = item.get("original", {})
             codename = original.get("name") or original.get("loc_name") or "Unknown"
             if codename.startswith("#"):
@@ -186,45 +189,49 @@ class ItemSchema:
                 "material": original.get("image_inventory", "Unknown"),
                 "image": item.get("image", ""),
             }
-            if col_name:
-                charm_data["collection"] = col_name
+            if collection_name:
+                charm_data["collection"] = collection_name
 
-            if d_idx in self._charms:
-                self._charms[d_idx].update(charm_data)
+            if def_index in self._charms:
+                self._charms[def_index].update(charm_data)
             else:
-                self._charms[d_idx] = charm_data
+                self._charms[def_index] = charm_data
 
         elif key.startswith("music_kit-") and def_index is not None:
-            d_idx = int(def_index)
-            kit_data = {"name": item.get("name", "Unknown"), "image": item.get("image", ""), "collection": col_name}
-            if d_idx in self._music_kits:
-                self._music_kits[d_idx].update(kit_data)
+            def_index = int(def_index)
+            kit_data = {
+                "name": item.get("name", "Unknown"),
+                "image": item.get("image", ""),
+                "collection": collection_name,
+            }
+            if def_index in self._music_kits:
+                self._music_kits[def_index].update(kit_data)
             else:
-                self._music_kits[d_idx] = kit_data
+                self._music_kits[def_index] = kit_data
 
         elif key.startswith("collectible-") and def_index is not None:
-            d_idx = int(def_index)
+            def_index = int(def_index)
             # Register as a weapon name so it's picked up by get_weapon_name
-            w_name = item.get("name")
-            if w_name:
-                self._weapons[d_idx] = w_name
+            weapon_name = item.get("name")
+            if weapon_name:
+                self._weapons[def_index] = weapon_name
 
         if weapon_id is not None:
-            w_id = int(weapon_id)
-            w_name = weapon_def.get("name")
-            if w_name:
-                self._weapons[w_id] = w_name
+            weapon_id = int(weapon_id)
+            weapon_name = weapon_def.get("name")
+            if weapon_name:
+                self._weapons[weapon_id] = weapon_name
 
             paint_index = item.get("paint_index")
             if paint_index is not None:
-                p_id = int(paint_index)
+                paint_id = int(paint_index)
                 pattern_def = item.get("pattern", {})
                 skin_name = pattern_def.get("name") or item.get("name")
 
                 if skin_name:
-                    s_key = (w_id, p_id)
-                    if s_key not in self._skins:
-                        self._skins[s_key] = {
+                    skin_key = (weapon_id, paint_id)
+                    if skin_key not in self._skins:
+                        self._skins[skin_key] = {
                             "name": skin_name,
                             "images": {},  # Wear-specific images (0-4)
                             "min_float": item.get("min_float"),
@@ -232,32 +239,32 @@ class ItemSchema:
                         }
 
                     # Update base info
-                    self._skins[s_key]["name"] = skin_name
+                    self._skins[skin_key]["name"] = skin_name
                     if item.get("min_float") is not None:
-                        self._skins[s_key]["min_float"] = item.get("min_float")
+                        self._skins[skin_key]["min_float"] = item.get("min_float")
                     if item.get("max_float") is not None:
-                        self._skins[s_key]["max_float"] = item.get("max_float")
-                    if col_name:
-                        self._skins[s_key]["collection"] = col_name
+                        self._skins[skin_key]["max_float"] = item.get("max_float")
+                    if collection_name:
+                        self._skins[skin_key]["collection"] = collection_name
 
                     # Store image variant if wear_tier detected
                     img = item.get("image", "")
                     if img:
                         if wear_tier is not None:
-                            self._skins[s_key]["images"][wear_tier] = img
+                            self._skins[skin_key]["images"][wear_tier] = img
                         else:
                             # Fallback if no tier suffix found
-                            self._skins[s_key]["image_default"] = img
+                            self._skins[skin_key]["image_default"] = img
 
         # Traverse nested children for structural resolution
         children_keys = ["contains", "contains_rare", "loot_list"]
-        for ck in children_keys:
-            c_list = item.get(ck)
-            if c_list and isinstance(c_list, list):
-                for child in c_list:
+        for child_key in children_keys:
+            child_list = item.get(child_key)
+            if child_list and isinstance(child_list, list):
+                for child in child_list:
                     child_id = child.get("id", "")
                     if child_id:
-                        self._process_item(child_id, child, parent_collection=col_name)
+                        self._process_item(child_id, child, parent_collection=collection_name)
 
     def get_weapon_name(self, weapon_id: int) -> str:
         """
@@ -301,28 +308,28 @@ class ItemSchema:
 
         return self._agents.get(defindex)
 
-    def get_wear_tier(self, float_val: float) -> int:
+    def get_wear_tier(self, floatvalue: float) -> int:
         """
         Map a float value (0.0 - 1.0) to a specific continuous cosmetic wear tier (0-4).
 
-        :param float_val: The exact float precision string/number measuring item wear.
-        :type float_val: float
+        :param floatvalue: The exact float precision string/number measuring item wear.
+        :type floatvalue: float
 
         :return: Discrete wear tier ranging from 0 (FN) to 4 (BS).
         :rtype: int
         """
 
-        if float_val < 0.07:
+        if floatvalue < 0.07:
             return 0  # Factory New
-        if float_val < 0.15:
+        if floatvalue < 0.15:
             return 1  # Minimal Wear
-        if float_val < 0.38:
+        if floatvalue < 0.38:
             return 2  # Field-Tested
-        if float_val < 0.45:
+        if floatvalue < 0.45:
             return 3  # Well-Worn
         return 4  # Battle-Scarred
 
-    def get_skin_info(self, weapon_id: int, paint_index: int, float_val: float | None = None) -> dict[str, Any] | None:
+    def get_skin_info(self, weapon_id: int, paint_index: int, floatvalue: float | None = None) -> dict[str, Any] | None:
         """
         Fetch generalized skin metadata corresponding strictly to the paintwear and specific paint_index.
 
@@ -330,8 +337,8 @@ class ItemSchema:
         :type weapon_id: int
         :param paint_index: The specific skin variation mapped physically.
         :type paint_index: int
-        :param float_val: Visual float altering the visual image optionally, Defaults to None.
-        :type float_val: float | None
+        :param floatvalue: Visual float altering the visual image optionally, Defaults to None.
+        :type floatvalue: float | None
 
         :return: An extracted structured object returning skin stats or None if unavailable.
         :rtype: dict[str, Any] | None
@@ -346,8 +353,8 @@ class ItemSchema:
 
         # Select image based on wear_tier
         images = skin.get("images", {})
-        if float_val is not None and images:
-            tier = self.get_wear_tier(float_val)
+        if floatvalue is not None and images:
+            tier = self.get_wear_tier(floatvalue)
             # Find the closest tier if exact one missing
             if tier in images:
                 res["image"] = images[tier]
@@ -430,20 +437,6 @@ class ItemSchema:
 
         return self._highlights.get(reel_id)
 
-    @staticmethod
-    def get_image_url(icon_url: str) -> str:
-        """
-        Validate and format standard web paths gracefully returning localized icons mappings.
-
-        :param icon_url: Expected standard path location mapped loosely from Steam networks.
-        :type icon_url: str
-
-        :return: Correct fully resolved URL or an empty string securely.
-        :rtype: str
-        """
-
-        return icon_url if icon_url else ""
-
 
 def get_config_path() -> Path:
     """
@@ -494,7 +487,7 @@ def save_schema_path(path: str):
         with open(config_path, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4)
     except (OSError, TypeError):
-        pass
+        return
 
 
 def load_schema_path() -> str | None:
@@ -514,7 +507,7 @@ def load_schema_path() -> str | None:
                 if path and Path(path).exists():
                     return path
         except (json.JSONDecodeError, OSError, KeyError):
-            pass
+            return None
 
     fallbacks = [
         Path.cwd() / "cs2schema.json",
@@ -525,7 +518,7 @@ def load_schema_path() -> str | None:
         Path(__file__).parent / "cs2_schema.json",
     ]
 
-    for f in fallbacks:
+    for fallback_path in fallbacks:
         if f.exists():
             return str(f.absolute())
 
@@ -586,18 +579,15 @@ def load_schema(path: str | None = None, raise_on_error: bool = False) -> ItemSc
     except (OSError, OverflowError):
         pass
 
-    if path_str in _SCHEMA_CACHE:
-        return _SCHEMA_CACHE[path_str]
+    global _SCHEMA_CACHE
+    if _SCHEMA_CACHE is not None:
+        return _SCHEMA_CACHE
 
     try:
         with open(path_str, "r", encoding="utf-8") as f:
             data = json.load(f)
             schema = ItemSchema(data)
-            _SCHEMA_CACHE[path_str] = schema
+            _SCHEMA_CACHE = schema
             return schema
     except (json.JSONDecodeError, OSError):
         return None
-
-
-if __name__ == "__main__":
-    exit(1)
