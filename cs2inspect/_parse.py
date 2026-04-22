@@ -1,9 +1,9 @@
 from typing import Any
 
-from cs2inspect._schema import ItemSchema, load_schema
-from cs2inspect._util_hex import from_hex
-from cs2inspect._util_link import _link_valid_and_type, unquote_link
-from cs2inspect._util_parse import (
+from ._schema import ItemSchema, load_schema
+from ._util_hex import from_hex
+from ._util_link import _link_valid_and_type, unquote_link
+from ._util_parse import (
     RE_MASKED_PAYLOAD,
     RE_UNMASKED_PAYLOAD,
     UnsupportedItemError,  # noqa: F401 — re-exported via __init__.py
@@ -12,7 +12,7 @@ from cs2inspect._util_parse import (
     enrich_enums,
     extract_payload,
 )
-from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
+from .econ_pb2 import CEconItemPreviewDataBlock
 
 
 def parse(inspect_link: str, enrich: bool = False, schema: ItemSchema | str | None = None) -> dict[str, Any]:
@@ -58,7 +58,7 @@ def parse(inspect_link: str, enrich: bool = False, schema: ItemSchema | str | No
         # Final cleanup: omit optional enriched fields if they are missing, None, or empty
         optional_fields = ["collection_name", "imageurl", "wear_name", "min", "max", "item_name", "weapon_type"]
         for field in optional_fields:
-            if field in result and result[field] in [None, ""]:
+            if field in result and result[field] in (None, ""):
                 del result[field]
 
     return result
@@ -66,10 +66,8 @@ def parse(inspect_link: str, enrich: bool = False, schema: ItemSchema | str | No
 
 def unlink(inspect_link: str) -> dict[str, Any] | CEconItemPreviewDataBlock:
     """
-    Parse a valid inspect link and return its original data block.
-    Matches the input types accepted by the `link()` function.
-    - Returns `CEconItemPreviewDataBlock` for masked links.
-    - Returns `dict` for unmasked links.
+    Reverse-engineer an inspect link back into its original data structure.
+    Returns a protobuf datablock for masked links, and a dictionary of IDs for unmasked links.
 
     :param inspect_link: The inspect link to parse.
     :type inspect_link: str
@@ -104,7 +102,3 @@ def unlink(inspect_link: str) -> dict[str, Any] | CEconItemPreviewDataBlock:
             return data
 
     raise ValueError("Could not unlink the provided string")
-
-
-if __name__ == "__main__":
-    exit(1)

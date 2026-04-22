@@ -1,10 +1,10 @@
 from typing import Any
 
-from cs2inspect._util_base import INSPECT_BASE
-from cs2inspect._util_gen import build_gen_from_datablock, build_gen_from_dict
-from cs2inspect._util_hex import to_hex
-from cs2inspect._util_link import is_link_valid
-from cs2inspect.econ_pb2 import CEconItemPreviewDataBlock
+from ._util_base import INSPECT_BASE_MASKED, INSPECT_BASE_UNMASKED
+from ._util_gen import build_gen_from_datablock, build_gen_from_dict
+from ._util_hex import to_hex
+from ._util_link import is_link_valid
+from .econ_pb2 import CEconItemPreviewDataBlock
 
 
 def _link_from_dict(data: dict[str, Any]) -> str | None:
@@ -28,13 +28,13 @@ def _link_from_dict(data: dict[str, Any]) -> str | None:
         class_id=data["class_id"],
         market_id=data.get("market_id"),
         owner_id=data.get("owner_id"),
-        base=data.get("base", INSPECT_BASE),
+        base=data.get("base", INSPECT_BASE_UNMASKED),
     )
 
 
-def link(data: dict[str, Any] | CEconItemPreviewDataBlock, base: str = INSPECT_BASE) -> str | None:
+def link(data: dict[str, Any] | CEconItemPreviewDataBlock, base: str | None = None) -> str | None:
     """
-    Generate an inspect link from a provided datablock or data dictionary.
+    Generate an inspect link from an item data dictionary or protobuf datablock.
 
     :param data: The input datablock or data dictionary.
     :type data: dict[str, Any] | CEconItemPreviewDataBlock
@@ -48,13 +48,13 @@ def link(data: dict[str, Any] | CEconItemPreviewDataBlock, base: str = INSPECT_B
     if isinstance(data, dict):
         return _link_from_dict(data)
     elif isinstance(data, CEconItemPreviewDataBlock):
-        return link_masked(data, base=base)
+        return link_masked(data, base=base or INSPECT_BASE_MASKED)
     return None
 
 
 def gen(data: dict[str, Any] | CEconItemPreviewDataBlock, prefix: str = "!gen") -> str | None:
     """
-    Generate a (!gen) or equivalent gen command string for the given item.
+    Generate a bot-compatible server command string (e.g., '!gen') from the given item data.
 
     :param data: The parsed data dictionary or protobuf block to generate from.
     :type data: dict[str, Any] | CEconItemPreviewDataBlock
@@ -87,17 +87,18 @@ def link_console(data: str | dict[str, Any] | CEconItemPreviewDataBlock) -> str 
     """
 
     if isinstance(data, (dict, CEconItemPreviewDataBlock)):
-        inspect_link = link(data).split("/+")[1].replace("%20", " ")
-        return inspect_link
+        if (raw := link(data)) is None:
+            return None
+        return raw.split("/+")[1].replace("%20", " ")
     elif isinstance(data, str):
         return data.split("/+")[1].replace("%20", " ")
     else:
         return None
 
 
-def link_masked(data_block: CEconItemPreviewDataBlock, base: str = INSPECT_BASE) -> str | None:
+def link_masked(data_block: CEconItemPreviewDataBlock, base: str = INSPECT_BASE_MASKED) -> str | None:
     """
-    Generate a masked inspect link (hex string payload) from the given data block.
+    Generate a masked inspect link (hexadecimal payload) from a protobuf datablock.
 
     :param data_block: The CEconItemPreviewDataBlock protobuf object.
     :type data_block: CEconItemPreviewDataBlock
@@ -114,10 +115,14 @@ def link_masked(data_block: CEconItemPreviewDataBlock, base: str = INSPECT_BASE)
 
 
 def link_unmasked(
-    asset_id: str, class_id: str, market_id: str | None = None, owner_id: str | None = None, base: str = INSPECT_BASE
+    asset_id: str,
+    class_id: str,
+    market_id: str | None = None,
+    owner_id: str | None = None,
+    base: str = INSPECT_BASE_UNMASKED,
 ) -> str | None:
     """
-    Generate an unmasked inspect link (D/A/S/M format) from the given IDs.
+    Generate an unmasked inspect link using Asset, Class, and Market/Owner IDs (S/A/D/M format).
 
     :param asset_id: The asset ID ('A' block).
     :type asset_id: str
@@ -137,7 +142,3 @@ def link_unmasked(
     location = f"M{market_id}" if market_id else f"S{owner_id}"
     inspect_link = f"{base}{location}A{asset_id}D{class_id}"
     return inspect_link if is_link_valid(inspect_link) else None
-
-
-if __name__ == "__main__":
-    exit(1)
