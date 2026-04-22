@@ -7,8 +7,20 @@ on:
     branches: [ "main", "dev" ]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/ruff-action@v3
+        with:
+          args: "check"
+      - uses: astral-sh/ruff-action@v3
+        with:
+          args: "format --check"
+
   test:
     runs-on: ubuntu-latest
+    needs: lint
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]

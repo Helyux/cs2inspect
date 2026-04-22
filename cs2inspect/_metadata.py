@@ -1,9 +1,18 @@
 from enum import IntEnum
 
 
+class LabeledIntEnum(IntEnum):
+    @classmethod
+    def get_name(cls, value: int) -> str:
+        try:
+            return cls(value).name.replace("_", " ").title()
+        except ValueError:
+            return "Unknown"
+
+
 # Source:
 # https://github.com/SteamTracking/GameTracking-CS2/blob/master/game/csgo/pak01_dir/resource/csgo_english.txt
-class Rarity(IntEnum):
+class Rarity(LabeledIntEnum):
     STOCK = 0
     CONSUMER_GRADE = 1
     INDUSTRIAL_GRADE = 2
@@ -16,10 +25,6 @@ class Rarity(IntEnum):
 
     @classmethod
     def get_name(cls, value: int, context: str = "weapon") -> str:
-        """
-        Get the localized name for a rarity value based on the item context.
-        Possible contexts: 'weapon', 'character', 'other'
-        """
         # Gold/Extraordinary items use special logic
         if value == cls.GOLD:
             if context == "character":
@@ -56,12 +61,12 @@ class Rarity(IntEnum):
                 cls.CLASSIFIED: "Exotic",
                 cls.COVERT: "Extraordinary",
                 cls.CONTRABAND: "Contraband",
-            }
+            },
         }
 
-        # Fallback to weapon track if context is unknown
-        track = tracks.get(context, tracks["weapon"])
-        return track.get(value, "Unknown")
+        # Fallback to weapon rarity_track if context is unknown
+        rarity_track = tracks.get(context, tracks["weapon"])
+        return rarity_track.get(value, "Unknown")
 
     @classmethod
     def parse(cls, value: str | int) -> int:
@@ -79,7 +84,7 @@ class Rarity(IntEnum):
         if isinstance(value, str):
             clean_name = value.upper().replace(" ", "_").replace("-", "_")
             try:
-                # Direct check against enum members (Weapon track mostly)
+                # Direct check against enum members (Weapon rarity_track mostly)
                 return cls[clean_name].value
             except KeyError:
                 # Context-aware aliases from all 3 tracks
@@ -88,34 +93,28 @@ class Rarity(IntEnum):
                     "MASTER": 6,
                     "EXTRAORDINARY": 6,
                     "ANCIENT": 6,
-                    "UNUSUAL": 99, # Special case for Gloves/Knives Star
-
+                    "UNUSUAL": 99,  # Special case for Gloves/Knives Star
                     # ID 5: Legendary
                     "SUPERIOR": 5,
                     "EXOTIC": 5,
                     "LEGENDARY": 5,
-
                     # ID 4: Mythical
                     "EXCEPTIONAL": 4,
                     "REMARKABLE": 4,
                     "MYTHICAL": 4,
-
                     # ID 3: Rare
                     "DISTINGUISHED": 3,
                     "HIGH_GRADE": 3,
                     "RARE": 3,
                     "MIL_SPEC": 3,
-
                     # ID 2: Uncommon
                     "MEDIUM_GRADE": 2,
                     "UNCOMMON": 2,
                     "INDUSTRIAL": 2,
-
                     # ID 1: Common
                     "BASE_GRADE": 1,
                     "COMMON": 1,
                     "CONSUMER": 1,
-
                     # ID 0: Default
                     "DEFAULT": 0,
                 }
@@ -128,7 +127,7 @@ class Rarity(IntEnum):
 # Sources:
 # https://raw.githubusercontent.com/SteamTracking/GameTracking-CS2/refs/heads/master/game/csgo/pak01_dir/scripts/items/items_game.txt
 # https://raw.githubusercontent.com/SteamTracking/GameTracking-CS2/refs/heads/master/game/csgo/pak01_dir/resource/csgo_english.txt
-class Quality(IntEnum):
+class Quality(LabeledIntEnum):
     NORMAL = 0
     GENUINE = 1
     VINTAGE = 2
@@ -147,28 +146,21 @@ class Quality(IntEnum):
 
     @classmethod
     def get_name(cls, value: int) -> str:
-        names = {
-            cls.NORMAL: "Normal",
-            cls.GENUINE: "Genuine",
-            cls.VINTAGE: "Vintage",
+        overrides = {
             cls.UNUSUAL: "★",
-            cls.UNIQUE: "Unique",
-            cls.COMMUNITY: "Community",
             cls.DEVELOPER: "Valve",
             cls.SELFMADE: "Prototype",
-            cls.CUSTOMIZED: "Customized",
             cls.STRANGE: "StatTrak™",
-            cls.COMPLETED: "Completed",
-            cls.HAUNTED: "Haunted",
             cls.TOURNAMENT: "Souvenir",
-            cls.HIGHLIGHT: "Highlight",
-            cls.VOLATILE: "Volatile",
         }
-        return names.get(value, "Unknown")
+        if value in overrides:
+            return overrides[value]
+        return super().get_name(value)
+
 
 # Source:
 # https://raw.githubusercontent.com/SteamDatabase/SteamTracking/b5cba7a22ab899d6d423380cff21cec707b7c947/ItemSchema/CounterStrikeGlobalOffensive.json
-class Origin(IntEnum):
+class Origin(LabeledIntEnum):
     TIMED_DROP = 0
     ACHIEVEMENT = 1
     PURCHASED = 2
@@ -227,7 +219,6 @@ class Origin(IntEnum):
         return names.get(value, "Unknown")
 
 
-
 def get_wear_name(wear: float) -> str:
     if wear < 0.07:
         return "Factory New"
@@ -240,14 +231,7 @@ def get_wear_name(wear: float) -> str:
     return "Battle-Scarred"
 
 
-CATEGORY_IDS = {
-    1209: "Sticker",
-    1349: "Graffiti",
-    4609: "Patch",
-    1355: "Charm",
-    1314: "Music Kit",
-    6117: "Pin"
-}
+CATEGORY_IDS = {1209: "Sticker", 1349: "Graffiti", 4609: "Patch", 1355: "Charm", 1314: "Music Kit", 6117: "Pin"}
 
 GRAFFITI_TINTS = {
     1: "Desert Amber",
@@ -268,9 +252,5 @@ GRAFFITI_TINTS = {
     16: "Royal Blue",
     17: "Emerald Green",
     18: "Brick Red",
-    19: "Danger Red"
+    19: "Danger Red",
 }
-
-
-if __name__ == '__main__':
-    exit(1)

@@ -1,17 +1,11 @@
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
-    -   id: trailing-whitespace
-        exclude_types:
-          - markdown
-    -   id: end-of-file-fixer
-    -   id: check-yaml
-    -   id: check-toml
-    -   id: check-added-large-files
--   repo: https://github.com/pycqa/isort
-    rev: 8.0.1
+      - id: check-added-large-files
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.8
     hooks:
-    -   id: isort
-        name: isort (python)
-        args: [--line-length=120]
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format

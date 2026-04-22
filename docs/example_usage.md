@@ -1,6 +1,6 @@
 # Example Usage
 
-This guide provides comprehensive examples for creating, parsing, and enriching CS2 inspect links using `cs2inspect`.
+This document provides comprehensive examples for creating, parsing, and enriching CS2 inspect links using `cs2inspect`.
 
 ---
 

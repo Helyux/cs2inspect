@@ -1,6 +1,6 @@
 import urllib.parse
 
-from cs2inspect._util_base import RE_MASKED_LINK, RE_UNMASKED_LINK
+from ._util_base import RE_MASKED_LINK, RE_UNMASKED_LINK
 
 
 def _link_valid_and_type(inspect: str) -> tuple[bool, str | None]:
@@ -18,8 +18,8 @@ def _link_valid_and_type(inspect: str) -> tuple[bool, str | None]:
         inspect = quote_link(inspect)
 
     patterns = {
-        'unmasked': RE_UNMASKED_LINK,
-        'masked': RE_MASKED_LINK,
+        "unmasked": RE_UNMASKED_LINK,
+        "masked": RE_MASKED_LINK,
     }
 
     for link_type_str, pattern in patterns.items():
@@ -103,7 +103,3 @@ def quote_link(inspect: str) -> str:
     """
 
     return urllib.parse.quote(inspect, safe=":/+")
-
-
-if __name__ == '__main__':
-    exit(1)

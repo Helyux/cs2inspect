@@ -1,15 +1,25 @@
+# Python
 __pycache__/
 *.pyc
-.coverage
+.python-version
 virtualenv
-MANIFEST
+
+# Distribution / Build
 build/
 dist/
-.cache/
+MANIFEST
 *.egg-info
-.vscode
-.python-version
+
+# Testing / Linting
+.cache/
+.coverage
+.pytest_cache/
+.ruff_cache/
+
+# IDEs
 .idea/
+.vscode
+
+# Project specific
 cs2_schema.json
 cs2schema.json
-inspect_test.py

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cs2inspect"
-version = "0.5.0"
+version = "0.6.0"
 description = "CS2 inspect link utility"
 authors = ["Lukas Mahler <m@hler.eu>"]
 readme = "README.md"
@@ -8,6 +8,10 @@ license = "GPL-3.0-or-later"
 repository = "https://github.com/Helyux/cs2inspect"
 classifiers=[
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Operating System :: OS Independent",
 ]
@@ -28,3 +32,13 @@ testpaths = ["tests"]
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 120
+exclude = ["econ_pb2.py"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]

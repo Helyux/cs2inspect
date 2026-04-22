@@ -17,9 +17,8 @@ RE_MASKED_PAYLOAD = re.compile(_PAYLOAD_PREFIX + _MASKED_BODY, re.IGNORECASE)
 RE_UNMASKED_PAYLOAD = re.compile(_PAYLOAD_PREFIX + _UNMASKED_BODY, re.IGNORECASE)
 
 # Inspect link defaults
-INSPECT_BASE_DEFAULT = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20"
-INSPECT_BASE_NEW = "steam://run/730//+csgo_econ_action_preview%20"
-INSPECT_BASE = INSPECT_BASE_DEFAULT
+INSPECT_BASE_UNMASKED = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20"
+INSPECT_BASE_MASKED = "steam://run/730//+csgo_econ_action_preview%20"
 
 # Remote full and highlights schema (the highlights are missing in the all.json file)
 SCHEMA_URL = "https://raw.githubusercontent.com/ByMykel/CSGO-API/main/public/api/en/all.json"
