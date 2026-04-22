@@ -23,37 +23,20 @@ def _proto_to_dict(proto: CEconItemPreviewDataBlock) -> dict[str, Any]:
     :rtype: dict[str, Any]
     """
 
-    # Map proto field names to result dictionary keys
-    mapping = {
-        "accountid": "accountid",
-        "itemid": "itemid",
-        "defindex": "defindex",
-        "paintindex": "paintindex",
-        "rarity": "rarity",
-        "quality": "quality",
-        "paintwear": "paintwear",
-        "paintseed": "paintseed",
-        "killeaterscoretype": "killeaterscoretype",
-        "killeatervalue": "killeatervalue",
-        "customname": "customname",
-        "inventory": "inventory",
-        "origin": "origin",
-        "questid": "questid",
-        "dropreason": "dropreason",
-        "musicindex": "musicindex",
-        "entindex": "entindex",
-        "petindex": "petindex",
-        "style": "style",
-        "upgrade_level": "upgrade_level",
-    }
+    # Whitelist of scalar proto fields to extract
+    scalar_fields = [
+        "accountid", "itemid", "defindex", "paintindex", "rarity", "quality",
+        "paintwear", "paintseed", "killeaterscoretype", "killeatervalue",
+        "customname", "inventory", "origin", "questid", "dropreason",
+        "musicindex", "entindex", "petindex", "style", "upgrade_level",
+    ]
 
     result = {}
 
     # Process scalar fields
-    for proto_name, result_key in mapping.items():
-        if proto.HasField(proto_name):
-            val = getattr(proto, proto_name)
-            result[result_key] = val
+    for field in scalar_fields:
+        if proto.HasField(field):
+            result[field] = getattr(proto, field)
 
     # Ensure cosmetic 'Big Three' default to 0 for consistency if missing
     for key in ["paintindex", "paintseed", "paintwear"]:
